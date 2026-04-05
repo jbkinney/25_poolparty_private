@@ -16,18 +16,19 @@
   keywords = {Chromatin immunoprecipitation,Computational biology and bioinformatics,Genomics}
 }
 
-@article{Barbon2022th, 
-  year     = {2021}, 
-  title    = {Variant Library Annotation Tool ({VaLiAnT}): an oligonucleotide library design and annotation tool for saturation genome editing and other deep mutational scanning experiments}, 
-  author   = {Barbon, Luca and Offord, Victoria and Radford, Elizabeth J and Butler, Adam P and Gerety, Sebastian S and Adams, David J and Tan, Hong Kee and Waters, Andrew J}, 
-  journal  = {Bioinformatics}, 
-  issn     = {1367-4803}, 
-  doi      = {10.1093/bioinformatics/btab776}, 
-  pmid     = {34791067}, 
-  pmcid    = {{PMC}8796380}, 
-  pages    = {892--899}, 
-  number   = {4}, 
-  volume   = {38}
+@article{Barbon2022th,
+  year     = {2021},
+  title    = {Variant Library Annotation Tool ({VaLiAnT}): an oligonucleotide library design and annotation tool for saturation genome editing and other deep mutational scanning experiments},
+  author   = {Barbon, Luca and Offord, Victoria and Radford, Elizabeth J and Butler, Adam P and Gerety, Sebastian S and Adams, David J and Tan, Hong Kee and Waters, Andrew J},
+  journal  = {Bioinformatics},
+  issn     = {1367-4803},
+  doi      = {10.1093/bioinformatics/btab776},
+  pmid     = {34791067},
+  pmcid    = {{PMC}8796380},
+  pages    = {892--899},
+  number   = {4},
+  volume   = {38},
+  mynotes  = {Python command-line tool for designing oligonucleotide variant libraries for saturation genome editing (SGE) and DMS experiments. Generates exhaustive single-position variants with codon-aware annotation and CRISPR-specific features (PAM protection). Should be cited in the Introduction as the most relevant assay-specific tool for DMS/SGE saturation mutagenesis, which is not easily adapted to combinatorial designs, MPRA grammar studies, or in silico experiments. Closest prior art to PoolParty.}
 }
 
 article{Belliveau2018kr, 
@@ -47,18 +48,19 @@ article{Belliveau2018kr,
   month    = {05}
 }
 
-@article{Cock2009df, 
-  year     = {2009}, 
-  title    = {Biopython: freely available Python tools for computational molecular biology and bioinformatics}, 
-  author   = {Cock, Peter J. A. and Antao, Tiago and Chang, Jeffrey T. and Chapman, Brad A. and Cox, Cymon J. and Dalke, Andrew and Friedberg, Iddo and Hamelryck, Thomas and Kauff, Frank and Wilczynski, Bartek and Hoon, Michiel J. L. de}, 
-  journal  = {Bioinformatics}, 
-  issn     = {1367-4803}, 
-  doi      = {10.1093/bioinformatics/btp163}, 
-  pmid     = {19304878}, 
-  pmcid    = {{PMC}2682512}, 
-  pages    = {1422--1423}, 
-  number   = {11}, 
-  volume   = {25}
+@article{Cock2009df,
+  year     = {2009},
+  title    = {Biopython: freely available Python tools for computational molecular biology and bioinformatics},
+  author   = {Cock, Peter J. A. and Antao, Tiago and Chang, Jeffrey T. and Chapman, Brad A. and Cox, Cymon J. and Dalke, Andrew and Friedberg, Iddo and Hamelryck, Thomas and Kauff, Frank and Wilczynski, Bartek and Hoon, Michiel J. L. de},
+  journal  = {Bioinformatics},
+  issn     = {1367-4803},
+  doi      = {10.1093/bioinformatics/btp163},
+  pmid     = {19304878},
+  pmcid    = {{PMC}2682512},
+  pages    = {1422--1423},
+  number   = {11},
+  volume   = {25},
+  mynotes  = {Foundational Python library for computational molecular biology providing sequence I/O, alignment, BLAST, motif analysis, and database access. Should be cited in the Introduction as the most prominent example of a general-purpose Python sequence toolkit that can manipulate individual sequences but has no notion of a variant library as a structured object, motivating the need for a purpose-built library design tool like PoolParty.}
 }
 
 @article{Dawes2022empirical,
@@ -143,18 +145,19 @@ article{Fleur2024decoding,
   language = {English}, 
 }
 
-@article{GeorgakopoulosSoares2017gb, 
-  year     = {2016}, 
-  title    = {{MPRAnator}: a web-based tool for the design of massively parallel reporter assay experiments}, 
-  author   = {Georgakopoulos-Soares, Ilias and Jain, Naman and Gray, Jesse M and Hemberg, Martin}, 
-  journal  = {Bioinformatics}, 
-  issn     = {1367-4803}, 
-  doi      = {10.1093/bioinformatics/btw584}, 
-  pmid     = {27605100}, 
-  pmcid    = {{PMC}5198521}, 
-  pages    = {137--138}, 
-  number   = {1}, 
-  volume   = {33}
+@article{GeorgakopoulosSoares2017gb,
+  year     = {2016},
+  title    = {{MPRAnator}: a web-based tool for the design of massively parallel reporter assay experiments},
+  author   = {Georgakopoulos-Soares, Ilias and Jain, Naman and Gray, Jesse M and Hemberg, Martin},
+  journal  = {Bioinformatics},
+  issn     = {1367-4803},
+  doi      = {10.1093/bioinformatics/btw584},
+  pmid     = {27605100},
+  pmcid    = {{PMC}5198521},
+  pages    = {137--138},
+  number   = {1},
+  volume   = {33},
+  mynotes  = {Web-based tool for designing MPRA experiments, with modules for motif placement, SNP variant design, PWM-based sequence generation, and negative control design. Should be cited in the Introduction as an example of an assay-specific tool that automates library design for a particular experimental format (MPRAs) but is not easily adapted to novel designs such as DMS libraries or in silico experiments.}
 }
 
 @article{GeorgakopoulosSoares2023tf,
@@ -192,31 +195,46 @@ article{Gertz2009ki,
   month    = {01}
 }
 
-@article{Ghazi2018aa, 
-  year     = {2018}, 
-  title    = {Design tools for {MPRA} experiments}, 
-  author   = {Ghazi, Andrew R and Chen, Edward S and Henke, David M and Madan, Namrata and Edelstein, Leonard C and Shaw, Chad A}, 
-  journal  = {Bioinformatics}, 
-  issn     = {1367-4803}, 
-  doi      = {10.1093/bioinformatics/bty150}, 
-  pmid     = {30052913}, 
-  pmcid    = {{PMC}6454564}, 
-  pages    = {2682--2683}, 
-  number   = {15}, 
-  volume   = {34}
+@article{Ghazi2018aa,
+  year     = {2018},
+  title    = {Design tools for {MPRA} experiments},
+  author   = {Ghazi, Andrew R and Chen, Edward S and Henke, David M and Madan, Namrata and Edelstein, Leonard C and Shaw, Chad A},
+  journal  = {Bioinformatics},
+  issn     = {1367-4803},
+  doi      = {10.1093/bioinformatics/bty150},
+  pmid     = {30052913},
+  pmcid    = {{PMC}6454564},
+  pages    = {2682--2683},
+  number   = {15},
+  volume   = {34},
+  mynotes  = {Web-based tool and R package for interactive MPRA experimental design, focused on statistical power analysis and automated sequence generation from VCF files for SNP-focused MPRAs. Should be cited in the Introduction as an example of an assay-specific tool that automates library design for a particular experimental format (SNP-focused MPRAs) but is not easily adapted to novel designs.}
 }
 
-article{Hiraga2021yg, 
-  year     = {2021}, 
-  title    = {Mutation Maker, An Open Source Oligo Design Platform for Protein Engineering}, 
-  author   = {Hiraga, Kaori and Mejzlik, Petr and Marcisin, Matej and Vostrosablin, Nikita and Gromek, Anna and Arnold, Jakub and Wiewiora, Sebastian and Svarba, Rastislav and Prihoda, David and Clarova, Kamila and Klempir, Ondrej and Navratil, Josef and Tupa, Ondrej and Vazquez-Otero, Alejandro and Walas, Marcin W. and Holy, Lukas and Spale, Martin and Kotowski, Jakub and Dzamba, David and Temesi, Gergely and Russell, Jay H. and Marshall, Nicholas M. and Murphy, Grant S. and Bitton, Danny A.}, 
-  journal  = {ACS Synth Biol}, 
-  issn     = {2161-5063}, 
-  doi      = {10.1021/acssynbio.0c00542}, 
-  pmid     = {33433999}, 
-  pages    = {357--370}, 
-  number   = {2}, 
-  volume   = {10}
+@article{Hossain2024oc,
+  year     = {2024},
+  title    = {Automated Design of Oligopools and Rapid Analysis of Massively Parallel Barcoded Measurements},
+  author   = {Hossain, Ayaan and Cetnar, Daniel P and LaFleur, Travis L and McLellan, James R and Salis, Howard M},
+  journal  = {ACS Synth Biol},
+  doi      = {10.1021/acssynbio.4c00661},
+  pmid     = {39641628},
+  pages    = {4218--4232},
+  number   = {12},
+  volume   = {13},
+  mynotes  = {Python suite for designing the physical infrastructure of oligo pools (barcodes, primer binding sites, spacers, overlap regions) and analyzing barcoded MPRA sequencing reads. Assumes variant sequences are already designed as input. Complementary to PoolParty: PoolParty designs the variant content, Oligopool Calculator designs the surrounding infrastructure. Could optionally be cited in the Introduction or Discussion as a complementary tool focused on oligo pool construction rather than variant library specification.}
+}
+
+@article{Hiraga2021yg,
+  year     = {2021},
+  title    = {Mutation Maker, An Open Source Oligo Design Platform for Protein Engineering},
+  author   = {Hiraga, Kaori and Mejzlik, Petr and Marcisin, Matej and Vostrosablin, Nikita and Gromek, Anna and Arnold, Jakub and Wiewiora, Sebastian and Svarba, Rastislav and Prihoda, David and Clarova, Kamila and Klempir, Ondrej and Navratil, Josef and Tupa, Ondrej and Vazquez-Otero, Alejandro and Walas, Marcin W. and Holy, Lukas and Spale, Martin and Kotowski, Jakub and Dzamba, David and Temesi, Gergely and Russell, Jay H. and Marshall, Nicholas M. and Murphy, Grant S. and Bitton, Danny A.},
+  journal  = {ACS Synth Biol},
+  issn     = {2161-5063},
+  doi      = {10.1021/acssynbio.0c00542},
+  pmid     = {33433999},
+  pages    = {357--370},
+  number   = {2},
+  volume   = {10},
+  mynotes  = {Open-source software for designing mutagenic primers and oligos for protein engineering, supporting site-scanning saturation mutagenesis (SSSM), multi site-directed mutagenesis (MSDM), and de novo gene synthesis (PAS). Focuses on primer design given user-specified mutations, not on deciding which variants to include in a library. Could optionally be cited in the Introduction as another assay-specific tool for DMS/protein engineering that focuses on physical realization (primer/oligo design) rather than library-level variant specification.}
 }
 
 @article{Inoue2015cs, 
@@ -543,17 +561,18 @@ article{Patwardhan2012hy,
   month    = {02}
 }
 
-@article{Pereira2015wj, 
-  year     = {2015}, 
-  title    = {Pydna: a simulation and documentation tool for {DNA} assembly strategies using python}, 
-  author   = {Pereira, Filipa and Azevedo, Fl{\'a}vio and Carvalho, {\^A}ngela and Ribeiro, Gabriela F and Budde, Mark W and Johansson, Bj{\"o}rn}, 
-  journal  = {BMC Bioinformatics}, 
-  doi      = {10.1186/s12859-015-0544-x}, 
-  pmid     = {25933606}, 
-  pmcid    = {{PMC}4472420}, 
-  pages    = {142}, 
-  number   = {1}, 
-  volume   = {16}
+@article{Pereira2015wj,
+  year     = {2015},
+  title    = {Pydna: a simulation and documentation tool for {DNA} assembly strategies using python},
+  author   = {Pereira, Filipa and Azevedo, Fl{\'a}vio and Carvalho, {\^A}ngela and Ribeiro, Gabriela F and Budde, Mark W and Johansson, Bj{\"o}rn},
+  journal  = {BMC Bioinformatics},
+  doi      = {10.1186/s12859-015-0544-x},
+  pmid     = {25933606},
+  pmcid    = {{PMC}4472420},
+  pages    = {142},
+  number   = {1},
+  volume   = {16},
+  mynotes  = {Python library for simulating molecular biology DNA operations (restriction digestion, ligation, PCR, Gibson assembly, homologous recombination). Operates on individual DNA constructs, not variant libraries. Should be cited in the Introduction as an example of a general-purpose Python sequence toolkit that can manipulate individual sequences but has no notion of a variant library as a structured object, motivating the need for PoolParty.}
 }
 
 article{Rosenberg2015em, 
@@ -585,13 +604,24 @@ article{Schneider1989wi,
   month    = {01}
 }
 
-@article{Schreiber2025nd, 
-  year     = {2025}, 
-  title    = {tangermeme: A toolkit for understanding cis-regulatory logic using deep learning models}, 
-  author   = {Schreiber, Jacob}, 
-  journal  = {{bioRxiv}}, 
-  doi      = {10.1101/2025.08.08.669296}, 
-  pages    = {2025.08.08.669296}
+@article{Schreiber2025nd,
+  year     = {2025},
+  title    = {tangermeme: A toolkit for understanding cis-regulatory logic using deep learning models},
+  author   = {Schreiber, Jacob},
+  journal  = {{bioRxiv}},
+  doi      = {10.1101/2025.08.08.669296},
+  pages    = {2025.08.08.669296},
+  mynotes  = {Python toolkit for interpreting genomic deep learning models via sequence manipulations (marginalization, ablation, saturation mutagenesis, variant effect prediction) paired with model operations (predictions, DeepLIFT/SHAP attributions). Should be cited in the Introduction as an example of a general-purpose sequence toolkit that provides sequence manipulation operations but has no notion of a variant library as a structured object. Could additionally be cited in the Discussion as a complementary tool for in silico model interpretation.}
+}
+
+@misc{Schreiber2025ledidi,
+  year      = {2025},
+  title     = {Programmatic design and editing of cis-regulatory elements},
+  author    = {Schreiber, Jacob and Lorbeer, Franziska Katharina and Heinzl, Monika and Lu, Yang Young and Stark, Alexander and Noble, William Stafford},
+  journal   = {{bioRxiv}},
+  doi       = {10.1101/2025.04.22.650035},
+  pages     = {2025.04.22.650035},
+  mynotes   = {Introduces Ledidi, a gradient-based optimization method that designs minimal edits to a template sequence to achieve desired outcomes from pre-trained ML models. Designs individual optimized sequences, not variant libraries. Should not be cited in the Introduction as it is not a library design tool. Could optionally be noted in the Discussion as an example of ML-guided sequence design complementary to PoolParty's systematic library approach.}
 }
 
 @article{Seitz2024squid,
@@ -664,14 +694,15 @@ article{Schneider1989wi,
   month    = {09}
 }
 
-@article{Swainston2017rb, 
-  year     = {2017}, 
-  title    = {{CodonGenie}: optimised ambiguous codon design tools}, 
-  author   = {Swainston, Neil and Currin, Andrew and Green, Lucy and Breitling, Rainer and Day, Philip J and Kell, Douglas B}, 
-  journal  = {PeerJ Comput Sci}, 
-  doi      = {10.7717/peerj-cs.120}, 
-  pages    = {e120}, 
-  volume   = {3}
+@article{Swainston2017rb,
+  year     = {2017},
+  title    = {{CodonGenie}: optimised ambiguous codon design tools},
+  author   = {Swainston, Neil and Currin, Andrew and Green, Lucy and Breitling, Rainer and Day, Philip J and Kell, Douglas B},
+  journal  = {PeerJ Comput Sci},
+  doi      = {10.7717/peerj-cs.120},
+  pages    = {e120},
+  volume   = {3},
+  mynotes  = {Web application for designing optimal ambiguous codons for protein mutagenesis, ranking by encoding efficiency and organism-specific codon usage. Operates at the single-codon level, not at the level of full sequence libraries. Should be cited in the Introduction as an example of a sequence optimization tool that addresses codon-level design for individual positions but not the design of complete variant libraries.}
 }
 
 @article{Tareen2022dh, 
@@ -798,15 +829,16 @@ article{Zhou2022ho,
   urldate = {2026-03-09}
 }
 
-@article{Zulkower2020jk, 
-  year     = {2020}, 
-  title    = {{DNA} Chisel, a versatile sequence optimizer}, 
-  author   = {Zulkower, Valentin and Rosser, Susan}, 
-  journal  = {Bioinformatics}, 
-  issn     = {1367-4803}, 
-  doi      = {10.1093/bioinformatics/btaa558}, 
-  pmid     = {32647895}, 
-  pages    = {4508--4509}, 
-  number   = {16}, 
-  volume   = {36}
+@article{Zulkower2020jk,
+  year     = {2020},
+  title    = {{DNA} Chisel, a versatile sequence optimizer},
+  author   = {Zulkower, Valentin and Rosser, Susan},
+  journal  = {Bioinformatics},
+  issn     = {1367-4803},
+  doi      = {10.1093/bioinformatics/btaa558},
+  pmid     = {32647895},
+  pages    = {4508--4509},
+  number   = {16},
+  volume   = {36},
+  mynotes  = {Python framework for optimizing individual DNA sequences against composable constraints and objectives (codon usage, GC content, restriction site removal, etc.). Operates on single sequences, not libraries. Should be cited in the Introduction as an example of a sequence optimization tool that addresses synthesis constraints on individual sequences but not at the level of variant libraries, motivating the need for PoolParty.}
 }
