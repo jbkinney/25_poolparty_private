@@ -1,39 +1,12 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-*.egg
-
-# Virtual environments
-.venv/
-venv/
-ENV/
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-
-# Jupyter
-.ipynb_checkpoints/
-
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Sphinx documentation
-**/docs/_build/
 
 # LaTeX auxiliary files
 *.aux
@@ -49,13 +22,8 @@ Thumbs.db
 *.lot
 *.pygtex
 *.pygstyle
+*.xwm
 _minted-*/
 
 # Other
 *.tmp
-
-# Legacy code (archived, not part of release)
-.cursor/
-
-uv.lock
-
