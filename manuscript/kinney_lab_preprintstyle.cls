@@ -1,14 +1,15 @@
 %%
-%% This is file `zHenriquesLab-StyleBioRxiv.cls',
+%% This is file `kinney_lab_preprintstyle.cls',
 %%
-%% Class files for pre-print servers such as BioRXiv
+%% Class file for pre-print servers such as BioRxiv
 %%
-%% Copyright (C) Ricardo Henriques <r.henriques@ucl.ac.uk>
-%% 
-\typeout{Document Class `HenriquesLab' <18-April-2018>.}
+%% Adapted from the HenriquesLab bioRxiv template by Justin Kinney on 5 March 2026
+%% Original Copyright (C) Ricardo Henriques <r.henriques@ucl.ac.uk>
+%%
+\typeout{Document Class `kinney_lab_preprintstyle' <05-March-2026>.}
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{zHenriquesLab-StyleBioRxiv}
-  [2018/04/18 revision by RH]
+\ProvidesClass{kinney_lab_preprintstyle}
+  [2026/03/05 adapted from HenriquesLab template by Justin Kinney]
 
 %% Load base class
 \LoadClass[a4paper]{article}
@@ -303,7 +304,7 @@
 \RequirePackage{chapterbib}
 \RequirePackage[sectionbib,numbers,sort&compress,merge,round]{natbib}
 \setlength{\bibsep}{0.0pt}
-\bibliographystyle{zHenriquesLab-StyleBib}
+\bibliographystyle{kinney_lab_bibstyle}
 \renewcommand{\bibsection}{} % Remove header
 \renewcommand\bibfont{\normalfont\sffamily\fontsize{8}{10}\selectfont} % set font to be sans serif
 
