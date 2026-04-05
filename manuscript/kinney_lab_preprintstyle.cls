@@ -177,13 +177,13 @@
 \newcommand{\shorttitle}[1]{\def\@shorttitle{#1}}
 \newcommand{\leadauthor}[1]{\def\@leadauthor{#1}}
 %\newcommand{\headerfont}{\normalfont\sffamily\fontsize{7}{9} \selectfont}
-\newcommand{\footerfont}{\normalfont\sffamily\fontsize{7}{9} \selectfont}
+\newcommand{\footerfont}{\normalfont\sffamily\fontsize{8}{10} \selectfont}
 \newcommand{\titlefont}{\fontfamily{lmss}\bfseries\fontsize{22pt}{24pt}\selectfont}
 \newcommand{\dropcapfont}{\fontfamily{lmss}\bfseries\fontsize{26pt}{28pt}\selectfont}
 \newcommand{\datesfont}{\normalfont\sffamily\fontsize{7}{8}\selectfont}
 \newcommand{\absfont}{\normalfont\sffamily\bfseries\fontsize{8}{11}\selectfont}
 \newcommand{\keywordsfont}{\normalfont\rmfamily\fontsize{7}{10}\selectfont}
-\newcommand{\copyrightfont}{\normalfont\rmfamily\fontsize{6}{8}\selectfont}
+\newcommand{\copyrightfont}{\normalfont\rmfamily\fontsize{8}{10}\selectfont}
 
 %% Set document color scheme
 \definecolor{black50}{gray}{0.5} % 50% black for hrules
@@ -194,7 +194,7 @@
 %% Author and affiliation
 \setlength{\affilsep}{8.5pt} % 16.5pts between base of author line and base of affil line
 \renewcommand\Authfont{\color{color0}\normalfont\sffamily\bfseries\fontsize{9}{11}\selectfont}
-\renewcommand\Affilfont{\color{color0}\normalfont\sffamily\fontsize{7}{8}\selectfont}
+\renewcommand\Affilfont{\color{color0}\normalfont\sffamily\fontsize{8}{10}\selectfont}
 \makeatletter
 \renewcommand\Authands{, and }
 
@@ -253,7 +253,7 @@
 \titlespacing*{\paragraph}{0pc}{4pt}{6pt}
 
 %% Figure caption style
-\DeclareCaptionFormat{smallformat}{\normalfont\sffamily\fontsize{7}{9}\selectfont#1#2#3}
+\DeclareCaptionFormat{smallformat}{\normalfont\sffamily\fontsize{8}{10}\selectfont#1#2#3}
 \DeclareCaptionFormat{largeformat}{\normalfont\sffamily\fontsize{9}{12}\selectfont#1#2#3}
 \captionsetup*{format=smallformat}
 
