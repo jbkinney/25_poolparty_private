@@ -1,6 +1,7 @@
 \documentclass[twoside]{zHenriquesLab-StyleBioRxiv}
 \renewcommand{\familydefault}{\sfdefault}
-\renewcommand{\normalsize}{\fontsize{8}{10}\selectfont}
+\renewcommand{\normalsize}{\fontsize{9}{11}\selectfont}
+\urlstyle{same}
 
 % Suppress underfull hbox warnings
 \hbadness=10000
@@ -39,13 +40,13 @@
 \author[1,\Letter]{Justin B. Kinney}
 
 \affil[1]{Simons Center for Quantitative Biology, Cold Spring Harbor Laboratory, 1 Bungtown Rd., Cold Spring Harbor, New York 11724, United States}
+\affil[ ]{\Letter\; Address correspondence to: \href{mailto:jkinney@cshl.edu}{jkinney@cshl.edu}}
 
 \begin{abstract}
 \textbf{Summary}: Computationally designed DNA sequence libraries (also called oligonucleotide pools) are essential components of massively parallel reporter assays (MPRAs), protein deep mutational scanning (DMS) experiments, and other multiplex assays of variant effect (MAVEs). Increasingly, such libraries are also being used to analyze genomic AI models in silico. Despite their importance, the process of designing these libraries remains tedious and error-prone due to the lack of purpose-built software. Here we introduce PoolParty, a Python package that enables the streamlined design of sequence libraries using a declarative, composable syntax. In PoolParty, users build libraries by chaining together a core set of operations into a directed acyclic graph (DAG) that generates sequences on demand. This makes it possible to specify complex library designs (e.g., mixing multiple types of systematic and random variation across multiple sequence regions) in just a few lines of code. PoolParty automatically generates informative names for each sequence, as well as ``design cards'' that record the specific operations used to generate each sequence. Over 20 built-in operation types cover nucleotide- and codon-level mutagenesis, motif insertion, deletion and insertion scans, barcode generation, and more. Visualization methods let users quickly audit library content and inspect the underlying DAG. PoolParty thus transforms oligo pool design from a tedious task requiring custom functions and scripts into a structured, transparent, and reproducible process. 
 
-\textbf{Availability and implementation:} PoolParty can be installed using the pip package manager and is compatible with Python $\geq$ 3.10. Documentation is provided at http://poolparty.readthedocs.io; source code is available at http://github.com/jbkinney/poolparty-statetracker.
+\textbf{Availability and implementation:} PoolParty can be installed using the pip package manager and is compatible with Python $\geq$ 3.10. Documentation is provided at \url{http://poolparty.readthedocs.io}; source code is available at \url{http://github.com/jbkinney/poolparty-statetracker}.
 
-\textbf{Contact:} jkinney@cshl.edu (J.B.K.)
 \end{abstract}
 
 \maketitle
@@ -87,11 +88,11 @@ To generate a sequence library, PoolParty iterates through a series of \emph{sta
 The specific way that each Operation interprets its internal state is determined by its \emph{mode}. 
 
 \begin{itemize}
-\item In \textbf{sequential mode}, the Operation exhaustively enumerates a finite set of sequence designs. For example, when \texttt{mutagenize} is instructed to generate single-nucleotide mutations in sequential mode, it yields one variant for each possible character change at each target position. Its internal state specifies which mutation to apply at which position.
+\item In \emph{sequential mode}, the Operation exhaustively enumerates a finite set of sequence designs. For example, when \texttt{mutagenize} is instructed to generate single-nucleotide mutations in sequential mode, it yields one variant for each possible character change at each target position. Its internal state specifies which mutation to apply at which position.
 
-\item In \textbf{random mode}, the Operation samples sequence designs stochastically. For example, when \texttt{mutagenize} operates in random mode, it randomly selects which positions to mutate and which mutations to introduce. Its internal state, combined with a master seed, determines the specific random draws, ensuring reproducibility. 
+\item In \emph{random mode}, the Operation samples sequence designs stochastically. For example, when \texttt{mutagenize} operates in random mode, it randomly selects which positions to mutate and which mutations to introduce. Its internal state, combined with a master seed, determines the specific random draws, ensuring reproducibility. 
 
-\item In \textbf{fixed mode}, there is no internal state. Rather, output sequences are uniquely determined by the input sequences. One example is \texttt{join}, which concatenates its input sequences without modification.
+\item In \emph{fixed mode}, there is no internal state. Rather, output sequences are uniquely determined by the input sequences. One example is \texttt{join}, which concatenates its input sequences without modification.
 \end{itemize}
 
 \subsection{StateTracker}
@@ -107,11 +108,11 @@ One may want to perform different Operations on different parts of a sequence. T
 It is often useful to record how each sequence within a library was constructed. PoolParty provides three complementary ways to do this (Fig.~\ref{fig:figure1}C).
 
 \begin{itemize}
-\item \textbf{Design cards} record the specific changes applied to each sequence by each Operation. Users specify which Operations and Operation-specific variables to track. As each sequence is generated, the root Pool returns it together with a design card that records the tracked variable values for that sequence. PoolParty compiles these into a DataFrame in which each row contains a generated sequence and its design card.
+\item \emph{Design cards} record the specific changes applied to each sequence by each Operation. Users specify which Operations and Operation-specific variables to track. As each sequence is generated, the root Pool returns it together with a design card that records the tracked variable values for that sequence. PoolParty compiles these into a DataFrame in which each row contains a generated sequence and its design card.
 
-\item \textbf{Sequence names} summarize at a glance how each sequence was constructed. Users assign a prefix to each Operation they wish to track. PoolParty then pairs each prefix with the corresponding Operation's internal state to form a token (e.g., \texttt{mut\_03}), and concatenates these tokens to form the sequence's name. For example, \texttt{wt.mut\_03.bc\_01} might denote a wild-type sequence with mutation variant number 3 and barcode number 1.
+\item \emph{Sequence names} summarize at a glance how each sequence was constructed. Users assign a prefix to each Operation they wish to track. PoolParty then pairs each prefix with the corresponding Operation's internal state to form a token (e.g., \texttt{mut\_03}), and concatenates these tokens to form the sequence's name. For example, \texttt{wt.mut\_03.bc\_01} might denote a wild-type sequence with mutation variant number 3 and barcode number 1.
 
-\item \textbf{Sequence styling} allows sequences to be annotated with colors and formatted text that reflects each one's construction history. For example, \texttt{mutagenize} can be instructed to mark the positions it mutates in bold yellow text, making these positions stand out from the rest of the sequence. This formatting is accomplished using ANSI escape codes, so that output renders correctly in command-line terminals, Jupyter notebooks, and other environments that support basic text formatting. These styles combine in a natural manner as sequences propagate through the DAG. For example, a mutated position can be underlined even if it occurs within a sequence region that is already colored blue.
+\item \emph{Sequence styling} allows sequences to be annotated with colors and formatted text that reflects each one's construction history. For example, \texttt{mutagenize} can be instructed to mark the positions it mutates in bold yellow text, making these positions stand out from the rest of the sequence. This formatting is accomplished using ANSI escape codes, so that output renders correctly in command-line terminals, Jupyter notebooks, and other environments that support basic text formatting. These styles combine in a natural manner as sequences propagate through the DAG. For example, a mutated position can be underlined even if it occurs within a sequence region that is already colored blue.
 \end{itemize}
 
 \subsection{Implementation and extensibility}
@@ -120,9 +121,9 @@ PoolParty requires Python 3.10 or later, is designed to have minimal dependencie
 
 \subsection{SpliceAI surrogate analysis}
 
-This section provides technical details for the surrogate modeling analysis presented in Results. We sampled 9-mers, representing cryptic 5' splice sites, from the human 5$'$ splice-site (5$'$ss) position weight matrix \citep{Wong2018quantitative} and scored them with MaxEntScan \citep{Yeo2004me}. Sequences were binned into 100 MaxEntScan score (hereafter, strength) quantiles, and 20 sequences were drawn from each bin (2,000 total). Each 9-mer was inserted at 100 positions flanking the canonical 5$'$ss of SMN2 exon~7 and paired with a matched control in which the GT dinucleotide was disrupted (T$>$A at $+2$; Fig.~\ref{fig:figure4}A).
+This section provides technical details for the surrogate modeling analysis presented in Results. We sampled 9-mers, representing cryptic 5' splice sites, from the human 5' splice-site (5'ss) position weight matrix \citep{Wong2018quantitative} and scored them with MaxEntScan \citep{Yeo2004me}. Sequences were binned into 100 MaxEntScan score (hereafter, strength) quantiles, and 20 sequences were drawn from each bin (2,000 total). Each 9-mer was inserted at 100 positions flanking the canonical 5'ss of SMN2 exon~7 and paired with a matched control in which the GT dinucleotide was disrupted (T$>$A at $+2$; Fig.~\ref{fig:figure4}A).
 
-We predicted SpliceAI 5$'$ss probabilities at the canonical site using the five-model ensemble of \citet{Jaganathan2019ps} with $\pm$5~kb of genomic context (GRCh38). For each library-control pair, we computed the difference in logit-transformed predictions at the canonical 5$'$ss. These per-sequence values were averaged within each cell of the resulting $100 \times 100$ position $\times$ strength grid (Fig.~\ref{fig:figure4}B).
+We predicted SpliceAI 5'ss probabilities at the canonical site using the five-model ensemble of \citet{Jaganathan2019ps} with $\pm$5~kb of genomic context (GRCh38). For each library-control pair, we computed the difference in logit-transformed predictions at the canonical 5'ss. These per-sequence values were averaged within each cell of the resulting $100 \times 100$ position $\times$ strength grid (Fig.~\ref{fig:figure4}B).
 
 We fit generalized additive models (GAMs) to the cell means using pyGAM \citep{Serven2018pg}, with smooth terms for position, strength, and their interaction. Models were weighted by the inverse variance of each cell mean. Exonic and intronic regions were modeled separately. Model performance was evaluated by checkerboard cross-validation of the grid.
 
@@ -168,8 +169,8 @@ Colored text helps users inspect the architecture of the resulting sequences. Af
 \includegraphics[width=0.85\textwidth]{figure4}
 
 \caption{\textbf{Surrogate modeling of SpliceAI predictions.}
-\textbf{(A)} Experimental design. Cryptic 5$'$ss 9-mers of varying MaxEntScan strength ($s$) are inserted at varying positions ($p$) flanking the canonical 5$'$ss of SMN2 exon~7. Each variant is paired with a control in which the splice-site GT dinucleotide is disrupted (GT$\to$GA). PoolParty records $s$ and $p$ in design cards. The effect of each insertion on SpliceAI predictions at the canonical 5$'$ss is quantified as $\Delta$logit and modeled as a function of $s$ and $p$ using a generalized additive model (GAM).
-\textbf{(B)} Mean $\Delta$logit across the strength $\times$ position grid ($100 \times 100$; each cell averages 20 distinct 9-mers). The grey band marks the canonical 5$'$ss region.
+\textbf{(A)} Experimental design. Cryptic 5'ss 9-mers of varying MaxEntScan strength ($s$) are inserted at varying positions ($p$) flanking the canonical 5'ss of SMN2 exon~7. Each variant is paired with a control in which the splice-site GT dinucleotide is disrupted (GT$\to$GA). PoolParty records $s$ and $p$ in design cards. The effect of each insertion on SpliceAI predictions at the canonical 5'ss is quantified as $\Delta$logit and modeled as a function of $s$ and $p$ using a generalized additive model (GAM).
+\textbf{(B)} Mean $\Delta$logit across the strength $\times$ position grid ($100 \times 100$; each cell averages 20 distinct 9-mers). The grey band marks the canonical 5'ss region.
 \textbf{(C)} GAM predictions (including interaction term), using the same color scale as in B.
 \textbf{(D)} Partial dependence of the position term $f_1(p)$, shown separately for exon (blue) and intron (red) models. Shaded regions indicate 95\% confidence intervals; points denote mean partial residuals.
 \textbf{(E)} Partial dependence of the strength term $f_2(s)$, with conventions as in D.
@@ -184,15 +185,15 @@ Designed sequence libraries are also used to study genomic AI models \citep{Avse
 
 In addition to streamlining the design of sequence libraries, PoolParty facilitates in silico experiments on genomic AI models in two ways. First, because sequence design is separated from sequence generation, new sequences can be generated on demand as the experiment proceeds. Second, the design card that PoolParty returns with each sequence provides metadata that can be used directly as covariates in downstream analyses, including surrogate modeling. 
 
-As a third example, we carried out a surrogate modeling study of SpliceAI \citep{Jaganathan2019ps}, a deep learning model of mRNA splicing. We asked how the insertion of a cryptic 5$'$ splice site (5$'$ss) near an existing (canonical) 5$'$ss affects the model's prediction for canonical site usage. Using the 5$'$ss of SMN2 exon~7 as the canonical site, we used PoolParty to construct a library in which cryptic 5$'$ splice-site 9-mers of varying strength were inserted at varying positions on either side of the canonical 5$'$ss (Methods). The specific values for cryptic site strength and position were recorded in the design cards (Fig.~\ref{fig:figure4}A).
+As a third example, we carried out a surrogate modeling study of SpliceAI \citep{Jaganathan2019ps}, a deep learning model of mRNA splicing. We asked how the insertion of a cryptic 5' splice site (5'ss) near an existing (canonical) 5'ss affects the model's prediction for canonical site usage. Using the 5'ss of SMN2 exon~7 as the canonical site, we used PoolParty to construct a library in which cryptic 5' splice-site 9-mers of varying strength were inserted at varying positions on either side of the canonical 5'ss (Methods). The specific values for cryptic site strength and position were recorded in the design cards (Fig.~\ref{fig:figure4}A).
 
 Each variant was paired with a matched control in which the cryptic site was disrupted, and the effect of each insertion was quantified as the difference in logit-transformed SpliceAI-predicted probabilities at the canonical site ($\Delta$logit). Generalized additive models (GAMs) were used to separately model the effects of cryptic site insertion at exonic and intronic positions. Each of these two models has three terms, corresponding to the effects of position alone, strength alone, and interactions between these covariates (Fig.~\ref{fig:figure4}A).
 
-The GAMs closely reproduced the observed data (held-out $R^2$ of 0.82 for exonic and 0.71 for intronic insertions; Fig.~\ref{fig:figure4}B,C). Cryptic sites on the exonic side suppressed canonical site usage more strongly than those on the intronic side (Fig.~\ref{fig:figure4}D), with the effect peaking approximately 20~bp upstream of the canonical 5$'$ss. This is consistent with the observation that cryptic 5$'$ splice sites are preferentially depleted near annotated ones on the exonic side \citep{Dawes2022empirical}. Stronger cryptic sites drove greater suppression in both models (Fig.~\ref{fig:figure4}E). The effects of position and strength exhibited substantial interactions (Fig.~\ref{fig:figure4}F). Through a comparison to analogous linear models, we observed that the non-linear terms and interaction terms in the GAMs substantially improved predictive performance (Fig.~\ref{fig:figure4}G).
+The GAMs closely reproduced the observed data (held-out $R^2$ of 0.82 for exonic and 0.71 for intronic insertions; Fig.~\ref{fig:figure4}B,C). Cryptic sites on the exonic side suppressed canonical site usage more strongly than those on the intronic side (Fig.~\ref{fig:figure4}D), with the effect peaking approximately 20~bp upstream of the canonical 5'ss. This is consistent with the observation that cryptic 5' splice sites are preferentially depleted near annotated ones on the exonic side \citep{Dawes2022empirical}. Stronger cryptic sites drove greater suppression in both models (Fig.~\ref{fig:figure4}E). The effects of position and strength exhibited substantial interactions (Fig.~\ref{fig:figure4}F). Through a comparison to analogous linear models, we observed that the non-linear terms and interaction terms in the GAMs substantially improved predictive performance (Fig.~\ref{fig:figure4}G).
 
 \section*{Discussion}
 
-We have presented PoolParty, a Python package that replaces the ad hoc scripting commonly used to design oligonucleotide libraries with a declarative, composable, and flexible framework. We demonstrated PoolParty through three use cases: library design for a DMS experiment on protein GB1; library design for an MPRA probing transcriptional regulatory grammar; and a surrogate modeling analysis of the effects that cryptic 5$'$ splice sites have on the predictions of SpliceAI. These examples illustrate the flexibility of PoolParty and its applicability to both experimental and computational studies.
+We have presented PoolParty, a Python package that replaces the ad hoc scripting commonly used to design oligonucleotide libraries with a declarative, composable, and flexible framework. We demonstrated PoolParty through three use cases: library design for a DMS experiment on protein GB1; library design for an MPRA probing transcriptional regulatory grammar; and a surrogate modeling analysis of the effects that cryptic 5' splice sites have on the predictions of SpliceAI. These examples illustrate the flexibility of PoolParty and its applicability to both experimental and computational studies.
 
 We highlight the design card that PoolParty returns with each generated sequence. By providing a structured record of how each sequence was constructed, design cards allow sequence design parameters to serve directly as covariates in downstream analyses, eliminating the need for post hoc sequence parsing. In the SpliceAI example, the cryptic splice-site strength and position recorded in each design card provided the covariates used for surrogate modeling. We expect this feature of PoolParty to be increasingly useful as in silico experiments on genomic AI models become more common.
 

@@ -218,22 +218,22 @@
 %   []
 
 \titleformat{\section}
-  {\large\sffamily\bfseries}
+  {\fontsize{11}{13}\selectfont\sffamily\bfseries}
   {}
   {0em}
   {Supplementary Note \thesection: #1}
   []
 \titleformat{name=\section,numberless}
-  {\large\sffamily\bfseries}
+  {\fontsize{11}{13}\selectfont\sffamily\bfseries}
   {}
   {0em}
   {#1}
-  []  
-\titleformat{\subsection}[runin]
-  {\sffamily\bfseries}
-  {\thesubsection.}
-  {0.5em}
-  {#1. }
+  []
+\titleformat{\subsection}
+  {\fontsize{9}{11}\selectfont\sffamily\bfseries}
+  {}
+  {0em}
+  {#1}
   []
 \titleformat{\subsubsection}[runin]
   {\sffamily\small\bfseries\itshape}
@@ -334,7 +334,7 @@
 
 \def\@maketitle{\newpage
   \begin{center}
-    \vskip0.2em{\Huge\bfseries\@title\par}\vskip1.0em%
+    \vskip0.2em{\fontsize{16}{19}\selectfont\bfseries\@title\par}\vskip1.0em%
     {\lineskip.5em\large\@author\par}
   \end{center}\par\vskip 1.4em
   \ifx\@abstracttext\@empty\else
@@ -442,8 +442,8 @@
 \lfoot[\bBioRXiv]{\dBioRXiv}
 \rfoot[\dBioRXiv]{\cBioRXiv}
 
-\rhead[]{\footnotesize\rightmark}
-\lhead[\footnotesize\leftmark]{}
+\rhead[]{}
+\lhead[]{}
 \cfoot{}
 \renewcommand{\headrulewidth}{0pt}
 
@@ -460,9 +460,7 @@
 \parskip=4pt plus 1pt minus 1pt
 
 %% Make list spacing match paragraph spacing
-\let\orig@itemize\itemize
-\def\itemize{\orig@itemize\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\itemsep}{4pt plus 1pt minus 1pt}}
-\let\orig@enumerate\enumerate
-\def\enumerate{\orig@enumerate\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\itemsep}{4pt plus 1pt minus 1pt}}
+\RequirePackage{enumitem}
+\setlist{topsep=0pt, partopsep=0pt, parsep=0pt, itemsep=4pt plus 1pt minus 1pt, leftmargin=1.2em, labelsep=0.4em}
 \endinput
 
