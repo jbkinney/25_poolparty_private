@@ -1,4 +1,4 @@
-\documentclass[twoside]{kinney_lab_preprintstyle}
+\documentclass[twoside]{kinneylab_preprintstyle}
 \renewcommand{\familydefault}{\sfdefault}
 \renewcommand{\normalsize}{\fontsize{9}{11}\selectfont}
 \urlstyle{same}
@@ -169,7 +169,7 @@ Colored text helps users inspect the architecture of the resulting sequences. Af
 
 \begin{figure*}[p]
 \centering
-\includegraphics[width=0.85\textwidth]{figure4}
+\includegraphics[width=0.75\textwidth]{figure4}
 
 \caption{\textbf{Surrogate modeling of SpliceAI predictions.}
 \textbf{(A)} Experimental design. Cryptic 5'ss 9-mers of varying MaxEntScan strength ($s$) are inserted at varying positions ($p$) flanking the canonical 5'ss of SMN2 exon~7. Each variant is paired with a control in which the splice-site GT dinucleotide is disrupted (GT$\to$GA). PoolParty records $s$ and $p$ in design cards. The effect of each insertion on SpliceAI predictions at the canonical 5'ss is quantified as $\Delta$logit and modeled as a function of $s$ and $p$ using a generalized additive model (GAM).
@@ -216,5 +216,6 @@ Z.L. conceived the project. Z.L. and J.B.K. designed the project, wrote the soft
 This work was supported by NIH grant R01HG011787. Computational equipment was supported by NIH grant S10OD028632.
 
 \section*{References}
-\bibliography{poolparty_refs}
+\bibliographystyle{kinneylab_bibstyle}
+\bibliography{references}
 \end{document}
