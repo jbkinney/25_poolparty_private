@@ -302,7 +302,7 @@
 
 % %% bibliography
 \RequirePackage{chapterbib}
-\RequirePackage[sectionbib,numbers,sort&compress,merge,round]{natbib}
+\RequirePackage[sectionbib,numbers,sort&compress,merge,square]{natbib}
 \setlength{\bibsep}{0.0pt}
 \renewcommand{\bibsection}{} % Remove header
 \renewcommand\bibfont{\normalfont\sffamily\fontsize{8}{10}\selectfont} % set font to be sans serif
