@@ -318,6 +318,10 @@
 \long\def\abstract#1\end{\gdef\@abstracttext{#1}\end}
 \let\@abstracttext\@empty
 
+%% Store keywords for use in \maketitle
+\newcommand{\ppkeywords}[1]{\gdef\@ppkeywords{#1}}
+\let\@ppkeywords\@empty
+
 \def\maketitle{\par
   \begingroup
   \def\thefootnote{} % the \thanks{} mark type is empty
@@ -343,6 +347,10 @@
     \ifbfabstract\fontsize{9}{11}\selectfont\bfseries\else\fontsize{9}{11}\selectfont\sffamily\fi
     \setlength{\parskip}{6pt plus 1pt minus 1pt}
     \@abstracttext
+    \ifx\@ppkeywords\@empty\else
+    \vspace{0.5em}\par
+    \noindent\textbf{Keywords:} \@ppkeywords
+    \fi
     \end{minipage}
     \end{center}
     \vskip 1.5em
