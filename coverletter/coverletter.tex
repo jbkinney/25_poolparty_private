@@ -32,31 +32,34 @@ Cold Spring Harbor Laboratory\\
 
 \noindent 5 April 2026
 
-\vspace{0.2cm}
+%\vspace{0.2cm}
 
-\noindent \textit{Subject: Manuscript submission to} Genome Biology
+\noindent \textit{Subject: Manuscript submission to Genome Biology}
 
-\vspace{0.2cm}
+%\vspace{0.2cm}
 
 \noindent Dear Editor,
 
-I kindly ask that you consider our manuscript, ``\textit{PoolParty: streamlined design of DNA sequence libraries in Python},'' for publication as a Software article in \textit{Genome Biology}.
+I kindly ask that you consider our manuscript, ``\textit{PoolParty: streamlined design of DNA sequence libraries in Python},'' for publication as a Software article in Genome Biology.
 
-Over the years my lab has carried out a variety of massively parallel reporter assays (MPRAs) and deep mutational scanning (DMS) experiments, often using designed oligonucleotide pools synthesized by Twist or Agilent. It isn't hard for those who can program to design such libraries, but as our experimental designs matured I began to realize that writing one-off scripts to design these libraries was concerningly tedious and and error-prone. Although other labs had published software for designing specific kinds of MPRA and DMS libraries, none of this software met our needs. The need to address this problem has recently grown in urgency, as analogous libraries are increasingly being used in silico analogues of MPRAs and DMS experiments as ways of probing the behavior of genomic neural networks. 
+Over the years, my lab has carried out a variety of massively parallel reporter assays (MPRAs) and deep mutational scanning (DMS) experiments, often using designed oligonucleotide pools synthesized by Twist or Agilent. As our experimental designs matured, I began to realize that writing one-off scripts to design these libraries was concerningly tedious and error-prone. Although other labs had published software for designing specific kinds of MPRA and DMS libraries, none of these tools had the flexibility we required. Furthermore, it was often hard to validate that the generated sequences were actually what we wanted. The need to address this problem has recently grown in urgency, as designed libraries are increasingly being used as key components of in silico experiments analyzing the behavior of genomic AI models.
 
-Last year my postdoc, Zhihan (Leo) Liu, came to me with the idea of creating a Python package, similar to TensorFlow or PyTorch (the primary deep learning frameworks), that would allow users to string together arbitrary combinations of mutational strategies and sequence design patterns into a computational graph that could then be executed to generate sequences on demand. A key component of Leo's idea was that the framework should not only generate sequences, it should also return ``design cards'' that describe in detail how each sequence was generated. I thought this was a great idea, and worked furiouosly with Leo over the next few months establish to develop the package, which we call PoolParty. 
+Zhihan (Leo) Liu, a postdoc in my lab, came to me last year with the idea of creating a Python package, similar in spirit to Keras, that would allow users to string together arbitrary combinations of mutational strategies and sequence design patterns into a computational graph that could then be executed to generate sequences on demand. A key component of Leo's idea was that the framework should not only generate sequences but also return ``design cards'' that describe in detail how each sequence was generated. I thought this was a great idea, and worked furiously with Leo over the next few months to develop the package, which we call PoolParty. 
 
-This paper describes the results of this work. After giving a high-level overview of how it works under the hood, we demonstrate PoolParty's utility by designing example DMS and MPRA libraries, as well as by using it in an in silico analysis of SplicAI. I had a lot of fun developing PoolParty, and I think you'll enjoy the paper we've produced. 
+This paper describes the results of this work. After giving an overview of how PoolParty works under the hood, we demonstrate PoolParty's utility by designing example DMS and MPRA libraries, as well as in an in silico analysis of SpliceAI. Importantly, the design cards and other visualization methods provided by PoolParty make it easy to validate sequence designs and use the resulting metadata in downstream analyses. I had a lot of fun developing PoolParty, and I think you'll enjoy the paper we've written. 
 
-My lab has a track record of building and maintaining robust and highly cited open-source software, including Logomaker (Tareen and Kinney, \textit{Bioinformatics}, 2020; \textbf{550 citations}) and MAVE-NN (Tareen et al., \textit{Genome Biology}, 2022; \textbf{83 citations}). We have similarly taken care to make PoolParty robust, user friendly, open source, easily installable via pip, and well documented, with tutorials and comprehensive documentation hosted on ReadTheDocs. We belive PoolParty is ready for prime time and that many labs will benefit from its capabilities. 
+My lab has a track record of building and maintaining robust and highly cited open-source software, including Logomaker (Tareen and Kinney, \textit{Bioinformatics}, 2020; \textbf{550 citations}) and MAVE-NN (Tareen et al., \textit{Genome Biology}, 2022; \textbf{83 citations}). We have similarly taken care to make PoolParty robust, user-friendly, open source, easily installable via pip, and well documented, with tutorials and a comprehensive API reference hosted on ReadTheDocs. I believe PoolParty is ready for prime time and that many labs will benefit from its capabilities. 
 
 We suggest the following experts as potential reviewers:
 \begin{itemize}[nosep, leftmargin=1.5em]
     \item Barak Cohen, Washington University in St.\ Louis, \href{mailto:cohen@wustl.edu}{cohen@wustl.edu}
-    \item Anshul Kundaje, Stanford University, \href{mailto:akundaje@stanford.edu}{akundaje@stanford.edu}
+    \item Polly Fordyce, Stanford University, \href{mailto:pfordyce@stanford.edu}{pfordyce@stanford.edu}
+    %\item Anshul Kundaje, Stanford University, \href{mailto:akundaje@stanford.edu}{akundaje@stanford.edu}
     \item Ben Lehner, Wellcome Sanger Institute, \href{mailto:ben.lehner@sanger.ac.uk}{ben.lehner@sanger.ac.uk}
-    \item Georg Seelig, University of Washington, \href{mailto:gseelig@uw.edu}{gseelig@uw.edu}
+    %\item Georg Seelig, University of Washington, \href{mailto:gseelig@uw.edu}{gseelig@uw.edu}
     \item Max Staller, UC Berkeley, \href{mailto:mstaller@berkeley.edu}{mstaller@berkeley.edu}
+    %\item Fabian Theis, Helmholtz Munich, \href{mailto:fabian.theis@helmholtz-muenchen.de}{fabian.theis@helmholtz-muenchen.de}
+    \item Nir Yosef, Weizmann Institute of Science, \href{mailto:nir.yosef@weizmann.ac.il}{nir.yosef@weizmann.ac.il}
 \end{itemize}
 
 My coauthors and I look forward to hearing back from you.
