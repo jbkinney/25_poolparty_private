@@ -25,5 +25,8 @@ Thumbs.db
 *.xwm
 _minted-*/
 
+# Reference papers
+bioinfo/papers/
+
 # Other
 *.tmp
