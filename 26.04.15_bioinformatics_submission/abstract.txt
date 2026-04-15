@@ -1,0 +1,8 @@
+Motivation: 
+Computationally designed DNA sequence libraries are essential components of massively parallel reporter assays (MPRAs), deep mutational scanning (DMS) experiments, and other multiplex assays of variant effect (MAVEs). They are also increasingly used in silico to analyze genomic AI models. Designing these libraries, however, remains tedious and error-prone due to the lack of purpose-built software.
+
+Results: 
+Here we describe PoolParty, a Python package that streamlines the design of complex oligo pools using a simple but flexible API. In PoolParty, each library is represented by a computational graph that can be specified in just a few lines of code. Over 50 built-in operations cover nucleotide- and codon-level mutagenesis, motif insertion, barcode generation, and more. PoolParty automatically generates informative names for each sequence and provides "design cards" detailing how each sequence was generated. Visualization methods let users quickly audit library content and inspect the underlying graph. PoolParty thus transforms oligo pool design from a tedious task requiring custom functions and scripts into a structured, transparent, and reproducible process.
+
+Availability and implementation:
+PoolParty is freely available and can be installed using pip. It is compatible with Python >= 3.10. Documentation is provided at https://poolparty.readthedocs.io; source code is available at https://github.com/jbkinney/poolparty-statetracker. A static release is archived at DOI 10.5281/zenodo.19445098.
