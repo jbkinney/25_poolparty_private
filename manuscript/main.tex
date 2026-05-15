@@ -23,13 +23,16 @@
 
 \graphicspath{{figs/}}
 
+% Improve two-column float placement for figure*
+\usepackage{stfloats}
+
 % line numbers
 \usepackage[mathlines, switch]{lineno}
 %\usepackage[right]{lineno}
 
 
 \begin{document}
-\linenumbers
+%\linenumbers
 \raggedbottom
 \widowpenalty=0
 \clubpenalty=0
@@ -48,14 +51,19 @@
 \affil[ ]{\Letter\; Address correspondence to: \href{mailto:jkinney@cshl.edu}{jkinney@cshl.edu}}
 
 \begin{abstract}
-Computationally designed DNA sequence libraries are essential components of many high-throughput assays. They are also increasingly used in silico to analyze genomic AI models. Designing these libraries, however, remains tedious and error-prone. Here we describe PoolParty, a Python package that streamlines the design of complex oligo pools using a simple but flexible API. In PoolParty, each library is represented by a computational graph that can be specified in just a few lines of code. Over 50 built-in operations cover nucleotide- and codon-level mutagenesis, motif insertion, barcode generation, and more. PoolParty also provides ``design cards'' detailing how each sequence was generated. 
-\end{abstract}
+\textbf{Motivation:}
+Computationally designed DNA sequence libraries are essential components of massively parallel reporter assays (MPRAs), deep mutational scanning (DMS) experiments, and other multiplex assays of variant effect (MAVEs). They are also increasingly used in silico to analyze genomic AI models. Designing these libraries, however, remains tedious and error-prone due to the lack of purpose-built software.
 
-\ppkeywords{sequence design, library design, massively parallel reporter assay, deep mutational scanning, multiplex assay of variant effect, genomic AI, in silico experiments, Python software, directed acyclic graph}
+\textbf{Results:}
+Here we describe PoolParty, a Python package that streamlines the design of complex oligo pools using a simple but flexible API. In PoolParty, each library is represented by a computational graph that can be specified in just a few lines of code. Over 50 built-in operations cover nucleotide- and codon-level mutagenesis, motif insertion, barcode generation, and more. PoolParty automatically generates informative names for each sequence and provides ``design cards'' detailing how each sequence was generated. Visualization methods let users quickly audit library content and inspect the underlying graph. PoolParty thus transforms oligo pool design from a tedious task requiring custom functions and scripts into a structured, transparent, and reproducible process.
+
+\textbf{Availability and implementation:}
+PoolParty is freely available and can be installed using pip. It is compatible with Python $\geq$ 3.10. Documentation is provided at \url{https://poolparty.readthedocs.io}; source code is available at \url{https://github.com/jbkinney/poolparty-statetracker}. A static release is archived at \href{https://zenodo.org/records/19445098}{DOI 10.5281/zenodo.19445098}.
+\end{abstract}
 
 \maketitle
 
-\section*{Background}
+\section*{Introduction}
 
 Designed libraries of DNA sequences (oligonucleotide pools) have become essential tools in functional genomics. In massively parallel reporter assays (MPRAs), complex libraries of DNA sequences are routinely used to measure the regulatory activities of tens of thousands of candidate regulatory elements or their variants in a single experiment \citep{Patwardhan2009cw, Kinney2010tn, Melnikov2012dw, Kwasnieski2012hu, Sharon2012io, Mogno2013cf, Levo2014hl, Inoue2015cs, Vvedenskaya2015ih, Urtecho2018hu, Klein2020, Romero2023, LaFleur2024aa}. In deep mutational scanning (DMS) experiments, coding sequences that have been either systematically or randomly mutagenized are commonly used to map protein fitness landscapes \citep{Fowler2010gt, Hietpas2011bp, Fowler2014gq, Olson2014iq, Adams2016dka, Findlay2018kd, Starr2020aa}. Oligo pools can also be used in high-throughput biochemical assays, such as measurements of transcription factor specificity \citep{Berger2006wp, Maerkl2007tv, Noyes2008vr, Gordan2013, Le2018cr, Shen2018ip, Khetan2025_paditseq}. These are all examples of multiplex assays of variant effect (MAVEs), a large and expanding family of high-throughput methods that quantitatively link sequence to function at scale \citep{Kinney2019jc, Starita2017ec, Weile2018gm}. Designed sequence libraries are also used beyond the wet lab: they are increasingly employed in silico to probe the behavior of genomic AI models \citep{Avsec2021bpnet, Toneyan2024creme, Seitz2024squid, Seitz2025, Nagai2026review} and to augment genomic AI training data \citep{Lee2023}.
 
@@ -65,7 +73,7 @@ Existing tools can help with parts of this process, but none provide a unified f
 
 Here we present PoolParty, a Python package that enables the streamlined design of complex DNA sequence libraries. In PoolParty, libraries are represented as objects called \emph{Pools}, while individual steps in the sequence generation process are called \emph{Operations}. Using a concise and transparent syntax, users chain together Operations into a directed acyclic graph (DAG)---an approach inspired by deep learning frameworks---that yields the desired Pool. The DAG describes the high-level logic used to generate sequences, while the procedural details and bookkeeping are handled internally. Importantly, no sequences are generated until the user requests them, so users can explore and test multiple design options without triggering expensive computations. When sequences are generated, each is automatically assigned an informative name and paired with a \emph{design card} that records the specific procedures used to construct it. We demonstrate PoolParty through three example applications: a DMS library for protein GB1, an MPRA library probing transcriptional regulatory grammar, and an in silico experiment characterizing SpliceAI \citep{Jaganathan2019ps}, in which design cards provide the covariates for surrogate modeling.
 
-\section*{Results}
+\section*{Methods}
 
 \begin{figure*}[t!]
 \centering
@@ -101,7 +109,7 @@ The specific way that each Operation interprets its internal state is determined
 
 \subsection{StateTracker}
 
-The way each Operation decomposes the state it receives during the backward pass is designed to reverse the way it constructs sequences during the forward pass. For most Operations, the set of possible output states is the Cartesian product of the possible internal states and the possible states of each input Pool. In such cases, the Operation uses mixed-radix decomposition to split the recieved state into its component states. The \texttt{stack} Operation is different: its output states are the disjoint union of its input Pool states. The \texttt{stack} Operation therefore uses the state it receives to select which input Pool to use, and to instruct this Pool (but not the other Pools) which sequence to return. Keeping track of these rules across a complex DAG requires specialized bookkeeping. We therefore developed a back-end package called StateTracker that automates state composition and decomposition during forward and backward passes through the DAG.
+The way each Operation decomposes the state it receives during the backward pass is designed to reverse the way it constructs sequences during the forward pass. For most Operations, the set of possible output states is the Cartesian product of the possible internal states and the possible states of each input Pool. In such cases, the Operation uses mixed-radix decomposition to split the received state into its component states. The \texttt{stack} Operation is different: its output states are the disjoint union of its input Pool states. The \texttt{stack} Operation therefore uses the state it receives to select which input Pool to use, and to instruct this Pool (but not the other Pools) which sequence to return. Keeping track of these rules across a complex DAG requires specialized bookkeeping. We therefore developed a back-end package called StateTracker that automates state composition and decomposition during forward and backward passes through the DAG.
 
 \subsection{Sequence regions}
 
@@ -119,7 +127,22 @@ It is often useful to record how each sequence within a library was constructed.
 \item \emph{Sequence styling} allows sequences to be annotated with colors and formatted text that reflects each one's construction history. For example, \texttt{mutagenize} can be instructed to mark the positions it mutates in bold yellow text, making these positions stand out from the rest of the sequence. This formatting is accomplished using ANSI escape codes, so that output renders correctly in command-line terminals, Jupyter notebooks, and other environments that support basic text formatting. These styles combine in a natural manner as sequences propagate through the DAG. For example, a mutated position can be underlined even if it occurs within a sequence region that is already colored blue.
 \end{itemize}
 
-\subsection{Example 1: DMS library for protein GB1}
+\subsection{Implementation and extensibility}
+
+PoolParty requires Python 3.10 or later, is designed to have minimal dependencies, and is distributed via PyPI. Documentation, tutorials, and example notebooks are available on the ReadTheDocs and GitHub project websites. PoolParty is also extensible: users can create new Operation types by subclassing the Operation base class and implementing a few required methods. Custom Operations automatically inherit support for state tracking, design card generation, and visualization, allowing researchers to add domain-specific functionality without reimplementing core infrastructure.
+
+\subsection{SpliceAI surrogate analysis}
+
+This section provides technical details for the surrogate modeling analysis presented in Results. Using the human 5' splice site (5'ss) position weight matrix \citep{Wong2018quantitative}, we sampled 9-mers representing cryptic 5'ss sequences and scored them with MaxEntScan \citep{Yeo2004me}. Sequences were binned into 100 MaxEntScan score (hereafter, strength) quantiles, and 20 sequences were drawn from each bin (2,000 total). Each 9-mer was inserted at 100 positions flanking the canonical 5'ss of SMN2 exon~7 and paired with a matched control in which the GT dinucleotide was disrupted (T$>$A at $+2$; Fig.~\ref{fig:figure4}A).
+
+We predicted SpliceAI 5'ss probabilities at the canonical site using the five-model ensemble of \citet{Jaganathan2019ps} with $\pm$5~kb of genomic context (GRCh38). For each library-control pair, we computed the difference in logit-transformed predictions at the canonical 5'ss. These per-sequence values were averaged within each cell of the resulting $100 \times 100$ position-by-strength grid (Fig.~\ref{fig:figure4}B).
+
+We fit generalized additive models (GAMs) to the cell means using pyGAM \citep{Serven2018pg}, with smooth terms for position, strength, and their interaction. Models were weighted by the inverse variance of each cell mean. Exonic and intronic regions were modeled separately. Model performance was evaluated by checkerboard cross-validation of the grid.
+
+\subsection{LLM disclosure}
+Large language models (Claude Opus 4.5 and 4.6, Anthropic) were used to assist with code development, debugging, documentation writing, and copy-editing of the manuscript. The authors are responsible for all final code and text.
+
+\section*{Results}
 
 \begin{figure*}[t]
 \centering
@@ -132,11 +155,11 @@ It is often useful to record how each sequence within a library was constructed.
 \label{fig:figure2}
 \end{figure*}
 
+\subsection{Example 1: DMS library for protein GB1}
+
 As a first example, we use PoolParty to reconstruct and extend the library used in a DMS experiment on protein GB1 by \citet{Olson2014iq}, adding random higher-order mutants and wild-type replicates to the original design. Their library contained the wild-type GB1 coding sequence, all single amino acid substitutions (excluding the start codon), and nearly all possible pairs of amino acid substitutions. This library is substantially larger than most DMS libraries, containing over half a million variants. Its inclusion of so many pairwise variants has helped it become a benchmark dataset in the quantitative modeling of protein sequence-function relationships \citep{Otwinowski2018jb, Otwinowski2018jj, Tareen2022dh, Faure2024mn}.
 
 Fig.\ \ref{fig:figure2}A illustrates the DAG used to construct this library; the corresponding Python code is shown in Fig.\ \ref{fig:figure2}B. First, we use the \texttt{from\_seq} Operation to define a Pool named \texttt{orf\_pool} that represents the wild-type GB1 coding sequence. This Pool is then passed to four separate Operations that define the four library components. The first is a \texttt{repeat} Operation that produces 100 copies of the wild-type sequence. The second and third are \texttt{mutagenize\_orf} Operations running in sequential mode: one generates all 1,045 single amino acid substitutions, and the other generates all 536,085 pairwise amino acid substitutions. The fourth is a \texttt{mutagenize\_orf} Operation running in random mode, which mutates each amino acid position with 10\% probability to generate 10,000 higher-order variants. We note that \texttt{mutagenize\_orf} supports multiple codon mutation types; this example uses \texttt{missense\_only\_first}, which selects the most abundant codon for each amino acid substitution. These four Pools are then merged by \texttt{stack} into the root Pool, yielding a library of 547,230 sequences in total. The design card for each variant (Fig.~\ref{fig:figure2}C) reports which component it belongs to, the specific mutations it contains, and the replicate index (for wild-type copies). Users can also inspect the DAG structure by calling the \texttt{print\_dag} method of the root Pool (Fig.~\ref{fig:figure2}D).
-
-\subsection{Example 2: MPRA library for regulatory grammar}
 
 \begin{figure*}[t]
 \centering
@@ -147,6 +170,8 @@ Fig.\ \ref{fig:figure2}A illustrates the DAG used to construct this library; the
 \textbf{(C)} Output of \texttt{print\_library}. TFBSs are colored by identity (HNF4A blue, PPARA purple, XBP1 orange); barcodes are shown in bold.}
 \label{fig:figure3}
 \end{figure*}
+
+\subsection{Example 2: MPRA library for regulatory grammar}
 
 MPRA libraries used to study regulatory grammar often vary the positions and orientations of transcription factor binding sites (TFBSs) \citep{Melnikov2012dw, Sharon2012io, King2020aa, Smith2013kn, Grossman2017aa, WeingartenGabbay2019bl, GeorgakopoulosSoares2023tf}. For example, \citet{GeorgakopoulosSoares2023tf} studied the impact of order and orientation on gene expression by testing over 200,000 sequences containing all pairwise and triplet arrangements of 18 TFBSs. Designing such libraries requires substantially more complex combinatorics than standard DMS libraries do. PoolParty, however, handles this complexity without making additional demands on the user. 
 
@@ -175,7 +200,7 @@ Designed sequence libraries are also used to study genomic AI models \citep{Avse
 
 In addition to streamlining the design of sequence libraries, PoolParty facilitates in silico experiments on genomic AI models in two ways. First, because sequence design is separated from sequence generation, new sequences can be generated on demand as the experiment proceeds. Second, the design card that PoolParty returns with each sequence provides metadata that can be used directly as covariates in downstream analyses, including surrogate modeling. 
 
-As a third example, we carried out a surrogate modeling study of SpliceAI \citep{Jaganathan2019ps}, a deep learning model of mRNA splicing. We asked how the insertion of a cryptic 5' splice site (5'ss) near an existing (canonical) 5'ss affects the model's prediction for canonical site usage. Using the 5'ss of SMN2 exon~7 as the canonical site, we used PoolParty to construct a library in which cryptic 5'ss 9-mers of varying strength were inserted at varying positions on either side of the canonical 5'ss (Methods). The specific values for cryptic site strength and position were recorded in the design cards (Fig.~\ref{fig:figure4}A).
+As a third example, we carried out a surrogate modeling study of SpliceAI \citep{Jaganathan2019ps}, a deep learning model of mRNA splicing. We asked how the insertion of a cryptic 5'ss near an existing (canonical) 5'ss affects the model's prediction for canonical site usage. Using the 5'ss of SMN2 exon~7 as the canonical site, we used PoolParty to construct a library in which cryptic 5'ss 9-mers of varying strength were inserted at varying positions on either side of the canonical 5'ss (Methods). The specific values for cryptic site strength and position were recorded in the design cards (Fig.~\ref{fig:figure4}A).
 
 Each variant was paired with a matched control in which the cryptic site was disrupted, and the effect of each insertion was quantified as the difference in logit-transformed SpliceAI-predicted probabilities at the canonical site ($\Delta$logit). Generalized additive models (GAMs) were used to separately model the effects of cryptic site insertion at exonic and intronic positions. Each of these two models has three terms, corresponding to the effects of position alone, strength alone, and interactions between these covariates (Fig.~\ref{fig:figure4}A).
 
@@ -193,49 +218,19 @@ In contrast to assay-specific tools such as VaLiAnT \citep{Barbon2022th} and MPR
 
 PoolParty was designed to address a focused computational problem: the streamlined design of DNA sequence libraries. As such, it has several limitations. PoolParty is not a sequence optimization tool, e.g., for optimizing codon usage \citep{Swainston2017rb}, satisfying synthesis constraints on individual sequences \citep{Zulkower2020jk}, or designing sequences guided by machine learning models \citep{Schreiber2025ledidi}. Nor does it address the problem of physically constructing DNA sequence libraries, e.g., by designing mutagenic primers \citep{Hiraga2021yg}. We expect that PoolParty can in many cases be productively paired with such complementary tools.
 
-\section*{Conclusions}
-
 PoolParty should substantially ease the design of DMS experiments, MPRAs, and other multiplex assays of variant effect. As genomic AI models continue to advance, PoolParty will also help researchers systematically probe and interpret the behavior of these models. Moreover, because PoolParty's composable design makes it straightforward to define new Operations, the framework can readily be extended to support novel assay types and analysis strategies as they emerge.
 
-\section*{Methods}
+\section*{Author contributions}
+Zhihan Liu (Conceptualization, Methodology, Software, Formal analysis, Validation, Writing---original draft, Writing---review \& editing), Aidan Cordero (Software, Validation, Writing---review \& editing), and Justin B. Kinney (Methodology, Software, Formal analysis, Writing---original draft, Writing---review \& editing, Supervision, Funding acquisition).
 
-\subsection{Implementation and extensibility}
+\section*{Conflict of interest}
+None declared.
 
-PoolParty requires Python 3.10 or later, is designed to have minimal dependencies, and is distributed via PyPI. Documentation, tutorials, and example notebooks are available on the ReadTheDocs and GitHub project websites. PoolParty is also extensible: users can create new Operation types by subclassing the Operation base class and implementing a few required methods. Custom Operations automatically inherit support for state tracking, design card generation, and visualization, allowing researchers to add domain-specific functionality without reimplementing core infrastructure.
+\section*{Funding}
+This work was supported by the National Institutes of Health [R01HG011787]. Computational equipment was supported by the National Institutes of Health [S10OD028632].
 
-\subsection{SpliceAI surrogate analysis}
-
-This section provides technical details for the surrogate modeling analysis presented in Results. Using the human 5'ss position weight matrix \citep{Wong2018quantitative}, we sampled 9-mers representing cryptic 5'ss sequences and scored them with MaxEntScan \citep{Yeo2004me}. Sequences were binned into 100 MaxEntScan score (hereafter, strength) quantiles, and 20 sequences were drawn from each bin (2,000 total). Each 9-mer was inserted at 100 positions flanking the canonical 5'ss of SMN2 exon~7 and paired with a matched control in which the GT dinucleotide was disrupted (T$>$A at $+2$; Fig.~\ref{fig:figure4}A).
-
-We predicted SpliceAI 5'ss probabilities at the canonical site using the five-model ensemble of \citet{Jaganathan2019ps} with $\pm$5~kb of genomic context (GRCh38). For each library-control pair, we computed the difference in logit-transformed predictions at the canonical 5'ss. These per-sequence values were averaged within each cell of the resulting $100 \times 100$ position-by-strength grid (Fig.~\ref{fig:figure4}B).
-
-We fit generalized additive models (GAMs) to the cell means using pyGAM \citep{Serven2018pg}, with smooth terms for position, strength, and their interaction. Models were weighted by the inverse variance of each cell mean. Exonic and intronic regions were modeled separately. Model performance was evaluated by checkerboard cross-validation of the grid.
-
-\subsection{LLM disclosure}
-Assistance from LLMs, Claude Opus 4.5 and 4.6 in particular, was used across all facets of this project.
-
-\section*{Declarations}
-
-\subsection*{Ethics approval and consent to participate}
-Not applicable.
-
-\subsection*{Consent for publication}
-Not applicable.
-
-\subsection*{Availability of data and materials}
-PoolParty is available as an open-source Python package under the MIT license. Source code is available at \url{http://github.com/jbkinney/poolparty-statetracker}. Documentation is provided at \url{http://poolparty.readthedocs.io}. The package can be installed via pip and is compatible with Python $\geq$ 3.10. A static release of the version described in this manuscript is deposited at \href{https://zenodo.org/records/19445098}{DOI 10.5281/zenodo.19445098}.
-
-\subsection*{Competing interests}
-The authors declare no competing interests.
-
-\subsection*{Funding}
-This work was supported by NIH grant R01HG011787. Computational equipment was supported by NIH grant S10OD028632.
-
-\subsection*{Authors' contributions}
-Z.L. conceived the project. Z.L. and J.B.K. designed the project, wrote the software, performed the analyses, and wrote the manuscript. Z.L. and A.C. wrote the documentation, developed the test suite, and deployed the software. J.B.K. supervised the research. All authors read and approved the final manuscript.
-
-\subsection*{Acknowledgements}
-Not applicable.
+\section*{Data availability}
+PoolParty is available on GitHub at \url{https://github.com/jbkinney/poolparty-statetracker}. The version described in this article is archived on Zenodo at \href{https://zenodo.org/records/19445098}{DOI 10.5281/zenodo.19445098}. Code to reproduce the analyses in this paper is included in the same repository.
 
 \section*{References}
 \bibliographystyle{kinneylab_bibstyle}
