@@ -3,7 +3,7 @@
 % Class: sn-jnl.cls (Springer Nature template)
 % Build: latexmk -pdf main.tex
 
-\documentclass[pdflatex,sn-vancouver-num,referee,lineno,oneside]{sn-jnl}
+\documentclass[pdflatex,sn-vancouver-num,referee,oneside]{sn-jnl}
 
 \usepackage{graphicx}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -12,7 +12,12 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{textgreek}
+\usepackage[mathlines]{lineno}
 \graphicspath{{figs/}}
+
+% The sn-jnl class defaults to a narrow journal-production text block.
+% Use a standard US Letter submission layout while keeping the Springer/BMC class.
+\geometry{reset,letterpaper,margin=1in}
 
 % Override sn-jnl.cls's italic \descriptionlabel (line 1144) with bold, to
 % match BMC's IFA convention for "Availability and requirements" and
@@ -44,7 +49,7 @@ massively parallel reporter assays (MPRAs), deep mutational scanning (DMS)
 experiments, and other multiplex assays of variant effect (MAVEs).
 They are also increasingly used in silico to analyze genomic AI models.
 Designing these libraries, however, remains tedious and error-prone due to
-the lack of purpose-built software.
+the lack of purpose-built software.\\
 
 \textbf{Results:}
 Here we describe PoolParty, a Python package that streamlines the design of
@@ -57,7 +62,7 @@ names for each sequence and provides ``design cards'' detailing how each
 sequence was generated. Visualization methods let users quickly audit library
 content and inspect the underlying graph. PoolParty thus transforms oligo
 pool design from a tedious task requiring custom functions and scripts into
-a structured, transparent, and reproducible process.
+a structured, transparent, and reproducible process.\\
 
 \textbf{Conclusions:}
 PoolParty should substantially ease the design of DMS, MPRA, and other
@@ -70,6 +75,8 @@ extended to support new assay types and analysis strategies as they emerge.
 deep mutational scanning, multiplex assay of variant effect, genomic AI,
 in silico experiments, Python software, directed acyclic graph}
 
+\modulolinenumbers[1]
+\linenumbers
 \maketitle
 
 \section{Background}\label{sec:background}
