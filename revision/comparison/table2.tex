@@ -4,7 +4,9 @@
 % they add nothing to the table and cannot overflow the line. Each label then
 % starts at its column centre and runs up-right. tabcolsep is 10pt so adjacent
 % diagonals clear each other (~19pt perpendicular separation).
-% Measured: 0.0pt baseline stagger, labels within 0.8pt of their column centre.
+% A 3pt left nudge (about half a symbol width) sets each diagonal over the
+% middle of its column of symbols rather than flush with the left edge.
+% Measured: 0.00pt baseline stagger, uniform -3.5pt offset, no overfull.
 % Requires: booktabs, graphicx, wasysym (\usepackage[nointegrals]{wasysym})
 \newcommand{\hbfull}{\CIRCLE}
 \newcommand{\hbhalf}{\LEFTcircle}
@@ -25,7 +27,7 @@ Operational definitions of every row are given in Additional file~1.}
 \label{tab:capabilities}
 \begin{tabular}{@{}lcccccccc@{}}
 \toprule
-& \makebox[0pt][l]{\rotatebox[origin=lB]{45}{DNA Chisel}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{MPRA Design Tools}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{MPRAnator}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{Mutation Maker}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{Oligopool Calculator}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{\textbf{PoolParty}}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{tangermeme}} & \makebox[0pt][l]{\rotatebox[origin=lB]{45}{VaLiAnT}}\\
+& \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{DNA Chisel}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{MPRA Design Tools}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{MPRAnator}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{Mutation Maker}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{Oligopool Calculator}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{\textbf{PoolParty}}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{tangermeme}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{VaLiAnT}}\\
 \midrule
 \multicolumn{9}{@{}l}{\textit{Library Specification}}\\
 \quad Library object & \hbnone & \hbhalf & \hbnone & \hbhalf & \hbhalf & \hbfull & \hbhalf & \hbnone\\
