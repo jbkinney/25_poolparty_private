@@ -1,0 +1,19 @@
+OPERATIONAL TEST (fixed 2026-08-10, before looking at any tool):
+
+For each tool, locate a SINGLE invocation -- one config/input file, one CLI run, or one script that uses
+only the tool's own API for BOTH generation AND combination -- in which the tool's own primitives declare
+>=2 STRUCTURALLY DIFFERENT component classes (differing in mutation mechanism or sampling regime, not merely
+in numeric parameters of one rule; e.g. exhaustive single substitution vs. sampled/combinatorial higher-order
+vs. unmutated wild-type control vs. indel/deletion class vs. a different mutator on a different sub-region),
+AND the tool's own code path emits them as ONE pooled output carrying shared per-oligo bookkeeping.
+
+  YES     = a shipped example, shipped input file, or official docs page demonstrates exactly this.
+  PARTIAL = heterogeneity is reachable but only across SEPARATE invocations whose outputs the user
+            concatenates himself, OR the in-spec mixing is confined to variants of a single mutator class.
+  NO      = the tool offers no tool-side mechanism to combine different component classes into one pooled
+            output, so any mixing would rest entirely on a generic language container (a Python list,
+            an R rbind, a shell `cat`). A generic array container is explicitly NOT sufficient for YES.
+  UNKNOWN = source and docs genuinely inaccessible.
+
+This test is applied identically to PoolParty. If PoolParty's only combiner were a bare Python list, it
+would score NO by the same clause that scores Biopython NO.

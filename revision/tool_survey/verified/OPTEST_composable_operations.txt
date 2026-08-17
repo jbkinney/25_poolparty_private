@@ -1,0 +1,25 @@
+OPERATIONAL TEST (fixed 2026-08-10 BEFORE looking at any tool):
+
+For each tool, locate its public API surface of LIBRARY-DESIGN operations -- operations whose
+output is candidate library/variant sequence content (mutagenesis, recoding, insertion/replacement,
+barcoding/indexing, combinatorial or degenerate expansion, constraint-directed sequence optimization,
+attribution-guided sequence editing). General sequence utilities (parse/revcomp/translate/write) and
+cloning-simulation primitives do NOT count.
+
+Then ask, using only primary sources (code file:line or exact quoted official docs):
+
+  (a) COMPOSITION: is there a carrier type T such that at least TWO DISTINCT design operations
+      accept T and return T (or return something another design op accepts), so a user can write
+      op_b(op_a(x)) AND op_a(op_b(x)) -- i.e. the ORDER is the user's choice, not the tool's?
+  (b) BRANCHING: can one intermediate result be bound once and fed to TWO different downstream
+      design operations (a fan-out), as shown in source, tests, or official examples?
+
+SCORING:
+  yes     = (a) demonstrated with >=2 user-orderable design ops on a shared carrier AND (b) possible
+            (fan-out expressible; does not require re-running from scratch).
+  partial = design ops exist and some chaining is possible, but EITHER the order is set by a fixed
+            driver/pipeline with configurable stages, OR only a small documented subset chains,
+            OR composition works only by manually re-feeding output files between invocations.
+  no      = the pipeline order is fixed in the tool's source; inserting or reordering a design step
+            requires editing the tool's source (or there is only ONE design op, so nothing to compose).
+  unknown = source genuinely inaccessible.
