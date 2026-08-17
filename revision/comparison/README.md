@@ -23,6 +23,9 @@ artifacts.
 | `scored/` | **Table 2's evidence.** One audit per row, one agent per row across all 8 tools. `_recheck/` holds batch-7 per-cell rescores, already folded in |
 | `records/` | **Table 1's evidence.** Per-tool records for all 13 tools. The only evidence for the five tools in Table 1 that were never scored per row — CodonGenie, ledidi, Biopython, pydna, SeqPro |
 | `examples/` | Expressiveness experiment: rebuilding other tools' published examples in PoolParty (R2 2b, R1 #5) |
+| `MAIN_TEX_CHANGES.md` | **Every edit this work implies for `main.tex`.** Nothing applied; the manuscript is untouched |
+| `table1.tex`, `table2.tex` | The rendered tables. `table2.tex` is generated from `MATRIX.md` -- do not hand-edit |
+| `preview_tables.tex` | Build harness mirroring `main.tex`'s preamble; produces `preview_tables.pdf` (gitignored) |
 
 Where `MATRIX.md` and `table2.md` disagree on a value, **`MATRIX.md` wins**.
 
@@ -82,5 +85,11 @@ Adopted while ruling on 62 escalations from the record-repair pass; still bindin
   Defence in `table2.md` *Open risks*.
 - **Codon-aware indels** — a v1 → v2 regression, deferred by decision. Does not
   change any row as currently worded. See `FINDINGS.md` B1.
-- **Table 1 tool set** does not match Table 2's eight columns; tangermeme's
-  placement is undecided.
+- **tangermeme's placement** in Table 1 -- own row, or back in the
+  general-purpose group -- is undecided. Table 1 otherwise now matches Table 2's
+  tool set exactly.
+- **One new reference.** `Hossain2024oc` (Oligopool Calculator) is cited by the
+  tables and by nothing in the manuscript. Accepted 2026-08-17; 61 keys to 62.
+  `Ghazi2018aa` was already cited at line 88 via `\citep[see also][]{...}`.
+- **Supplementary naming is unsettled** and blocks Table 2's caption: this task
+  writes "Additional file 1", the benchmarks task writes "Table S1".
