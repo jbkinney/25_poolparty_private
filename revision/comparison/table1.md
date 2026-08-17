@@ -1,32 +1,63 @@
-# Table 1 draft v3 — tool overview (main text)
+# Table 1 — tool overview (main text)
 
-**Shape follows surveyed convention.** Four real comparison tables were examined
-(see `CONVENTIONS.md`): tools are rows in 4/4; column headers are full words
-with no invented acronyms; the dominant descriptive pattern is
-*Tool · Purpose · Key features · Availability*. Two columns are added beyond that
-pattern — *Output*, because the editor explicitly asked for "similarities and
-differences in program outputs", and *Reference*, which is near-universal.
+**Rendered by `table1.tex`.** That file is the deliverable; this one records the
+design decisions behind it. Keep them in step.
+
+**Shape follows surveyed convention** (see `CONVENTIONS.md`): tools are rows in
+4/4 surveyed tables; column headers are full words with no invented acronyms; the
+dominant descriptive pattern is *Tool · Purpose · Key features · Availability*.
+Two columns are added beyond that pattern — *Output*, because the editor
+explicitly asked for "similarities and differences in program outputs", and
+*Reference*, which is near-universal.
 
 Terminology follows `TERMINOLOGY.md`.
 
----
+## Structure — revised 2026-08-17
+
+**Rows now match Table 2's columns, one-to-one and in the same order.** DNA Chisel
+and Mutation Maker were previously folded into a grouped *Adjacent design tools*
+row while appearing as individual columns in Table 2. A reader could not map one
+table onto the other. Both are now individual rows.
+
+The residue of that group is CodonGenie and ledidi, renamed **Single-sequence
+design tools**, which describes what they have in common rather than their
+distance from us.
+
+Ten rows: the eight scored tools, then two grouped rows.
+
+**Order is alphabetical in both tables**, with PoolParty bold rather than first —
+the surveyed DMS review orders chronologically so its own subject is not
+privileged, and the same reasoning applies here.
+
+**Key features are held to 2-3 clauses per tool.** PoolParty's cell previously ran
+to five clauses against two for everyone else. Whatever its accuracy, a cell three
+times longer than its neighbours reads as self-promotion.
+
+## Layout
+
+`sidewaystable` (landscape). Measured, not assumed: in portrait the float exceeds
+the page by 99pt in referee mode and 83pt in production mode, in both cases
+because the prose columns wrap heavily at 13.1cm. Landscape gives 19.4cm and the
+float then fits with no overfull boxes in either mode.
+
+Requires `booktabs`, `array`, `rotating`. Springer's own template loads booktabs
+and multirow, so this is unremarkable, but all three are additions to `main.tex`.
+
+A `\singlespacing` override was tried to defeat referee-mode double spacing and
+**measured to have no effect inside the float** — it made the table 8pt taller.
+Removed rather than left in as decoration.
 
 ## The table
 
-| Tool | Purpose | Key features | Output | Availability | Reference |
-|---|---|---|---|---|---|
-| MPRA Design Tools | Design MPRA libraries and estimate statistical power | Barcode assignment with error-correcting sets; power analysis over effect size and sequencing depth | Barcoded constructs and statistical power estimates | R package (GitHub); Shiny app | [Ghazi2018aa] |
-| MPRAnator | Design MPRA libraries of motif arrangements and sequence variants | Combinatorial placement of motifs; randomly sampled and combinatorial substitution sets; scrambled and reverse-complement controls | Oligo library (FASTA) | Web service | [GeorgakopoulosSoares2017gb] |
-| **PoolParty** | Design DNA sequence libraries of any type | Libraries specified as a directed acyclic graph of operations; accepts sequences, FASTA, degenerate templates and motifs, or generates k-mers with no template; saturation mutagenesis, randomly sampled variants, and pairwise and higher-order variants can be mixed in one library; per-variant design cards | Library of sequences, each with a design card (CSV, TSV, FASTA, JSONL) | Python package (PyPI) | This work |
-| VaLiAnT | Design and annotate libraries for saturation genome editing and cDNA deep mutational scanning | Saturation mutagenesis from genomic coordinates; several mutation types per target region; transcript-aware, including codons split across exons | Per-region oligo libraries with metadata tables and VCF carrying variant consequence annotation | Command-line tool (source, Docker) | [Barbon2022th] |
-| Oligopool Calculator | Design pool infrastructure and analyse sequencing readout | Constraint-aware barcodes, primers and spacers; degenerate compression of a supplied variant set; off-target screening against a host genome | Synthesis-ready pool; variant counts from sequencing reads | Python package (PyPI); command line | [Hossain2024oc] |
-| tangermeme | Probe cis-regulatory logic with deep learning models | Saturation mutagenesis of input sequences; insertion and removal of motifs across sets of sequences | Perturbed sequences and model predictions | Python package (PyPI) | [Schreiber2025nd] |
-| General-purpose toolkits<br>*(Biopython, pydna, SeqPro)* | Manipulate sequences, simulate cloning, prepare arrays for modelling | Parsing, transformation and file-format support; no library abstraction | Transformed sequences | Python packages (PyPI) | [Cock2009df, Pereira2015wj, Klie2023kg] |
-| Adjacent design tools<br>*(CodonGenie, DNA Chisel, ledidi, Mutation Maker)* | Optimise or edit individual sequences | Codon choice, synthesis-constraint satisfaction, model-guided editing, mutagenic primer design | An optimised sequence or a primer set | Web services and Python packages | [Swainston2017rb, Zulkower2020jk, Schreiber2025ledidi, Hiraga2021yg] |
+**Not duplicated here.** The rendered table is `table1.tex`; keeping a second copy
+in markdown is how the two fell out of step before (the markdown still showed
+`Adjacent design tools` after Table 2 had been scoring DNA Chisel and Mutation
+Maker as separate columns for days). Read the cell contents there.
 
-**Footnote:** *Tools examined August 2026. Two rows group tools that address
-problems adjacent to library design; members are named and cited individually.
-Em dash (—) denotes a capability the tool does not provide.*
+Row order, matching Table 2: DNA Chisel · MPRA Design Tools · MPRAnator ·
+Mutation Maker · Oligopool Calculator · **PoolParty** · tangermeme · VaLiAnT ·
+General-purpose toolkits *(Biopython, pydna, SeqPro)* · Single-sequence design
+tools *(CodonGenie, ledidi)*.
 
 ---
 
@@ -40,8 +71,9 @@ changed if you prefer it first.
 **Output earns its column.** It is the most direct response to the editor's ask
 about program outputs, and reading down it makes the complementarity argument
 structurally: VaLiAnT emits VCF with consequence annotation, Oligopool Calculator
-emits a synthesis-ready pool from variants a user already has, adjacent tools emit
-one sequence. Nobody has to be told these are different problems.
+emits a synthesis-ready library from variants a user already has, DNA Chisel and
+the single-sequence tools emit one sequence. Nobody has to be told these are
+different problems.
 
 **No Pros/Cons column**, though two of the seven CRISPR-review tables use one.
 Writing "Cons" about tools whose authors may referee this paper is precisely the
@@ -59,10 +91,13 @@ the supplement.
 
 ## On the two grouped rows
 
-Convention lists every tool individually (4/4 surveyed). We deviate because this
-table spans tool *categories*, which none of the surveyed tables does — the CRISPR
-systematic review, which faces the same problem, answers it with seven separate
-tables, which is worse here.
+Convention lists every tool individually (4/4 surveyed). We deviate for the two
+final rows only, because the table spans tool *categories*, which none of the
+surveyed tables does — the CRISPR systematic review, which faces the same problem,
+answers it with seven separate tables, which is worse here.
+
+The deviation is now much smaller than it was: every tool scored in Table 2 has
+its own row, so grouping applies only to five tools that Table 2 does not score.
 
 Three mitigations: members are named in the Tool cell, all members are cited in
 Reference, and the footnote states the grouping rationale.

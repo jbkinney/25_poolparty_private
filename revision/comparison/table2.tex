@@ -1,0 +1,57 @@
+% Table 2 - capability matrix. GENERATED from MATRIX.md - do not hand-edit.
+% Requires: booktabs, graphicx, wasysym (\usepackage[nointegrals]{wasysym})
+\newcommand{\hbfull}{\CIRCLE}
+\newcommand{\hbhalf}{\LEFTcircle}
+\newcommand{\hbnone}{\Circle}
+\begin{table}[tbp]
+\centering
+\footnotesize
+% (setspace override omitted: no effect inside this float)
+\setlength{\tabcolsep}{4pt}
+\caption{\textbf{Capabilities of tools for designing DNA sequence libraries.}
+\hbfull\ denotes a capability the tool provides; \hbhalf\ a capability provided
+with a stated restriction; \hbnone\ a capability the tool does not provide. A
+capability counts only where the tool supplies an operation, parameter or mode
+for it, and not where a user reconstructs it by composing primitives the tool
+provides for other purposes. Tools assessed August 2026 against their
+documentation, source repositories and, where installable, executed code.
+Operational definitions of every row are given in Additional file~1.}
+\label{tab:capabilities}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+& \rotatebox{90}{DNA Chisel} & \rotatebox{90}{MPRA Design Tools} & \rotatebox{90}{MPRAnator} & \rotatebox{90}{Mutation Maker} & \rotatebox{90}{Oligopool Calculator} & \rotatebox{90}{\textbf{PoolParty}} & \rotatebox{90}{tangermeme} & \rotatebox{90}{VaLiAnT}\\
+\midrule
+\multicolumn{9}{@{}l}{\textit{Library Specification}}\\
+\quad Library object & \hbnone & \hbhalf & \hbnone & \hbhalf & \hbhalf & \hbfull & \hbhalf & \hbnone\\
+\quad Composable operations & \hbhalf & \hbnone & \hbhalf & \hbnone & \hbfull & \hbfull & \hbhalf & \hbnone\\
+\quad Mixed variant types in one library & \hbnone & \hbfull & \hbfull & \hbhalf & \hbnone & \hbfull & \hbnone & \hbfull\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Variant Generation}}\\
+\quad Saturation mutagenesis & \hbnone & \hbnone & \hbnone & \hbnone & \hbhalf & \hbfull & \hbfull & \hbfull\\
+\quad Randomly sampled variants & \hbfull & \hbhalf & \hbfull & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone\\
+\quad Pairwise and higher-order variants & \hbfull & \hbnone & \hbfull & \hbfull & \hbhalf & \hbfull & \hbhalf & \hbnone\\
+\quad Model-guided variants & \hbfull & \hbnone & \hbnone & \hbnone & \hbnone & \hbhalf & \hbfull & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Variant Types}}\\
+\quad Codon /\allowbreak  amino-acid substitutions & \hbfull & \hbnone & \hbnone & \hbhalf & \hbnone & \hbfull & \hbnone & \hbfull\\
+\quad Insertions and deletions & \hbnone & \hbfull & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbfull\\
+\quad Combinatorial multi-motif placement & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone\\
+\quad Recombination & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone\\
+\quad Shuffling & \hbnone & \hbnone & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Physical Construction}}\\
+\quad Synthesis-constraint checking & \hbfull & \hbhalf & \hbhalf & \hbnone & \hbfull & \hbhalf & \hbnone & \hbhalf\\
+\quad Constraint-based optimisation & \hbfull & \hbhalf & \hbhalf & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
+\quad Primer design & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Metadata and Inspection}}\\
+\quad Per-sequence design cards & \hbfull & \hbfull & \hbhalf & \hbfull & \hbfull & \hbfull & \hbnone & \hbfull\\
+\quad Automatic naming & \hbnone & \hbhalf & \hbfull & \hbfull & \hbhalf & \hbfull & \hbhalf & \hbfull\\
+\quad Sequence styling & \hbnone & \hbnone & \hbhalf & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Genomic Integration}}\\
+\quad Genome coordinates & \hbnone & \hbhalf & \hbfull & \hbnone & \hbnone & \hbhalf & \hbhalf & \hbfull\\
+\quad Transcript /\allowbreak  annotation aware & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbfull\\
+\botrule
+\end{tabular}
+\end{table}

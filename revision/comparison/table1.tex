@@ -1,0 +1,117 @@
+% Table 1 - tool overview. Source of truth: table1.md
+% Requires: booktabs, array, rotating
+% Row order is alphabetical, matching the column order of Table 2, so the two
+% tables can be read against each other. PoolParty is bold, not first.
+\begin{sidewaystable}
+\centering
+\footnotesize
+% (setspace override omitted: measured to have no effect inside this float)
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\caption{\textbf{Tools for designing DNA sequence libraries and for related
+sequence-design problems.} Rows appear in the same order as the columns of
+Table~\ref{tab:capabilities}. The final two rows group tools that address problems
+adjacent to library design; their members are named and cited individually. Tools
+examined August 2026.}
+\label{tab:tools}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{5.45cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{2.7cm}l@{}}
+\toprule
+\textbf{Tool} & \textbf{Purpose} & \textbf{Key features} & \textbf{Output} &
+\textbf{Availability} & \textbf{Ref.}\\
+\midrule
+
+DNA Chisel &
+Optimise a single sequence against declared constraints and objectives &
+Hard constraints and scored objectives combined in one problem; codon
+optimisation and avoidance of restriction sites, homopolymers and extreme GC &
+One optimised sequence with a constraint-satisfaction report &
+Python package (PyPI); web application &
+\cite{Zulkower2020jk}\\
+\addlinespace
+
+MPRA Design Tools &
+Design MPRA libraries and estimate statistical power &
+Barcode assignment with error-correcting sets; power analysis over effect size
+and sequencing depth &
+Barcoded constructs and statistical power estimates &
+R package (GitHub); Shiny application &
+\cite{Ghazi2018aa}\\
+\addlinespace
+
+MPRAnator &
+Design MPRA libraries of motif arrangements and sequence variants &
+Combinatorial placement of motifs; randomly sampled and combinatorial
+substitution sets; scrambled and reverse-complement controls &
+Library of sequences (FASTA) &
+Web service &
+\cite{GeorgakopoulosSoares2017gb}\\
+\addlinespace
+
+Mutation Maker &
+Design mutagenic primers for laboratory construction of variant libraries &
+Three workflows: site-scanning saturation mutagenesis, multi-site directed
+mutagenesis, and PCR-based gene synthesis; degenerate codons and primer mixing
+ratios &
+Mutagenic primer pairs, or gene fragments with mixing ratios &
+Web application (Docker); REST API &
+\cite{Hiraga2021yg}\\
+\addlinespace
+
+Oligopool Calculator &
+Design library infrastructure and analyse sequencing readout &
+Constraint-aware barcodes, primers and spacers; degenerate compression of a
+supplied variant set; off-target screening against a host genome &
+Synthesis-ready library; variant counts from sequencing reads &
+Python package (PyPI); command line &
+\cite{Hossain2024oc}\\
+\addlinespace
+
+\textbf{PoolParty} &
+Design DNA sequence libraries of any type &
+Libraries specified as a directed acyclic graph of operations; saturation
+mutagenesis, randomly sampled variants and pairwise and higher-order variants
+can be mixed in one library; per-variant design cards &
+Library of sequences, each with a design card (CSV, TSV, FASTA, JSONL) &
+Python package (PyPI) &
+This work\\
+\addlinespace
+
+tangermeme &
+Probe cis-regulatory logic with deep learning models &
+Saturation mutagenesis of input sequences; insertion and removal of motifs
+across sets of sequences &
+Perturbed sequences and model predictions &
+Python package (PyPI) &
+\cite{Schreiber2025nd}\\
+\addlinespace
+
+VaLiAnT &
+Design and annotate libraries for saturation genome editing and cDNA deep
+mutational scanning &
+Saturation mutagenesis from genomic coordinates; several mutation types per
+target region; transcript-aware, including codons split across exons &
+Per-region libraries with metadata tables and VCF carrying variant consequence
+annotation &
+Command-line tool (source, Docker) &
+\cite{Barbon2022th}\\
+\midrule
+
+General-purpose toolkits\newline\textit{(Biopython, pydna, SeqPro)} &
+Manipulate sequences, simulate cloning, prepare arrays for modelling &
+Parsing, transformation and file-format support; no library abstraction &
+Transformed sequences &
+Python packages (PyPI) &
+\cite{Cock2009df,Pereira2015wj,Klie2023kg}\\
+\addlinespace
+
+Single-sequence design tools\newline\textit{(CodonGenie, ledidi)} &
+Choose codons, or edit one sequence toward a model's objective &
+Degenerate codons covering a target residue set; gradient-based editing guided
+by a predictive model &
+A codon set, or one edited sequence &
+Web service; Python package &
+\cite{Swainston2017rb,Schreiber2025ledidi}\\
+
+\botrule
+\end{tabular}
+\end{sidewaystable}
