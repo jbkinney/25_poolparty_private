@@ -115,6 +115,31 @@ genomics gap, which Table 2 makes visible: `genome_coordinates` ◐ and
 **Concede:** genome coordinates, transcript models, split codons, VCF/VEP output,
 consequence annotation. All genuinely VaLiAnT-only.
 
+**Also concede here, rather than as table rows** (decided 2026-08-17):
+
+- **GC- and length-matched background sequences drawn from a reference.** PoolParty
+  has no such operation -- verified by search over the package: its control
+  operations are `shuffle_seq`, `shuffle_scan`, `shuffle_states`, `rc` and
+  `sample`. tangermeme has `match.extract_matching_loci` (BED + FASTA -> GC-matched
+  negatives, Tutorial C1). Matched negatives are standard MPRA practice, so the
+  omission is worth naming.
+
+  *Not added as a row* because it would score roughly tangermeme ● against seven ○,
+  giving the table a **third** near-uniform row and doubling its exposure to the
+  "this row does not discriminate" objection we are already defending on
+  `Recombination`. The symmetry it would have bought is already available:
+  `Transcript / annotation aware` is VaLiAnT-alone, the exact mirror of
+  `Recombination`. It would also split control generation across two rows, with
+  PoolParty winning one and losing the other, which reads as arbitrary.
+
+- **Codon-aware insertions and deletions.** Row 8 does not distinguish
+  nucleotide-level from codon-aware indels, so PoolParty's ● is correct as worded;
+  this is a scope concession, not a mis-scored cell. **Do not frame it as a
+  structural consequence of the DAG architecture** -- v1 shipped
+  `DeletionScanORFPool` and `InsertionScanORFPool` and the code is public history.
+  See `FINDINGS.md` B1. If the two classes are ported back to v2 before
+  resubmission, delete this concession; the table needs no change either way.
+
 **Do not concede HGVS.** R3's premise is wrong — `hgvs_input` is `no` for all 13
 tools surveyed, VaLiAnT included.
 
