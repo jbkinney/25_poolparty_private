@@ -68,6 +68,7 @@ uncontrolled churn, and from wasting scored cells:
 | 2026-08-15 | **Added** row 20 `primer_design`; created a **Physical construction** block holding rows 19, 11 and 20; moved `model_guided_variants` out of it into variant generation. | Coherence and honesty. The block matches the Discussion's own scoping sentence; `model_guided_variants` concerns biological function, not manufacturability. Label measured: `primer` 270 uses in 5/11 papers vs `oligo design` 14 in 1. |
 | 2026-08-15 | **Added** row 19 `synthesis_constraint_checking` to the variant block, adjacent to row 11. No removal. | Honesty and discrimination. Three tools (Oligopool, Mutation Maker, DNA Chisel) at `yes` against PoolParty `partial`; a genuine three-level spread across all eight — the best discrimination of any candidate identified. |
 | 2026-08-15 | **Added** row 18 `shuffling` to the variant block. `sequence_styling` retained rather than displaced, so the set grows 17 -> 18. | Discrimination and currency. Shuffling is a variant type with a real threshold (dinucleotide-preserving), current for both MPRA controls and in-silico nulls, and PoolParty ties rather than wins. |
+| 2026-08-17 | **Retained** row 10 `recombination` despite failing rule 2's discrimination ground (PoolParty ● against seven ○). No substitution; the set stays at 20. Decision by the user. | Currency, under rule 2's scoping to the paper's three declared applications: marginal for wet-lab MPRA, standard for in-silico attribution. Logged because rule 5 covers decisions *not* to change the set as well as changes — an uncontested row that nobody recorded a reason for is how a padding criticism lands unanswered. Defence and required Results text in *Open risks* below. |
 
 ### Candidate rows — documented, NOT integrated
 
@@ -230,12 +231,27 @@ moved against PoolParty**. Provenance for each is in `MATRIX.md`.
 
 ## Open risks
 
-**`Recombination` is a one-tool row — confirmed, not merely suspected.** PoolParty
-scores ● and all seven others ○. This fails the discrimination ground of the
-substitution protocol, and it is exactly the padding criticism the block structure
-was meant to avoid. **Decision still open:** drop to 19 rows, substitute, or keep
-and defend it on the grounds that in-silico attribution work makes it current.
-Note that it is one of only three rows PoolParty holds alone.
+**`Recombination` is a one-tool row — RESOLVED 2026-08-17: kept, on currency.**
+PoolParty scores ● and all seven others ○, so the row has zero discrimination and
+is the likeliest target of a padding criticism. It stays. The defence, which the
+Results text must carry rather than leave implicit:
+
+1. **The table is visibly not stacked.** PoolParty is *not* best on six of twenty
+   rows, two of them to VaLiAnT. Sole-● on three. A padded table does not concede
+   six rows.
+2. **The exclusion is principled, not gerrymandered.** The attack is that row 10's
+   "concatenating user-supplied fragments does not count" was worded to exclude
+   competitors. It was not — it is the global rule applied uniformly, and the same
+   rule cost PoolParty cells elsewhere. **Seven of the nine scoring corrections
+   moved against PoolParty**; that ratio is the evidence the instrument was not
+   tuned, and it belongs in the response letter.
+3. **Currency comes from the paper's third declared application.** Recombination is
+   marginal for wet-lab MPRA but standard for in-silico attribution — swapping
+   segments between parents to ask which region drives a model's prediction.
+
+**Required in the Results:** state plainly that recombination is the one capability
+no compared tool provides, and why it is included. A referee who notices it first
+reads it as padding; naming it first costs a clause and removes the objection.
 
 **Two rows still carry medium-confidence competitor cells** —
 `randomly_sampled_variants`/DNA Chisel and `composable_operations`/Oligopool were

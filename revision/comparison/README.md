@@ -76,8 +76,10 @@ Adopted while ruling on 62 escalations from the record-repair pass; still bindin
 
 ## Known open items
 
-- **`Recombination` is a one-tool row** — PoolParty ● against seven ○. Fails the
-  discrimination ground of the substitution protocol. Keep, substitute, or drop.
+- **`Recombination` is a one-tool row** — PoolParty ● against seven ○. **Resolved
+  2026-08-17: kept, on currency.** It carries a drafting obligation — the Results
+  must state that no compared tool provides it, and why it is in the table.
+  Defence in `table2.md` *Open risks*.
 - **Codon-aware indels** — a v1 → v2 regression, deferred by decision. Does not
   change any row as currently worded. See `FINDINGS.md` B1.
 - **Table 1 tool set** does not match Table 2's eight columns; tangermeme's
