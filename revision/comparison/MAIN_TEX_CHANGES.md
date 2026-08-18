@@ -187,29 +187,44 @@ Either narrow the sentence, or move tangermeme out of that citation group. Table
 already gives tangermeme its own row rather than grouping it — **that grouping is
 an open decision**, see `table1.md`.
 
-## G. Supplementary material — naming must be settled first
+## G. Supplementary material — none from this task
 
-Table 2's caption ends:
+**Decided 2026-08-17: no Additional file.** The 20 operational row definitions go
+in the **point-by-point response letter**, not the paper.
 
-> "Operational definitions of every row are given in Additional file 1."
+Reasons, in order of weight:
 
-**`main.tex` currently has no supplementary material at all** — no "Additional
-file", no "Supplementary", nothing. Meanwhile the benchmarks session (the other
-revision task) already writes **"Table S1"**, **"Figure S1"**, **"Fig. S1"**.
+1. The **editor** asked for the well-defined process. The response letter is
+   addressed to the editor, so that is where the answer belongs.
+2. It matches a decision already taken: the ~20-candidate screening record goes in
+   the response letter rather than the paper, on the same logic.
+3. **The caption already carries the part that matters** -- the binding global rule
+   that a capability counts only where the tool supplies an operation, parameter,
+   or mode for it. The per-row tests are adjudication detail.
+4. Nothing in our own convention survey suggests published comparison tables ship
+   operational definitions. The DMS review's columns (*Scoring approach*, *Scoring
+   statistic*) are not defined anywhere either.
 
-Two revision tasks, two conventions. Settle once, for both. BMC Bioinformatics
-uses "Additional file N", so the cheaper move is to bring benchmarks to that rather
-than the reverse.
+**Consequence for the other revision task:** the "Additional file N" vs "Table S1"
+question is no longer shared. Whatever `benchmarks/` needs, it decides alone.
 
-Whatever is chosen, `ROW_DEFINITIONS.md` has to ship as that file — Table 2 is not
-interpretable without the operational tests, and the caption promises them.
+The full definitions live in `ROW_DEFINITIONS.md` and reach the referees via the
+response letter. Keep that file current -- it is now the only copy.
 
-## H. Caption fixes, blocked on G
+## H. Captions -- DONE
 
-1. **The bold on PoolParty is unexplained** in both tables. One column header and
-   one row label are bold with no key. Add a clause, e.g. "PoolParty (bold) is the
-   tool presented here."
-2. **Fix the supplement reference** in Table 2's caption once G is decided.
+Both captions were rewritten 2026-08-17 and are already in `table1.tex` and
+`table2.tex`. No further action.
+
+- Table 2's promise of "Additional file 1" is gone, per G.
+- Both captions state that PoolParty is shown in bold.
+- Spelling switched to US throughout both tables to match `main.tex`, which uses
+  *modeling* (x10), *optimiz-* (x2), *behavior* (x3), *color* (x7), *center* (x6),
+  and *analyzed*. Six British forms were corrected, including the row label
+  `Constraint-based optimisation` -> `Constraint-based optimization`. The internal
+  slug in `scored/` was left alone; it is an identifier, not display text.
+- Serial commas added, matching `main.tex` (*"structured, transparent, and
+  reproducible"*; *"source, transformation, composition, and state"*).
 
 ## I. Findings unrelated to the tables
 
