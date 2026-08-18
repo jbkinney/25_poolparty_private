@@ -23,7 +23,7 @@ individually. Tools were examined in August 2026.}
 DNA Chisel &
 Optimize a single sequence against declared constraints and objectives &
 Hard constraints and scored objectives combined in one problem; codon
-optimization and avoidance of restriction sites, homopolymers and extreme GC &
+optimization and avoidance of restriction sites, homopolymers, and extreme GC &
 One optimized sequence with a constraint-satisfaction report &
 Python package (PyPI); web application &
 \citep{Zulkower2020jk}\\
@@ -59,7 +59,7 @@ Web application (Docker); REST API &
 
 Oligopool Calculator &
 Design library infrastructure and analyze sequencing readout &
-Constraint-aware barcodes, primers and spacers; degenerate compression of a
+Constraint-aware barcodes, primers, and spacers; degenerate compression of a
 supplied variant set; off-target screening against a host genome &
 Synthesis-ready library; variant counts from sequencing reads &
 Python package (PyPI); command line &
@@ -67,11 +67,13 @@ Python package (PyPI); command line &
 \addlinespace
 
 \textbf{PoolParty} &
-Design DNA sequence libraries of any type &
-Libraries specified as a directed acyclic graph of operations; saturation
-mutagenesis, randomly sampled variants and pairwise and higher-order variants
-can be mixed in one library; per-variant design cards &
-Library of sequences, each with a design card (CSV, TSV, FASTA, JSONL) &
+Design libraries combining multiple variant types, for laboratory assays
+or for probing genomic models &
+Libraries specified as a directed acyclic graph of operations, freely mixing
+mutagenesis schemes; inputs from sequences, FASTA, degenerate templates, or
+motifs; sequences generated only on request &
+Library of sequences, each paired with a record of how it was constructed
+(CSV, TSV, FASTA, JSONL) &
 Python package (PyPI) &
 This work\\
 \addlinespace
@@ -98,7 +100,7 @@ Command-line tool (source, Docker) &
 
 General-purpose toolkits\newline\textit{(Biopython, pydna, SeqPro)} &
 Manipulate sequences, simulate cloning, prepare arrays for modeling &
-Parsing, transformation and file-format support; no library abstraction &
+Parsing, transformation, and file-format support &
 Transformed sequences &
 Python packages (PyPI) &
 \citep{Cock2009df,Pereira2015wj,Klie2023kg}\\
