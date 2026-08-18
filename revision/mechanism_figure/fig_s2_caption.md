@@ -1,19 +1,19 @@
 # Supplementary Figure S2 — caption
 
-Paste-ready for `main.tex`. 115 words.
+Paste-ready for `main.tex`. 117 words.
 
 ```latex
 \caption{\textbf{A worked example of sequence generation.}
 \textbf{(A)} Python code defining the library.
 \textbf{(B)} Number of states of each Pool and Operation.
 \textbf{(C)} Generating the sequence for $s_{Final} = 9$. Left: state assignment (blue).
-Right: sequence construction (magenta). The lists beside Pool A and \texttt{mutagenize} give
-the sequences and mutations indexed by their states. Inactive branches are shown in grey.
-\textbf{(D)} Style and name for the same sequence. Each generated sequence is a \texttt{Seq}
-object that bundles the sequence string with its \texttt{.style}. The \texttt{style} and
-\texttt{prefix} arguments are supplied to Operations; the resulting \texttt{.style} and name
-are held by Pools. Sequence characters are colored by their \texttt{.style} entries; where
-entries overlap, the last one applies.}
+Right: sequence construction (magenta). Lists beside Pool A and \texttt{mutagenize} show
+which sequence or mutation each state selects. Inactive branches are shown in grey.
+\textbf{(D)} Style and name for the same sequence. Sequences are carried through the DAG as
+\texttt{Seq} objects, which hold the sequence string together with its \texttt{.style}. The
+\texttt{style} and \texttt{prefix} arguments are supplied to Operations; the resulting
+\texttt{.style} and name are held by Pools. Sequence characters are colored by their
+\texttt{.style} entries; where entries overlap, the last one applies.}
 \label{fig:figureS2}
 ```
 
@@ -74,9 +74,9 @@ BMC scales full-width figures to 170 mm and caps figure + legend at 225 mm.
 | PDF as exported | 180.6 x 184.5 mm, cropped to content, fonts embedded, fully vector |
 | scale to 170 mm wide | x 0.9413 |
 | printed figure height | 173.7 mm |
-| legend, 115 words | ~7.6 lines ~ 27 mm |
-| **total** | **~200 mm** (cap 225) |
-| headroom | ~25 mm |
+| legend, 117 words | ~7.8 lines ~ 27 mm |
+| **total** | **~201 mm** (cap 225) |
+| headroom | ~24 mm |
 
 ## Suggested main-text change
 
@@ -93,7 +93,7 @@ example. Captions elsewhere in this paper never cross-reference sections.
 
 1. **Body text prints at 5.4-5.6 pt** at 170 mm - about 1,570 of ~1,660 characters. BMC
    requires text legible at final size. Fix: raise 8 px fonts to 10-11 px and spend some of
-   the 25 mm headroom.
+   the 24 mm headroom.
 2. **221 vector paths at 0.01-0.02 pt**, against BMC's 0.25 pt floor. Likely table and box
    borders exported at near-zero width; they may drop out in print.
 3. **Panel A cannot produce panel D.** `generate_library(num_cycles=1)` returns
