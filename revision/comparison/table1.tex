@@ -9,25 +9,14 @@
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.1}
 \caption{\textbf{Tools for designing DNA sequence libraries and for
-related sequence-design problems.} Rows appear in the same order as the columns of
-Table~\ref{tab:capabilities}. The final two rows group tools that address problems
-adjacent to library design; their members are named in the table and cited
-individually. Tools were examined in August 2026.}
+related sequence-design problems.} Members of the final two rows are named in the
+table and cited individually. Tools were examined in August 2026.}
 \label{tab:tools}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{5.45cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{2.7cm}l@{}}
 \toprule
 \textbf{Tool} & \textbf{Purpose} & \textbf{Key features} & \textbf{Output} &
 \textbf{Availability} & \textbf{Ref.}\\
 \midrule
-
-DNA Chisel &
-Optimize one sequence at a time against declared constraints and objectives &
-Hard constraints and scored objectives combined in one problem; codon
-optimization and avoidance of restriction sites, homopolymers, and extreme GC &
-One optimized sequence with a constraint-satisfaction report &
-Python package (PyPI); web application &
-\citep{Zulkower2020jk}\\
-\addlinespace
 
 MPRA Design Tools &
 Design MPRA libraries and estimate statistical power &
@@ -62,7 +51,7 @@ Add barcodes, primers, and spacers to a supplied variant set, and analyze
 the sequencing readout &
 Constraint-aware barcodes, primers, and spacers; degenerate compression of a
 supplied variant set; off-target screening against a host genome &
-Synthesis-ready library; variant counts from sequencing reads &
+Synthesis-ready constructs; variant counts from sequencing reads &
 Python package (PyPI); command line &
 \citep{Hossain2024oc}\\
 \addlinespace
@@ -108,13 +97,15 @@ Python packages (PyPI) &
 \citep{Cock2009df,Pereira2015wj,Klie2023kg}\\
 \addlinespace
 
-Single-sequence design tools\newline\textit{(CodonGenie, ledidi)} &
-Choose codons, or edit one sequence at a time toward a model's objective &
-Degenerate codons covering a target residue set; gradient-based editing guided
-by a predictive model &
-A codon set, or one edited sequence &
-Web service; Python package &
-\citep{Swainston2017rb,Schreiber2025ledidi}\\
+Sequence optimization tools\newline\textit{(CodonGenie, DNA Chisel, ledidi)} &
+Optimize one sequence at a time for codon usage, synthesis constraints, or a
+model's objective &
+Degenerate codons covering a target residue set; hard constraints and scored
+objectives combined in one problem; gradient-based editing guided by a
+predictive model &
+One optimized or edited sequence, or a degenerate codon &
+Python packages (PyPI); web services &
+\citep{Swainston2017rb,Zulkower2020jk,Schreiber2025ledidi}\\
 
 \botrule
 \end{tabular}

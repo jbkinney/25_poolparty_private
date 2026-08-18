@@ -32,6 +32,43 @@ booktabs and multirow, so none of this is unusual for the class.
 production modes with zero errors, no oversized floats, and no overfull boxes
 above 3pt. Harness: `preview_tables.tex`, which mirrors this preamble exactly.
 
+## B0. Table 1 groups DNA Chisel — decided 2026-08-18
+
+Table 1 has **nine** rows, not ten: seven library-design tools individually, then
+two grouped rows. **DNA Chisel is grouped**, under *Sequence optimization tools
+(CodonGenie, DNA Chisel, ledidi)*, but **keeps its own column in Table 2**.
+
+Why the group is named that: `main.tex` line 235 already says *"PoolParty is not a
+sequence optimization tool, e.g., for optimizing codon usage [CodonGenie],
+satisfying synthesis constraints on individual sequences [DNA Chisel], or
+designing sequences guided by machine learning models [ledidi]"* -- the same three
+tools, in that order. Table and Discussion now describe them identically.
+
+Why the earlier label failed: *Single-sequence design tools* excluded DNA Chisel,
+whose own abstract calls it *"a sequence optimization framework"* and whose Purpose
+cell read *"Optimize one sequence at a time"*. Any accurate category name for
+CodonGenie and ledidi also describes DNA Chisel, so the name could not be fixed
+while it sat outside the group.
+
+**Why it stays in Table 2.** DNA Chisel is ahead of PoolParty on **four of the six
+rows where PoolParty is not best, the only tool in all four** -- model-guided
+variants, synthesis-constraint checking, constraint-based optimization, primer
+design. Removing it would drop `Model-guided variants` to tangermeme alone, a third
+near-uniform row, and would show the competitor that beat us most disappearing
+between submission and revision. It also scores 7 supported, third highest in the
+matrix.
+
+**Consequence to expect:** a reader tracing DNA Chisel's Table 2 column finds it
+inside a Table 1 group rather than on its own row. The group label names it, so it
+is findable. An earlier caption draft called this out explicitly; that was cut --
+the label already shows it, and naming one competitor in a caption gives it odd
+prominence.
+
+**Open:** the Discussion positions DNA Chisel and Mutation Maker as complementary
+(line 235), while Table 2 scores them as competitors across 20 library-design
+capabilities where they show 11 and 12 unsupported. Both framings are defensible.
+Reconcile deliberately in the D3 rewrite rather than leaving it for a referee.
+
 ## B. Insert the two tables
 
 `\input{table1.tex}` and `\input{table2.tex}`, or paste their contents.
