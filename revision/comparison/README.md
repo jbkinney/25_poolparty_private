@@ -83,8 +83,15 @@ Adopted while ruling on 62 escalations from the record-repair pass; still bindin
   2026-08-17: kept, on currency.** It carries a drafting obligation — the Results
   must state that no compared tool provides it, and why it is in the table.
   Defence in `table2.md` *Open risks*.
-- **Codon-aware indels** — a v1 → v2 regression, deferred by decision. Does not
-  change any row as currently worded. See `FINDINGS.md` B1.
+- **Codon-aware indels** — **resolved 2026-08-17, not a gap.** Previously recorded as
+  a v1 → v2 regression; that was wrong. `deletion_scan` / `insertion_scan` accept
+  `positions=slice(offset, None, 3)`, and the step is tool-resolved, so codon scans
+  work today — verified by execution. What remains is a documentation gap, and
+  optional `frame=` sugar. See `FINDINGS.md` B1.
+- **`deletion_scan` collides with itself across deletion lengths** — a hard-coded
+  internal region name blocks two different `deletion_length` values in one Party,
+  which rules out VaLiAnT's `1del`+`2del` pattern (three of its five examples).
+  See `FINDINGS.md` B3.
 - **tangermeme's placement** in Table 1 -- own row, or back in the
   general-purpose group -- is undecided. Table 1 otherwise now matches Table 2's
   tool set exactly.

@@ -61,43 +61,69 @@ nothing.
 
 ## B. Capability gaps — require code
 
-### B1. No codon-aware indels *(a v1 → v2 regression)*
+### B1. Codon-aware indels — present, undocumented *(RECLASSIFIED 2026-08-17)*
 
-`deletion_scan` and `insertion_scan` take no `frame` parameter and contain zero
-references to codons or ORFs. `grep -rn "inframe|in_frame|in-frame"` over the
-package returns nothing. An in-frame deletion requires the user to pass
-`deletion_length=3` with codon-aligned `positions` computed themselves.
+**This entry previously said codon-aware indels were absent. That was wrong, and the
+correction matters: it removed a blocker from the VaLiAnT reproduction experiment.**
 
-The codon machinery exists — `mutagenize_orf` takes an explicit `frame` (±1/2/3) —
-it is simply not wired to the indel operations.
+What remains true: `deletion_scan` and `insertion_scan` take no `frame` parameter and
+contain **zero** references to codons, ORFs, frames or triplets. `grep -rniE
+"inframe|in_frame|in-frame"` over `src/poolparty/` returns nothing.
 
-**v1 had this.** `poolparty/deletion_scan_orf_pool.py` defined
-`DeletionScanORFPool`: *"Scan deletions across an ORF at the codon level …
-Operations work at the codon level to maintain reading frame integrity"*, with
-`deletion_size` and `start`/`end`/`step_size` all in **codon units**, plus a
-position-based interface with per-position weights. `InsertionScanORFPool` likewise.
-That is finer control than VaLiAnT's `inframe` mutator.
+What was wrong: the conclusion that the user must compute codon-aligned positions
+themselves. `positions` is typed `Sequence[Integral] | slice | None`, and the shared
+`validate_positions` (`utils/seq_utils.py`) resolves a slice through
+`positions.indices(...)`, **honouring the step**. So a codon scan is declarative and
+tool-resolved, not hand-assembled.
 
-Corrected v1 → v2 mapping (an earlier note overstated the loss):
+Verified by execution against the installed package:
+
+| Call | Result |
+|---|---|
+| `deletion_scan(deletion_length=3, positions=slice(0,None,3), deletion_marker=None, mode='sequential')` on a 6-codon ORF | **6 states, each removing one complete codon**, frame preserved |
+| same with a 2-nt leader and `slice(2,None,3)` | correct — leader intact, codon boundaries respected |
+| `deletion_length=6`, step 3 | works — 5 states, all 12 nt (two-codon deletions) |
+| `insertion_scan(ins_pool, positions=slice(0,None,3), mode='sequential')` | **7 states**, insertions at codon boundaries |
+
+So VaLiAnT's `inframe` mutator is reproducible today with no code change.
+
+**The real gap is documentation, and it is inconsistent.**
+`docs/operations/deletion_scan.rst` types `positions` as `list[int] | None` and
+describes it as an *"Explicit list of window start positions"* — a slice is never
+mentioned or demonstrated. Yet `mutagenize_orf`'s `codon_positions=slice(1, 56)` **is**
+documented, in `docs/tutorials/dms_gb1.rst`. The same capability is documented for one
+operation and hidden for another. Same failure mode as A1.
+
+**Optional code, much smaller than a port:** a `frame=` argument on `deletion_scan` /
+`insertion_scan` that derives the offset (and, where a region is an `OrfRegion`, reads
+the frame from it) would turn a two-part idiom into one named parameter. That is sugar,
+not a missing capability.
+
+**v1 comparison, for the record.** `poolparty/deletion_scan_orf_pool.py` defined
+`DeletionScanORFPool`: *"Scan deletions across an ORF at the codon level … Operations
+work at the codon level to maintain reading frame integrity"*, with `deletion_size` and
+`start`/`end`/`step_size` in **codon units**, plus per-position weights.
+`InsertionScanORFPool` likewise. v1 expressed this in codon units with a named class;
+v2 expresses it in nucleotide units with a stepped slice. The capability survived; the
+vocabulary did not.
+
+Corrected v1 → v2 mapping:
 
 | v1 class | v2 status |
 |---|---|
 | `KMutationORFPool` | **absorbed** into `mutagenize_orf(num_mutations=k)` — verified: k=1/2/3 → 171 / 12,996 / 576,156 states |
 | `RandomMutationORFPool` | **absorbed** into `mutagenize_orf(mutation_rate=…, mode='random')` — verified |
-| `DeletionScanORFPool` | **lost** |
-| `InsertionScanORFPool` | **lost** |
+| `DeletionScanORFPool` | **expressible** via `deletion_scan(deletion_length=3n, positions=slice(offset,None,3))` — no named codon API |
+| `InsertionScanORFPool` | **expressible** via `insertion_scan(positions=slice(offset,None,3))` — no named codon API |
 
-Two of four were consolidated into a more general operation — a refactor, arguably an
-improvement. Only the two indel classes were lost.
+Nothing was lost. Two classes were generalised and two were re-expressed as idioms.
 
-**Table status: deferred, non-blocking.** Row 8 (`Insertions and deletions`) does not
-distinguish nucleotide-level from codon-aware indels, so PoolParty's `yes` is correct
-under the wording used. Options: restore in v2 (row stays `yes` honestly), sharpen
-row 8 (PoolParty likely → `partial`), or leave undifferentiated.
+**Table status: unchanged.** Row 8 (`Insertions and deletions`) does not distinguish
+nucleotide-level from codon-aware indels, so PoolParty's `yes` stands either way.
 
-**Do not** leave it undifferentiated *and* describe the gap in the Discussion as a
-structural consequence of the DAG architecture. v1 proves it is not, and the v1 code
-is public history. That framing is available for B2; it is not available here.
+**Do not** describe this gap in the Discussion as a structural consequence of the DAG
+architecture. It never was, and now it is not even a gap — only an undocumented idiom.
+That framing remains available for B2 and for the non-uniform enumeration limit in C1.
 
 ### B2. Genomic coordinates are not composed for designed variants
 
@@ -119,17 +145,46 @@ one **is** a structural consequence of composability and can be framed as such.
 
 ---
 
+### B3. `deletion_scan` cannot be used twice with different deletion lengths
+
+`deletion_scan` hard-codes the name of its internal marker region —
+`marker_name = "_del"` (`scan_ops/deletion_scan.py:81`), passed as `tag_name` to
+`region_scan`, with **no parameter to override it**. Region lengths are Party-global,
+so a second `deletion_scan` with a different `deletion_length` collides:
+
+```
+ValueError: Region '_del' already registered with seq_length=3,
+cannot re-register with seq_length=6. Region lengths must be consistent
+within a Party.
+```
+
+Reproduced directly: `deletion_length=3` then `deletion_length=6` in one process,
+on independent pools. Each works alone; together the second raises.
+
+**Why it matters for the comparison.** VaLiAnT routinely combines deletion spans in a
+single library — `1del` with `2del0` or `2del1` appears in **three of its five shipped
+examples** (`brca1_nuc`, `cdna`, `brca1_prime_editing`). None of those is expressible
+in one PoolParty Party today. It also blocks any mixed 1-codon / 2-codon in-frame
+deletion series.
+
+`brca1_pep` is unaffected — it uses a single deletion length — which is part of why it
+is the right primary reproduction target.
+
+**Fix:** expose the marker name, or derive it from `deletion_length` / the operation's
+prefix, so distinct lengths get distinct regions.
+
 ## C. Behaviour worth documenting as limitations
 
 Verified live; all are correct behaviour that will surprise users.
 
-1. **Synonymous variants cannot be exhaustively enumerated.** `mutagenize_orf` refuses `mode='sequential'` for any non-uniform mutation type (`mutagenize_orf.py:205-207`); `synonymous`, `missense_only_random` and `nonsynonymous_random` all raise. A DMS user building a synonymous-control arm must fall back to random sampling, which does not guarantee coverage.
+1. **Synonymous variants cannot be exhaustively enumerated, and the reason is architectural.** `mutagenize_orf` refuses `mode='sequential'` for any non-uniform mutation type (`mutagenize_orf.py:205-207`); `synonymous`, `missense_only_random` and `nonsynonymous_random` all raise. The mechanism is explicit in `codon_table.py:8-13`: `UNIFORM_MUTATION_TYPES` is a dict of **fixed alternatives per codon** — `any_codon: 63`, `nonsynonymous_first: 20`, `missense_only_first: 19`, `nonsense: 3` — consumed as `self.uniform_num_alts`. Synonymous substitution has no fixed count (Met and Trp have none; Leu, Ser and Arg have five), so the per-operation state count is not a constant and the product arithmetic behind lazy state decomposition does not apply. A DMS user building a synonymous-control arm must fall back to random sampling, which does not guarantee coverage. **Unlike B1, this one may honestly be described as a consequence of the architecture** — it blocks VaLiAnT's `snvre` mutator, which appears in four of its five shipped examples.
 2. **Codon-level "exhaustive" means exhaustive over amino acids, not codons.** `missense_only_first` enumerates 19 substitutions per codon using one representative codon each, not all synonymous DNA variants.
 3. **Deletion scans emit gap characters by default** and do not shorten the sequence; `deletion_marker=None` gives true shortening. Verified: `deletion_length=3` on a 12-mer returns `---ATTTTGGGG` by default and `ATTTTGGGG` with the marker disabled.
 4. **`from_motif` is random-mode only** (`from_motif.py:67`), so a PWM-derived library has no exhaustive traversal.
 5. **`materialize` severs the DAG** — verified: `parents` goes from 1 to 0, losing construction history and state-space arithmetic.
 6. **`num_states` counts state slots, not distinct sequences.** Random draws can duplicate, `repeat` duplicates by design, `filter` leaves nulls. Observed directly: two minus-strand shuffle rows produced identical sequences from different offsets.
 7. **Dinucleotide shuffling fixes the first and last characters** (Euler-path constraint); a perfect tandem repeat has exactly one valid shuffle and returns unchanged.
+8. **There is no "substitute to a specific amino acid" mutation type.** `VALID_MUTATION_TYPES` (`codon_table.py:16-24`) offers only *classes* of substitution — `any_codon`, `nonsynonymous_first/random`, `missense_only_first/random`, `synonymous`, `nonsense`. Targeting one named residue at every codon is not expressible, so VaLiAnT's `ala` mutator (alanine scanning, a standard DMS design) has no PoolParty equivalent. `nonsense` is the nearest analogue to VaLiAnT's `stop`, but yields 3 alternatives per codon rather than one representative, so counts will not match.
 
 ---
 
