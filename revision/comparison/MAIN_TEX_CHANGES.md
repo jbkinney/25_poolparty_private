@@ -217,7 +217,11 @@ Both captions were rewritten 2026-08-17 and are already in `table1.tex` and
 `table2.tex`. No further action.
 
 - Table 2's promise of "Additional file 1" is gone, per G.
-- Both captions state that PoolParty is shown in bold.
+- Neither caption explains the bold on PoolParty. It was added, then cut: a
+  reader of this paper does not need telling which tool is ours, and Table 1's
+  Reference column already reads *This work*. Figure 3's caption explains bold
+  because barcodes against TFBSs in a colored sequence display are genuinely
+  ambiguous; this is not that.
 - Spelling switched to US throughout both tables to match `main.tex`, which uses
   *modeling* (x10), *optimiz-* (x2), *behavior* (x3), *color* (x7), *center* (x6),
   and *analyzed*. Six British forms were corrected, including the row label
