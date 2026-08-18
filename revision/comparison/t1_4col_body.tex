@@ -1,8 +1,8 @@
 % Table 1 - tool overview. Source of truth: table1.md
-% Requires: booktabs, array
+% Requires: booktabs, array, rotating
 % Row order is alphabetical, matching the column order of Table 2, so the two
 % tables can be read against each other. PoolParty is bold, not first.
-\begin{table}[tbp]
+\begin{sidewaystable}
 \centering
 \footnotesize
 % (setspace override omitted: measured to have no effect inside this float)
@@ -12,13 +12,11 @@
 related sequence-design problems.} Members of the final two rows are named in the
 table and cited individually.}
 \label{tab:tools}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{2.15cm}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{5.45cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{2.7cm}l@{}}
 \toprule
-\textbf{Tool} & \textbf{Purpose / availability} & \textbf{Key features} &
-\textbf{Output}\\
-\midrule
-
-MPRA Design Tools \citep{Ghazi2018aa} &
+	extbf{Tool} & 	extbf{Purpose / availability} & 	extbf{Key features} &
+	extbf{Output}\
+\midruleMPRA Design Tools \citep{Ghazi2018aa} &
 Design MPRA libraries and estimate statistical power. R package (GitHub). &
 Barcode assignment with error-correcting sets; power analysis over effect
 size and sequencing depth &
@@ -91,4 +89,4 @@ by a predictive model &
 An optimized or edited sequence, or a degenerate codon\\
 \botrule
 \end{tabular}
-\end{table}
+\end{sidewaystable}
