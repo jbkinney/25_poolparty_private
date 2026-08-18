@@ -4,6 +4,9 @@
 % 180.6 x 184.5 mm; BMC scales full-width figures to 170 mm, giving 173.7 mm
 % of height and leaving ~24 mm of the 225 mm figure+legend cap for the legend).
 % Requires: graphicx
+% Numbering: this float takes the running figure counter, so it prints as
+% "Fig. 1" in this standalone preview. In the supplement, precede it with
+% \setcounter{figure}{1}\renewcommand{\thefigure}{S\arabic{figure}} to get "Fig. S2".
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../mechanism_figure/fig_s2}
