@@ -33,7 +33,7 @@ uncontrolled churn, and from wasting scored cells:
    of them but current for the third still passes. This is discriminating, not
    merely permissive: it retains `Recombination` (marginal for wet-lab MPRA, but
    standard practice for in-silico attribution work) while rejecting
-   *degenerate-codon compression* (a synthesis-cost optimisation — dead in silico,
+   *degenerate-codon compression* (a synthesis-cost optimization — dead in silico,
    where nothing is synthesised, and largely obsoleted elsewhere by falling pool
    prices). Compression also sits in direct tension with the paper's own thesis:
    a compressed library cannot carry per-variant design cards, because you do not
@@ -61,7 +61,7 @@ uncontrolled churn, and from wasting scored cells:
 
 | Date | Change | Ground |
 |---|---|---|
-| 2026-08-15 | Row 11 renamed `constraint_repaired_variants` -> `constraint_based_optimisation`. Label only; the operational test was unchanged, so scores stand. | Terminology: "optimisation" appears 110x in 11/11 tool papers, "repair" 7x in 3 and never in the sequence-design sense. |
+| 2026-08-15 | Row 11 renamed `constraint_repaired_variants` -> `constraint_based_optimization`. Label only; the operational test was unchanged, so scores stand. | Terminology: "optimization" appears 110x in 11/11 tool papers, "repair" 7x in 3 and never in the sequence-design sense. |
 | 2026-08-17 | Block restructure, no rescoring: `How variants are generated` -> **Variant generation**; `What variants can be generated` -> **Variant types**. Moved `mixed_variant_types` to Library specification (it describes what one specification can express, not how variants are chosen) and `model_guided_variants` to Variant generation (it is a way of arriving at variants, not a kind of change). | Consistency — all six block names are now noun phrases, and each block answers one question. |
 | 2026-08-17 | Merged batch-7 rechecks: `saturation_mutagenesis`/DNA Chisel `partial`->`no`; `mixed_variant_types`/DNA Chisel `partial`->`no`; `mixed_variant_types`/Oligopool `partial`->`no`. Three cells unchanged. | Rescored under corrected definitions after the struck "user's responsibility" and "separate runs" clauses. |
 | 2026-08-15 | **Removed from display** `Library algebra` and `On-demand generation`. They were in an early 19-row proposal, dropped when the set was trimmed to 17, and were never defined in `ROW_DEFINITIONS.md` nor scored in any batch. They were reinstated by mistake when the display table was rewritten by hand to add the Physical construction block; this entry records the correction, not a new decision. | Bookkeeping. Both are rows PoolParty held alone in the original 8-row matrix, so reinstating them would have added two sole-● rows unnoticed. |
@@ -187,7 +187,7 @@ VARIANT TYPES
 
 PHYSICAL CONSTRUCTION
   Synthesis-constraint checking             ◐     ◐     ◐     ◐      ●      ○      ●      ○
-  Constraint-based optimisation             ○     ○     ◐     ◐      ●      ●      ●      ○
+  Constraint-based optimization             ○     ○     ◐     ◐      ●      ●      ●      ○
   Primer design                             ○     ○     ○     ○      ●      ●      ◐      ○
 
 METADATA AND INSPECTION

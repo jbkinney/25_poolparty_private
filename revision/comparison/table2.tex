@@ -2,7 +2,7 @@
 % Column headers: 45deg. origin=lB anchors each label at its own baseline-left,
 % so all labels share one baseline; \makebox[0pt][l] gives them zero width so
 % they add nothing to the table and cannot overflow the line. Each label then
-% starts at its column centre and runs up-right. tabcolsep is 10pt so adjacent
+% starts at its column center and runs up-right. tabcolsep is 10pt so adjacent
 % diagonals clear each other (~19pt perpendicular separation).
 % A 3pt left nudge (about half a symbol width) sets each diagonal over the
 % middle of its column of symbols rather than flush with the left edge.
@@ -16,14 +16,14 @@
 \footnotesize
 % (setspace override omitted: no effect inside this float)
 \setlength{\tabcolsep}{10pt}
-\caption{\textbf{Capabilities of tools for designing DNA sequence libraries.}
-\hbfull\ denotes a capability the tool provides; \hbhalf\ a capability provided
-with a stated restriction; \hbnone\ a capability the tool does not provide. A
-capability counts only where the tool supplies an operation, parameter or mode
-for it, and not where a user reconstructs it by composing primitives the tool
-provides for other purposes. Tools assessed August 2026 against their
-documentation, source repositories and, where installable, executed code.
-Operational definitions of every row are given in Additional file~1.}
+\caption{\textbf{Capabilities of tools for designing DNA sequence
+libraries.} \hbfull\ indicates that a tool provides the capability, \hbhalf\ that
+it provides the capability subject to a stated restriction, and \hbnone\ that it
+does not. A capability is counted only where the tool supplies an operation,
+parameter, or mode for it, not where the user assembles it from primitives the
+tool provides for other purposes. Tools were assessed in August 2026 from their
+documentation and source code, and by running those that could be installed.
+PoolParty is shown in bold.}
 \label{tab:capabilities}
 \begin{tabular}{@{}lcccccccc@{}}
 \toprule
@@ -49,7 +49,7 @@ Operational definitions of every row are given in Additional file~1.}
 \addlinespace
 \multicolumn{9}{@{}l}{\textit{Physical Construction}}\\
 \quad Synthesis-constraint checking & \hbfull & \hbhalf & \hbhalf & \hbnone & \hbfull & \hbhalf & \hbnone & \hbhalf\\
-\quad Constraint-based optimisation & \hbfull & \hbhalf & \hbhalf & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
+\quad Constraint-based optimization & \hbfull & \hbhalf & \hbhalf & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
 \quad Primer design & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
 \addlinespace
 \multicolumn{9}{@{}l}{\textit{Metadata and Inspection}}\\

@@ -57,7 +57,7 @@ current layout would falsify the record — so they were left alone. Translate a
 | `revision/tool_survey/final/` | `records/` |
 | `revision/tool_survey/scored/` | `scored/` |
 | `revision/tool_survey/papers/` | `../../lit_review/analyzed/` |
-| `extractions/`, `reviews/`, `prior_analyses/`, `verified/`, `citation_audit/`, `factcheck/`, `fixes/`, `MATRIX_verified.md`, `ROWS_v2.md`, `ROWS_v3.md` | deleted — commit `35d65d8`, branch `bmc-revision` |
+| `extractions/`, `reviews/`, `prior_analyzes/`, `verified/`, `citation_audit/`, `factcheck/`, `fixes/`, `MATRIX_verified.md`, `ROWS_v2.md`, `ROWS_v3.md` | deleted — commit `35d65d8`, branch `bmc-revision` |
 
 PDF citations **were** rewritten, since the files still exist and a live pointer is
 more useful than a historical one. All 19 resolve.

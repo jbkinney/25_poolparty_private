@@ -108,7 +108,7 @@ completeness; a referee who has run VaLiAnT can refute it from the README.
 ### D3. Add the genomics-scope limitation R3 asked for
 
 Line 235 already lists limitations (not a sequence optimiser, not codon
-optimisation, not synthesis constraints, not primer design). Extend it with the
+optimization, not synthesis constraints, not primer design). Extend it with the
 genomics gap, which Table 2 makes visible: `genome_coordinates` ◐ and
 `transcript_annotation_aware` ○ against VaLiAnT's ● on both.
 

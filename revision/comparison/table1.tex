@@ -8,11 +8,11 @@
 % (setspace override omitted: measured to have no effect inside this float)
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.1}
-\caption{\textbf{Tools for designing DNA sequence libraries and for related
-sequence-design problems.} Rows appear in the same order as the columns of
+\caption{\textbf{Tools for designing DNA sequence libraries and for
+related sequence-design problems.} Rows appear in the same order as the columns of
 Table~\ref{tab:capabilities}. The final two rows group tools that address problems
-adjacent to library design; their members are named and cited individually. Tools
-examined August 2026.}
+adjacent to library design; their members are named in the table and cited
+individually. Tools were examined in August 2026. PoolParty is shown in bold.}
 \label{tab:tools}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{5.45cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{2.7cm}l@{}}
 \toprule
@@ -21,10 +21,10 @@ examined August 2026.}
 \midrule
 
 DNA Chisel &
-Optimise a single sequence against declared constraints and objectives &
+Optimize a single sequence against declared constraints and objectives &
 Hard constraints and scored objectives combined in one problem; codon
-optimisation and avoidance of restriction sites, homopolymers and extreme GC &
-One optimised sequence with a constraint-satisfaction report &
+optimization and avoidance of restriction sites, homopolymers and extreme GC &
+One optimized sequence with a constraint-satisfaction report &
 Python package (PyPI); web application &
 \citep{Zulkower2020jk}\\
 \addlinespace
@@ -58,7 +58,7 @@ Web application (Docker); REST API &
 \addlinespace
 
 Oligopool Calculator &
-Design library infrastructure and analyse sequencing readout &
+Design library infrastructure and analyze sequencing readout &
 Constraint-aware barcodes, primers and spacers; degenerate compression of a
 supplied variant set; off-target screening against a host genome &
 Synthesis-ready library; variant counts from sequencing reads &
@@ -97,7 +97,7 @@ Command-line tool (source, Docker) &
 \midrule
 
 General-purpose toolkits\newline\textit{(Biopython, pydna, SeqPro)} &
-Manipulate sequences, simulate cloning, prepare arrays for modelling &
+Manipulate sequences, simulate cloning, prepare arrays for modeling &
 Parsing, transformation and file-format support; no library abstraction &
 Transformed sequences &
 Python packages (PyPI) &

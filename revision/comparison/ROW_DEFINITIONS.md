@@ -45,7 +45,7 @@ list/dict of sequences) whose library meaning lives only in the caller's head.
 `partial` = a durable, documented, in-memory value representing the **whole
 library** is returned by the tool's own design API, but its type is general-purpose
 (DataFrame, list, tensor).
-An object representing a single sequence or a single optimisation problem is `no`,
+An object representing a single sequence or a single optimization problem is `no`,
 however purpose-built its type.
 
 ### 2. Composable operations
@@ -73,7 +73,7 @@ performing the enumeration — score `no`.**
 ### 4. Randomly sampled variants
 A documented rate, count or RNG parameter produces a *sample* of the variant space.
 **Random sequence generation is not sampled mutagenesis** — generating random
-barcodes, shuffled controls, or stochastic search during optimisation does not
+barcodes, shuffled controls, or stochastic search during optimization does not
 count.
 
 ### 5. Pairwise and higher-order variants
@@ -142,19 +142,19 @@ does not count; the tool must generate the breakpoint combinations. This covers
 both the wet-lab sense (chimeric constructs) and the in-silico sense (swapping
 segments between parents to ask which region drives a model's prediction).
 
-### 11. Constraint-based sequence optimisation
+### 11. Constraint-based sequence optimization
 The tool **modifies** a sequence so it satisfies declared constraints, rather than
 only rejecting sequences that violate them. **Rejection-only filtering does not
 count** — this row is about the tool altering the sequence to comply. `partial` =
-optimisation against a narrow constraint class only.
+optimization against a narrow constraint class only.
 
 *Displayed in the **Physical construction** block.*
 
 ### 12. Model-guided variants
 Design driven by the output of a predictive model, where the model's prediction
 determines the edit. `partial` = the tool accepts an arbitrary scoring callable so
-a model can be attached, but performs no optimisation against it. `yes` = an
-optimisation loop against the model's output.
+a model can be attached, but performs no optimization against it. `yes` = an
+optimization loop against the model's output.
 
 *Displayed in the variant-generation block. This row is about **biological
 function**, not manufacturability — it does not belong with the physical-construction
@@ -231,7 +231,7 @@ check without the constraint types being modelled.
 Count only constraints on **physical realisability**. Checks on biological content —
 "does this contain a stop codon", "is this in frame" — are not this row.
 
-**Boundary — vs. row 11 (Constraint-based sequence optimisation):** these two are
+**Boundary — vs. row 11 (Constraint-based sequence optimization):** these two are
 complementary and must not both be credited for the same mechanism. Row 19 is
 **detecting** violations — checking, reporting, rejecting, filtering. Row 11 is
 **fixing** them — altering the sequence so it complies. A tool that only rejects

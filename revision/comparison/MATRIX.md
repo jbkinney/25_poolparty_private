@@ -25,7 +25,7 @@ VARIANT TYPES
   Shuffling                                     ●      ○      ◐      ○      ○      ○      ○      ●
 PHYSICAL CONSTRUCTION
   Synthesis-constraint checking                 ◐      ◐      ◐      ◐      ●      ○      ●      ○
-  Constraint-based optimisation                 ○      ○      ◐      ◐      ●      ●      ●      ○
+  Constraint-based optimization                 ○      ○      ◐      ◐      ●      ●      ●      ○
   Primer design                                 ○      ○      ○      ○      ●      ●      ◐      ○
 METADATA AND INSPECTION
   Per-sequence design cards                     ●      ●      ◐      ●      ●      ●      ●      ○
@@ -54,7 +54,7 @@ GENOMIC INTEGRATION
 |---|---|---|
 | Model-guided variants | `partial` | DNAch, tang |
 | Synthesis-constraint checking | `partial` | Oligo, DNAch |
-| Constraint-based optimisation | `no` | Oligo, MutMk, DNAch |
+| Constraint-based optimization | `no` | Oligo, MutMk, DNAch |
 | Primer design | `no` | Oligo, MutMk |
 | Genome coordinates | `partial` | VaLi, MPRAn |
 | Transcript / annotation aware | `no` | VaLi |
@@ -96,7 +96,7 @@ be `no`? **One of four moved.**
 |---|---|
 | `library_object` / tangermeme ◐ | **No change.** The objection is sound — `beam_substitution(n_best=10)` returns what a search converged on, not a declared design space. But adopting that test moves only this cell (the other `partial`s all have user-determined membership), it moves *in our favour*, and `◐` already conveys "returns a set, but not a library object". `○` would overstate. |
 | `synthesis_constraint_checking` / PoolParty ● | **Corrected to ◐.** The five named filters are real but undocumented — see `FINDINGS.md` A1. Row 19 requires named **and documented** checks. |
-| `randomly_sampled_variants` / DNA Chisel ● (medium) | **No change.** `pick_random_mutations(n_mutations, sequence)` is documented public API taking a count parameter. Borderline against the row's exclusion of "stochastic search during optimisation", but exposed independently of the solver. |
+| `randomly_sampled_variants` / DNA Chisel ● (medium) | **No change.** `pick_random_mutations(n_mutations, sequence)` is documented public API taking a count parameter. Borderline against the row's exclusion of "stochastic search during optimization", but exposed independently of the solver. |
 | `composable_operations` / Oligopool ● (medium) | **No change.** Docs state "Chainable: Output of one module feeds into the next"; `primer()` and `motif()` share the DataFrame contract in either order. Inferred from documentation rather than a worked example, hence medium. |
 
 A scan of all 160 cells found 12 scored below `high` confidence. Two were already
