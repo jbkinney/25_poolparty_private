@@ -76,16 +76,16 @@ chr1  1000  rs123  A  G,T
 
 With `alleles="both"` this yields three states:
 
-| # | `allele` | `ref` | `alt` | sequence |
-|---|---|---|---|---|
-| 1 | `ref` | `A` | *(empty)* | window with `A` at the centre |
-| 2 | `alt` | `A` | `G` | window with `G` |
-| 3 | `alt` | `A` | `T` | window with `T` |
+| # | name | `allele` | `ref` | `alt` | sequence |
+|---|---|---|---|---|---|
+| 1 | `chr1_1000_A` | `ref` | `A` | `None` | window with `A` at the centre |
+| 2 | `chr1_1000_A_G` | `alt` | `A` | `G` | window with `G` |
+| 3 | `chr1_1000_A_T` | `alt` | `A` | `T` | window with `T` |
 
-**`alt` is empty on a REF row.** There are two ALT alleles but only one REF
-sequence, so no single ALT belongs to it. Filling it with `G,T` would imply a
-sequence containing both, and repeating `A` would imply a substitution that did not
-happen.
+**`alt` is null on a REF row**, and the REF name carries no ALT base. There are two
+ALT alleles but only one REF sequence, so no single ALT belongs to it — in either
+the card or the name. See *Sequence naming* and *`alt` on REF rows is null* below
+for the alternatives that were compared.
 
 **Pairing is on `(chrom, pos, ref)`, not on `variant_id`.** An earlier version of
 this document said `variant_id` — that was wrong. The VCF `ID` column is optional
@@ -125,23 +125,79 @@ from annotation, obtained on the input side.
 Cut as redundant: `alt_index` (`variant_id` + `alt` already disambiguate) and
 `strand` (a single argument, so identical on every row).
 
-### Sequence naming — **DECIDED**
-gnomAD/GTEx style, `.`-separated to match PoolParty's existing `wt.mut_03.bc_01`:
+### Sequence naming — **DECIDED, revised 2026-08-21**
+
+gnomAD/GTEx style, with no allele suffix:
 
 ```
-chr1_12345_A_G          alleles="alt"
-chr1_12345_A_G.ref      alleles="both", REF member
-chr1_12345_A_G.alt      alleles="both", ALT member
+chr1_12345_A_G     an ALT sequence
+chr1_12345_A       the REF sequence
 ```
+
+**REF names carry no ALT base.** One REF window is shared by every ALT allele at
+that position, so naming it after one of them (`chr1_12345_A_G.ref`) would be
+arbitrary — with `A>G,T` there is no reason to pick `G` over `T`.
+
+**No `.ref` / `.alt` suffix.** It is recoverable from the name itself: the position
+always sits between the contig and the bases and is always digits, so the
+second-from-right underscore field is **digits for a REF and DNA for an ALT**.
+Contig names containing underscores do not affect this, because they lie entirely
+to the left of the position. Verified against the cases that could break it:
+
+| name | resolves to |
+|---|---|
+| `chr1_KI270706v1_random_1000_A` | REF |
+| `chr1_KI270706v1_random_1000_A_G` | ALT |
+| `chr1_1000_AG_A` (deletion) | ALT |
+| `plasmid_ACGT_500_A` (contig ending in DNA letters) | REF |
+| `chr1_1000_A_G.mut_03.bc_01` (downstream tokens appended) | ALT |
+
+The last row matters because PoolParty composes names as sequences flow through the
+DAG, joining tokens with `.`. Splitting on `.` and taking the first token isolates
+the `from_vcf` part before applying the rule.
+
+The reasoning for dropping the suffix rather than keeping it: anyone reading these
+names from a FASTA is already parsing them — they need chrom, pos, ref and alt
+regardless — so allele identity is one extra field check in a parse they are doing
+anyway. The suffix would have bought only human legibility when eyeballing a file,
+at the cost of `.alt` appearing on the great majority of rows.
+
+The `allele` design card key still records it directly for anyone who requests
+cards. Note that cards are **opt-in**: without a `cards=` argument the output is
+`['name', 'seq']` only, so the name is the sole signal in the default case — which
+is why the naming rule must be documented.
 
 Underscores rather than AlphaGenome's display form `chr1:12345:A>G`, because
-PoolParty exports FASTA and a `>` inside a header is hostile to parsers. Also
-avoids resembling `from_fasta`'s `{chrom}:{start}-{stop}({strand})` names, which
-use **0-based** coordinates — two source ops emitting similar-looking names with
+PoolParty exports FASTA and a `>` inside a header is hostile to parsers. This also
+avoids resembling `from_fasta`'s `{chrom}:{start}-{stop}({strand})` names, which use
+**0-based** coordinates — two source ops emitting similar-looking names under
 different conventions would be a trap.
 
 The rsID goes in the `variant_id` card, not the name: VCF IDs are frequently `.`,
 so names must be systematic.
+
+### `alt` on REF rows is null — **DECIDED 2026-08-21**
+
+A REF row's `alt` design card cell is `None`, rendering as blank.
+
+Five options were compared by their behaviour in pandas, since the design card is a
+DataFrame:
+
+| `alt` on REF row | `isna()` finds it | CSV round-trip | `alt.unique()` |
+|---|---|---|---|
+| `""` | **no** | becomes `NaN` — file and memory disagree | `['', 'G', 'T']` |
+| **`None`** | **yes** | `NaN`, consistent | `['G', 'T']` — clean |
+| `"G,T"` | no | survives | `['G', 'G,T', 'T']` — phantom allele |
+| `"A"` (repeat REF) | no | survives | `['A', 'G', 'T']` |
+| `"."` | no | survives | `['.', 'G', 'T']` — magic string |
+
+`None` is the only value that is absent to `isna()`, invisible to `unique()`, and
+consistent across a CSV round-trip. `"A"` has an argument — it makes
+`df[df.ref != df.alt]` select exactly the real substitutions — but it changes what
+the column means from "the alternate allele" to "the bases this sequence carries",
+and anyone joining on `alt` against a VCF's ALT field would silently match a variant
+that does not exist. Selecting variants is better written `df[df.allele == "alt"]`,
+which is explicit and works regardless.
 
 ### Fixed behaviour, not arguments — **DECIDED**
 Each of these was considered as an argument and rejected as configuration nobody
