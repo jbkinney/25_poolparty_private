@@ -3,8 +3,9 @@
 Implementation plan for `pp.stats()` / `pool.stats()`.
 
 **Status: approved. Ready to implement.** Nothing in the package, its docs, or the
-manuscript has been modified. All numbers below were measured in the read-only
-venv at `poolparty-statecounter/.venv` against `poolparty` 0.1.0.
+manuscript has been modified. Every number below was measured against `poolparty`
+0.1.0 at commit `1bb0179`. Implementation runs in the `poolparty_dev` conda
+environment — see §15.
 
 ---
 
@@ -44,6 +45,9 @@ never changes a design or a library.
 | 16 | **The auto limit is not a parameter.** Hard-coded at 1,000,000; `num_cycles=1` is the override | yes |
 | 17 | **Every count key that counts sequences ends in `_seqs`.** See §4 | yes |
 | 18 | **Three keys cut** as pure arithmetic nobody quotes: `length_variable`, `hamming_num_pairs`, `hamming_sd` | yes |
+| 19 | **The dict subclass is private.** `_StatsDict`, not exported; return annotated `dict[str, Any]`. See §4 | yes |
+| 20 | **One branch**, `feature/pool-stats`, in a git worktree off `origin/main`. See §15 | yes |
+| 21 | **Environment: the `poolparty_dev` conda env, no venv.** See §15 | yes |
 
 ### Rationale for the decisions that were debated
 
@@ -230,7 +234,7 @@ takes **sequences**, not a pool.
 | Layer | File | Signature | Why |
 |---|---|---|---|
 | Counting | `utils/stats_utils.py` (new) | `_stats_from_seqs(seqs, ...) -> dict` | No `Pool`, no `Party`. Most tests become one-liners. Reusable on an imported CSV, and on another tool's output for item 2b |
-| Generation | `stats.py` (new) | `stats(source, ...) -> LibraryStats` | Decides how many to generate (§5), generates, delegates |
+| Generation | `stats.py` (new) | `stats(source, ...) -> dict[str, Any]` | Decides how many to generate (§5), generates, delegates |
 | Method | `pool_mixins/stats_mixin.py` (new) | `DnaPool.stats(...)` | Discoverable where `to_df`/`to_file` are |
 
 Only `num_states` and the open-ended flag need the pool. Everything else needs
@@ -250,7 +254,7 @@ def stats(
     enzymes: Optional[list[str]] = None,
     sites: Optional[list[str]] = None,
     show_progress: bool = True,
-) -> LibraryStats:
+) -> dict[str, Any]:
 ```
 
 `pool.stats(...)` takes the same arguments minus `source`. Nine arguments.
@@ -334,12 +338,27 @@ reverse complement `GAGACC`):
 
 ### Return value
 
-`class LibraryStats(dict)` — a dict subclass with a formatted `__repr__` (~40
-lines). `s["num_duplicate_seqs"]` works, `dict(s)` round-trips, it is JSON-
-serialisable, and `pd.DataFrame([a.stats(), b.stats()])` gives the supplementary
-table. Rejected: a bespoke non-dict class (a new public type for no gain); a bare
-`dict` (no formatted output); a `pd.Series` (mixed dtypes print poorly, cannot
-group sections).
+A plain `dict`, as far as the public contract goes. The concrete object is a
+**private** `dict` subclass, `_StatsDict`, whose only addition is a `__repr__`
+that renders the formatted report of §6 (~40 lines). It is not exported, not in
+`api.rst`, and not in `TestAllExports`; the return annotation is
+`dict[str, Any]`.
+
+`s["num_duplicate_seqs"]` works, `dict(s)` round-trips, it is JSON-serialisable,
+and `pd.DataFrame([a.stats(), b.stats()])` gives the supplementary table.
+
+**Why private (decision 19).** Users never construct it, never `isinstance` it and
+never pass it anywhere; the subclass exists only so `print(s)` renders a report
+instead of a wall of braces. Making it public would add a permanent name to the
+API, a line in `TestAllExports` and an `autoclass` entry, and would buy exactly
+one capability — being able to write `def f(x: PoolStats)`. Going public later is
+a non-breaking addition; going private later is not. Rejected alternatives: a
+public `PoolStats` (better of the two public names, since the method is
+`pool.stats()`, but see above); a public `LibraryStats` (the object holds
+pool-level facts too — `num_states`, `open_ended` — so the name is only two-thirds
+right); a bespoke non-dict class (new public type, no gain); a bare `dict` with no
+subclass (loses the formatted output required by decision 4); a `pd.Series`
+(mixed dtypes print poorly and it cannot group sections).
 
 ### Table 2 — return keys
 
@@ -774,7 +793,7 @@ New `tests/test_stats.py`. Conventions from `tests/test_seq_properties.py`: one
 | `TestRestrictionArgs` | `enzymes=["golden_gate"]` expands to 5 sites; `sites=["RGATCY"]` matches all four expansions; reverse-complement hits are found; neither argument → key absent |
 | `TestReproducibility` | two identical calls return identical results (guards finding 3e); chunked generation equals a single call |
 | `TestEdgeCases` | `length_min != length_max` → Hamming section absent, no crash; all-filtered-out pool → `num_valid_seqs == 0`, no `ZeroDivisionError`; `max_hamming_seqs=None` → section absent; `max_homopolymer_run=None` → `frac_seqs_with_long_homopolymer` absent |
-| `TestFormatting` | `LibraryStats` is a `dict` (`s["num_duplicate_seqs"]`, `dict(s)` round-trip, JSON-serialisable); `repr` contains the section headings; empty sections absent from `repr`; open-ended `repr` contains the caveat note; the cut keys are absent |
+| `TestFormatting` | the returned object is a `dict` (`s["num_duplicate_seqs"]`, `dict(s)` round-trip, JSON-serialisable); `repr` contains the section headings; empty sections absent from `repr`; open-ended `repr` contains the caveat note; the cut keys are absent |
 | `TestRegression` | the funnel comes from `generate_library`, not `to_df` — a filtered pool must report the real duplicate count, not the refill artefact of finding 3f |
 | `TestNeverMutates` | `pool.num_states`, `pool.parents` and a re-generated library are byte-identical before and after `stats()` |
 
@@ -826,7 +845,7 @@ writes it should write both halves.
 | Item | Lines |
 |---|---:|
 | `utils/stats_utils.py` — the counting layer | ~200 |
-| `stats.py` — generation, size decision, `LibraryStats` | ~180 (≈40 is the formatted `__repr__`) |
+| `stats.py` — generation, size decision, `_StatsDict` | ~180 (≈40 is the formatted `__repr__`) |
 | `utils/seq_properties.py` — `longest_homopolymer` + citation fix | ~25 |
 | `pool_mixins/stats_mixin.py` + `pool_mixins/__init__.py` + `dna_pool.py` + `__init__.py` | ~40 |
 | `tests/test_stats.py` | ~280 |
@@ -892,3 +911,84 @@ it to say that a design containing a filter yields fewer rows than
 `comparison/PLAN.md` lists R2 1a under "Out of scope for this document" — correct
 for that file (the tool-comparison cluster), but nothing else tracked it. Point
 its "Remaining work" table at this file.
+
+---
+
+## 15. Implementation logistics
+
+### Branch and working copy
+
+One branch, `feature/pool-stats`, in its own git worktree (decision 20):
+
+```
+git -C poolparty-statecounter fetch origin
+git -C poolparty-statecounter worktree add \
+    ../poolparty-pool-stats -b feature/pool-stats origin/main
+```
+
+**Branch from `origin/main`, not local `main`.** Local `main` is 12 commits
+behind (`1bb0179` vs `4f125f2`), and its working tree is dirty with someone
+else's uncommitted `poolparty/README.md` edit plus two untracked
+`.docs_buildhtml/` build directories. Branching from `origin/main` leaves all of
+that untouched — no stash, no clean-up, no coordination needed. Verified that
+`README.md` is not among the 18 files those 12 commits touch, so a fast-forward
+would also have worked; branching from the remote tip is simply cheaper.
+
+Of those 18 upstream files (ORF work merged as PRs #15 and #16), the only overlap
+with this plan's target list is `poolparty/CHANGELOG.md`. Branching from
+`origin/main` removes even that conflict.
+
+**Why a worktree and not the main checkout.** The item-2c agent's work also
+touches `poolparty/docs/`, and a checkout can only be on one branch at a time.
+One of us needs a worktree; it should be this work, because their change is
+docs-only and smaller. The repo already uses this pattern — `poolparty-orf-scans`
+and `poolparty-orf-geometry-fixes` are live worktrees on `feature/orf-indel-scans`
+and `fix/orf-geometry-consistency`.
+
+### Commits
+
+One branch, but two commits, so the fix stays separately reviewable and
+revertable in the history:
+
+1. `fix: stop to_df re-emitting survivors on filtered designs` — §13 only.
+2. `feat: add pp.stats() / pool.stats()` — §4 and everything else.
+
+### Environment
+
+**The `poolparty_dev` conda environment. No venv** (decision 21).
+
+```
+/home/leo/anaconda3/envs/poolparty_dev   Python 3.10.19, pytest 9.0.2
+```
+
+Its editable installs of `poolparty` and `statetracker` point at the **main**
+checkout, so inside the worktree imports must be redirected:
+
+```
+PYTHONPATH=<worktree>/poolparty/src:<worktree>/statetracker/src \
+  /home/leo/anaconda3/envs/poolparty_dev/bin/python -m pytest poolparty/tests
+```
+
+Verified with a sentinel package that `PYTHONPATH` takes precedence over the
+`.pth` editable install. Nothing is installed and no new environment is created.
+**Print `poolparty.__file__` before trusting any test run in the worktree** — a
+silent fall-through to the main checkout would invalidate the "2,929 tests still
+pass" claim.
+
+### Order of work
+
+| # | Step |
+|---|---|
+| 1 | Fetch, create the worktree from `origin/main` |
+| 2 | Confirm the full suite passes *before* any edit, so later failures are attributable |
+| 3 | Commit 1 — the `to_df` fix (§13) and its tests |
+| 4 | Commit 2 — `stats` (§4), its tests (§10), and the documentation (§11) |
+| 5 | Full suite again, then open the PR |
+
+### CI
+
+`.github/workflows/test.yml` triggers only on push or pull request to
+`main`/`master`/`develop` — **not** on feature-branch pushes. So the branch push
+gets nothing and opening the PR is what runs the matrix: Ubuntu × Python
+3.10/3.11/3.12, plus macOS and Windows on 3.11. Run the suite locally first and
+treat the PR as the real gate.
