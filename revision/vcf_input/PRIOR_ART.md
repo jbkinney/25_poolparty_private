@@ -22,8 +22,9 @@ reference genome is enough.
 carries a protein `sequence` read from FASTA, a 1-based `position`, a
 `reference_aa` and an `alternate_aa`, and builds
 `alternate_sequence = sequence[:position-1] + alternate_aa + sequence[position:]`.
-EVE's `MSA_processing(MSA_location=...)` consumes a multiple sequence alignment and
-has no concept of a variant coordinate at all.
+EVE's `MSA_processing(MSA_location=...)` consumes a multiple sequence alignment; its
+`create_all_singles` builds mutants as `letter + str(pos) + mut`, so it has
+protein-level positions but no genomic coordinate.
 
 Getting from a VCF to a protein variant requires transcript models, reading frames
 and split codons — i.e. VEP. That is the boundary of what a source operation can
@@ -55,9 +56,12 @@ Points that matter for our design:
    on mismatch:
    `if seq[wid//2 : wid//2+len(record.ref)].upper() != record.ref: skip`.
    This is the check that catches an hg19 VCF against an hg38 FASTA.
-5. **Records skipped:** symbolic alts (`<`, `>`), alts containing `.`/`-`/`*`,
-   MNPs (`len(ref) > 1 and len(alt) > 1`), REF longer than the window, and windows
-   running off a contig end (`len(seq) != wid`).
+5. **Records skipped:** symbolic alts (`<`, `>`), alts containing `.`/`-`/`*`, REF
+   longer than **`2*dist_var`** — the *scored span*, 100 bp by default, not the
+   10,101 bp window — and windows running off a contig end (`len(seq) != wid`).
+   **MNPs and delins are not skipped**: `utils.py:138-140` appends a null-score
+   record and continues, because SpliceAI's output re-alignment cannot handle them.
+   That is a constraint on predictions, not on sequence construction.
 6. **Contig names are normalised** (`normalise_chrom`) so `chr1` and `1` interoperate.
 7. It reads the reference with **`pyfaidx`** — the same library PoolParty's
    `from_fasta` already depends on.
@@ -99,7 +103,8 @@ GFF, Ensembl); `start`/`end` mean 0-based half-open (BED, pyranges, Python slice
 - REF/ALT as a **pair**, unequal length for indels — both.
 - **Verify REF against the FASTA** and fail — SpliceAI.
 - **Normalise contig names** — SpliceAI.
-- **Skip** symbolic alts, MNPs and off-contig windows — SpliceAI.
+- **Skip** symbolic alts, non-DNA alts (`.`/`-`/`*`), oversized alleles and
+  off-contig windows — SpliceAI. **Not** MNPs.
 - **1-based `pos`, 0-based half-open window** with the names carrying the
   convention — AlphaGenome.
 

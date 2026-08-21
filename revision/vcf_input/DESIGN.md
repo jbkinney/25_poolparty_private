@@ -1,401 +1,325 @@
 # `from_vcf` — design
 
-Every design question is settled. Each decision below records the reasoning, not
-just the outcome, so it is not re-litigated from memory. Nothing is implemented.
+Reads a VCF plus a reference FASTA and returns a `DnaPool` of windows around each
+variant. Answers part of Reviewer 3's comment; see `README.md` for what it does and
+does not claim.
 
-## Proposed signature
+**Revised 2026-08-21** after three independent reviews (correctness, adversarial,
+simplicity). Seven decisions were reversed and four factual claims corrected; the
+superseded reasoning has been removed rather than annotated. Nothing is
+implemented.
+
+## Signature
 
 ```python
 def from_vcf(
     vcf_path,
     fasta_path,
+    flank_left,
+    flank_right,
     *,
-    flank_left,            # required
-    flank_right,           # required
-    alleles="both",        # "ref" | "alt" | "both"
-    strand="+",
-    # inherited from the existing source ops
+    alleles="both",        # Literal["ref","alt","both"]
     prefix=None, style=None, cards=None, iter_order=None,
 ) -> DnaPool
 ```
 
-Required-after-defaulted is legal here because everything after `*` is
-keyword-only; omitting a flank raises `TypeError: missing 2 required keyword-only
-arguments`. `mode` and `num_states` are **not** exposed — see the decisions below.
+Five arguments, four of them positional. `mode`, `num_states` and `strand` are not
+exposed; see the decisions below.
 
-Six new arguments; everything else is surface `from_fasta` and `from_seqs` already
-expose.
+## Decisions
 
-## Why this is shaped like `from_fasta`
+### Sequence length varies; no padding, no trimming
 
-`from_fasta` already reads a reference with `pyfaidx`, takes `(chrom, start, stop,
-strand)` coordinates, turns a batch into N states via `from_seqs`, and supports
-`prefix`, `style`, `cards`, `iter_order`. `from_vcf` differs only in where the
-coordinates come from and in emitting a REF/ALT pair per record. Most of the design
-is inherited rather than invented.
+`len(sequence) = flank_left + len(allele) + flank_right`. A deletion produces a
+shorter ALT sequence than its REF; an insertion a longer one. Nothing is padded or
+trimmed to compensate.
 
-## Decisions taken
+Padding was considered. Gap markers (PoolParty's own convention — `deletion_scan`
+emits `---` by default) fix deletions but cannot fix insertions: there is nowhere
+to put the extra bases. Gapping the *reference* instead makes REF and ALT equal
+**within a pair**, but lengths still differ **across** the pool because the allele
+width differs per variant, so `seq_length` is `None` either way. Trimming the
+flanks to compensate makes the ALT window cover a different stretch of chromosome
+than the REF window, so part of any ALT − REF difference would come from unequal
+reference context rather than from the variant.
 
-### One pool, not two — **DECIDED**
-REF and ALT members live in the same pool, distinguished by the `allele` design
-card key. `alleles=` selects which are emitted.
-
-### Indel length: match SpliceAI, no flag — **DECIDED**
-`len(sequence) = flank_left + flank_right + len(ALT)`, so indels produce sequences
-of differing length within one pool.
-
-An `equal_length=True` option was considered and rejected. There is no coherent way
-to trim: for an indel you can hold at most two of {fixed width, variant centred,
-REF and ALT covering the same genomic span}. The only trim that keeps the variant
-centred refills from the reference on one side, which makes the ALT window cover a
-*different stretch of chromosome* than the REF window. Since the measurement is
-ALT − REF, part of that difference would then be caused by unequal reference
-context rather than by the variant. That is a scientific confound, not a cosmetic
-one.
-
-This is comfortable because PoolParty never emits arrays — output is sequences and
-a DataFrame — there is no `pad`/`resize`/`one_hot` operation in the package, and
-variable-length pools already occur (`deletion_scan(deletion_marker=None)`).
-One-hot encoding happens in user code, which is where padding belongs and where the
-choice is visible.
-
-Documentation owes one sentence: *the variant begins at offset `flank_left` in the
-emitted sequence; indels make sequences differ in length, so pad at encoding time
-if your model needs uniform input.*
-
-### Multi-allelic: 1 REF + N ALT — **DECIDED**
-A row with two ALT alleles and `alleles="both"` yields three states, not two pairs.
-The REF window is identical for both alleles and duplicating it would misstate the
-library size.
-
-Worked example. One VCF record with two ALT alleles:
+**The cost, stated rather than engineered around.** A pool whose sequences differ
+in length has `seq_length is None`, and these operations refuse to run on it —
+measured, each against a variable-length pool and an otherwise identical
+uniform-length control:
 
 ```
-chr1  1000  rs123  A  G,T
+subseq_scan   deletion_scan   insertion_scan   deletion_multiscan
+recombine     shuffle_scan    mutagenize_orf
 ```
 
-With `alleles="both"` this yields three states:
+`mutagenize`, `shuffle_seq`, `rc`, `upper`, `filter` and the export operations are
+unaffected. `insertion_multiscan` and `annotate_orf` are unresolved — both failed on
+the uniform control too, for unrelated reasons, so they were not isolated.
 
-| # | name | `allele` | `ref` | `alt` | sequence |
-|---|---|---|---|---|---|
-| 1 | `chr1_1000_A` | `ref` | `A` | `None` | window with `A` at the centre |
-| 2 | `chr1_1000_A_G` | `alt` | `A` | `G` | window with `G` |
-| 3 | `chr1_1000_A_T` | `alt` | `A` | `T` | window with `T` |
+A pool containing only SNVs has uniform length and none of this applies.
 
-**`alt` is null on a REF row**, and the REF name carries no ALT base. There are two
-ALT alleles but only one REF sequence, so no single ALT belongs to it — in either
-the card or the name. See *Sequence naming* and *`alt` on REF rows is null* below
-for the alternatives that were compared.
+*Correction:* an earlier draft justified this by claiming variable-length pools
+already occur via `deletion_scan(deletion_marker=None)`. Measured false —
+`deletion_length` is a scalar, so every state is shortened identically and
+`seq_length` stays defined. `from_vcf` is the first operation in PoolParty to
+produce a genuinely variable-length pool.
 
-**Pairing is on `(chrom, pos, ref)`, not on `variant_id`.** An earlier version of
-this document said `variant_id` — that was wrong. The VCF `ID` column is optional
-and is `.` in most variant-caller output, so every record would share one value and
-pairing would collapse. `(chrom, pos, ref)` identifies the record, and all three are
-already card keys. To score ALT − REF for state 2, take the row with the same
-`(chrom, pos, ref)` and `allele == "ref"`.
+### One reference sequence per site, always
 
-### Coordinate conventions — **DECIDED**
+All records at the same `(chrom, pos, ref)` share one REF window, because it *is*
+the same window. De-duplication is unconditional; there is no switch.
 
-| Card key | Convention | Round-trips to |
+Without it, ClinVar yields **319,648 redundant REF sequences** — identical DNA,
+emitted up to 182 times at one position. Multi-allelic VCF rows (`A → G,T`) are the
+case an earlier draft designed for, and ClinVar contains **zero** of them: it splits
+alleles across separate records at the same position, which is the case that
+actually occurs.
+
+State counts over ClinVar (3,375,801 records, 3,056,153 distinct sites):
+
+| `alleles` | states |
+|---|---|
+| `"alt"` | 3,375,801 |
+| `"ref"` | 3,056,153 |
+| `"both"` | 6,431,954 |
+
+`num_states` is exactly the number of sequences the pool yields.
+
+### Sequence naming, and no allele suffix
+
+```
+1_939398_G          the reference at this site
+1_939398_G_INS      a variant at this site
+```
+
+gnomAD/GTEx form, underscore-separated. Underscores rather than AlphaGenome's
+display form `chr1:12345:A>G`, because PoolParty exports FASTA and a `>` inside a
+header is hostile to parsers. This also avoids resembling `from_fasta`'s
+`{chrom}:{start}-{stop}({strand})` names, which use 0-based coordinates.
+
+**No `.ref`/`.alt` suffix.** Once each reference appears once per site, reference and
+variant names cannot collide, so the suffix identifies nothing that position does not:
+a reference name is always a strict prefix of its variants' names, and by field
+position the second-from-right underscore field is digits for a reference and DNA
+for a variant.
+
+The rsID goes in the `variant_id` card, not the name — VCF IDs are frequently `.`,
+so names must be systematic.
+
+**Dotted contig names are fully supported.** RefSeq and GenBank references use
+versioned accessions throughout — `GCF_000001405.39_GRCh38.p13_genomic.fna` names
+chromosome 1 `NC_000001.11` — so a rule that skipped or mishandled dotted contigs
+would discard entire files. The field-position test above works on them; only the
+combination of a dotted contig, downstream operations appended, *and* no design
+cards requested leaves a name ambiguous, because `.` is both the accession
+separator and PoolParty's DAG token separator. The `allele` card is authoritative in
+that case. This affects 28 of 3,375,801 ClinVar records and none of the
+`alleles="alt"` workflow.
+
+### Design cards
+
+`chrom` · `pos` · `ref` · `alt` · `allele` · `variant_id` · `filter` ·
+`window_start` · `window_stop`, plus `info_`-prefixed keys on request.
+
+Carrying the VCF `ID` column and selected `INFO` fields is what puts ClinVar and
+gnomAD identifiers on every sequence — the part that actually answers R3, obtained
+on the input side.
+
+`alt` is `None` on a reference row. With one reference per site it pairs with
+several variants, so no single ALT belongs to it. `None` rather than `""` because
+only `None` is found by `isna()` and survives a CSV round-trip.
+
+Two mechanics to respect. With list-style `cards=[...]`, `generate_library` prefixes
+every column with the operation name, giving `op[0]:from_vcf.allele`; bare column
+names require dict-style `cards={'alt': 'alt', ...}`. And `info_AF` rather than
+`info:AF`, because a colon makes the column unusable with `df.query()`.
+
+This is nine static keys against a package maximum of five. The deviation is
+deliberate: the identity fields are what make the pool traceable to its input, which
+is the feature.
+
+### Coordinates: `pos` 1-based, windows 0-based half-open
+
+| key | convention | round-trips to |
 |---|---|---|
 | `pos` | 1-based, exactly the VCF POS | the user's VCF |
 | `window_start`, `window_stop` | 0-based, half-open | `from_fasta`, BED, pyranges |
 
-Both round-trips work, which is the point. `pos` must equal the VCF POS or the card
-lies about its own input. `from_fasta` documents *"Coordinates are 0-based [start,
-stop)"*, so window coordinates feed straight back into it with no arithmetic.
+Mixing them is deliberate and follows AlphaGenome, where the field name carries the
+convention: `Variant.position` is 1-based, `Interval.start/end` are 0-based
+half-open. `pos` must equal the VCF POS or the card lies about its own input, and
+`from_fasta` documents "Coordinates are 0-based [start, stop)".
 
-Mixing conventions is deliberate and follows AlphaGenome (`PRIOR_ART.md`): the
-field name carries the convention — `position` is 1-based, `start`/`end` are
-0-based half-open.
+`pos - window_start` is off by one as a within-sequence offset; the correct value is
+`(pos - 1) - window_start`. On a reference row the window describes the sequence; on
+a variant row it describes the reference span the variant replaces, so
+`window_stop - window_start != len(seq)` for indels.
 
-The residual trap is that `pos - window_start` is off by one as a within-sequence
-offset; the correct value is `(pos - 1) - window_start`. No card key is added for
-it, because by construction the variant always begins at offset `flank_left`.
+### Indel anchor: centre on POS
 
-### Design card keys — **DECIDED**
-`chrom` · `pos` · `ref` · `alt` · `allele` · `variant_id` · `filter` ·
-`window_start` · `window_stop`, plus `info:`-prefixed keys on request, e.g.
-`cards=['chrom', 'pos', 'info:AF', 'info:CLNSIG']`.
+VCF writes a deletion with an anchor base — deleting `G` from `AG` is
+`chr1 1000 . AG A` — so POS marks the **anchor `A`, not the deleted `G`**. The
+window is centred on POS, matching `spliceai/utils.py`. Documented because anyone
+reasoning about a deletion assumes the opposite, and for a long deletion the
+difference moves the window by its length.
 
-Carrying the VCF `ID` column and selected `INFO` fields through to design cards is
-what puts ClinVar and gnomAD identifiers on every sequence — part of what R3 wanted
-from annotation, obtained on the input side.
+### Always plus strand; no `strand` argument
 
-Cut as redundant: `alt_index` (`variant_id` + `alt` already disambiguate) and
-`strand` (a single argument, so identical on every row).
+Sequences are the reference plus strand. `pp.rc()` is exported and composes, so
+`pp.rc(from_vcf(...))` covers the reverse-complement case without an argument.
 
-### Sequence naming — **DECIDED, revised 2026-08-21**
+Dropping it also removes a contradiction: with `strand="-"` the name would report
+plus-strand bases (`…_A_G`) while the sequence carried their complements, and
+nothing in the name or cards recorded which had been done. `from_fasta` avoids this
+by putting strand in the name; here it is simpler not to offer the option.
 
-gnomAD/GTEx style, with no allele suffix:
+### Guards — fixed behaviour, each reporting a count
 
-```
-chr1_12345_A_G     an ALT sequence
-chr1_12345_A       the REF sequence
-```
+Skipped records are counted and reported through `warnings.warn`, not dropped
+silently: this operation's output is a library the user keeps, unlike SpliceAI's,
+which is a score column.
 
-**REF names carry no ALT base.** One REF window is shared by every ALT allele at
-that position, so naming it after one of them (`chr1_12345_A_G.ref`) would be
-arbitrary — with `A>G,T` there is no reason to pick `G` over `T`.
+| Guard | Reason | In ClinVar |
+|---|---|---|
+| ALT containing `.`, `-`, `*`, `<`, `>` | Not DNA. Pasted in, they produce a normal-length sequence with a literal `.` in it, and `.`/`*` are in PoolParty's `IGNORE_CHARS`, so `clear_gaps` would silently delete the variant position | 1,017 records |
+| `len(REF)` or `len(ALT)` over a stated cap | A 9,983-base REF turns a requested 201 bp window into ~10 kb with no error. SpliceAI caps at `2*dist_var` (100 bp default) | max REF 9,983, max ALT 9,837 |
+| Window running off a contig end | No window to cut | — |
+| Contig absent from the FASTA | `pyfaidx` raises `KeyError`; a patch scaffold should not abort a 3M-record run | 28 records on scaffolds |
 
-**No `.ref` / `.alt` suffix.** It is recoverable from the name itself: the position
-always sits between the contig and the bases and is always digits, so the
-second-from-right underscore field is **digits for a REF and DNA for an ALT**.
-Contig names containing underscores do not affect this, because they lie entirely
-to the left of the position. Verified against the cases that could break it:
+**REF verification, case-insensitively, log and skip.** The VCF's REF is compared
+against the FASTA with `.upper()` on both sides, following
+`spliceai/utils.py:117` — soft-masked references (UCSC `hg38.fa`, Ensembl `dna_sm`)
+are lowercase over roughly half the genome, and a case-sensitive comparison would
+reject every variant in a repeat region. A mismatch logs and skips the record rather
+than raising; an hg19 VCF against an hg38 FASTA then fails visibly on essentially
+every record, which is the diagnosis, while a handful of oddities do not abort the
+run.
 
-| name | resolves to |
-|---|---|
-| `chr1_KI270706v1_random_1000_A` | REF |
-| `chr1_KI270706v1_random_1000_A_G` | ALT |
-| `chr1_1000_AG_A` (deletion) | ALT |
-| `plasmid_ACGT_500_A` (contig ending in DNA letters) | REF |
-| `chr1_1000_A_G.mut_03.bc_01` (downstream tokens appended) | ALT |
+*Not a guard:* MNPs and delins are **kept**. An earlier draft skipped them, citing
+SpliceAI. That was a misreading — `utils.py:138-140` *appends* a null-score record
+and continues, because its output re-alignment cannot handle them. That is a
+constraint on predictions, which PoolParty does not produce. `1 930222 GAACTC
+TTCTTCTG` is perfectly representable. 14,738 ClinVar records affected.
 
-The last row matters because PoolParty composes names as sequences flow through the
-DAG, joining tokens with `.`. Splitting on `.` and taking the first token isolates
-the `from_vcf` part before applying the rule.
+### `FILTER` is not consulted
 
-The reasoning for dropping the suffix rather than keeping it: anyone reading these
-names from a FASTA is already parsing them — they need chrom, pos, ref and alt
-regardless — so allele identity is one extra field check in a parse they are doing
-anyway. The suffix would have bought only human legibility when eyeballing a file,
-at the cost of `.alt` appearing on the great majority of rows.
+Every record produces a sequence regardless of `FILTER`. Silently discarding rows
+from a supplied file is the wrong failure — the library comes back smaller than the
+VCF with nothing saying why. `filter` is a card key so anyone wanting PASS-only can
+select on it. Note it is `.` for all 3,375,801 ClinVar records, so it is inert on
+that file and meaningful on caller output.
 
-The `allele` design card key still records it directly for anyone who requests
-cards. Note that cards are **opt-in**: without a `cards=` argument the output is
-`['name', 'seq']` only, so the name is the sole signal in the default case — which
-is why the naming rule must be documented.
+The rule this follows: **skip what cannot be represented, keep what we merely might
+not like.**
 
-Underscores rather than AlphaGenome's display form `chr1:12345:A>G`, because
-PoolParty exports FASTA and a `>` inside a header is hostile to parsers. This also
-avoids resembling `from_fasta`'s `{chrom}:{start}-{stop}({strand})` names, which use
-**0-based** coordinates — two source ops emitting similar-looking names under
-different conventions would be a trap.
+### Flanks are required
 
-The rsID goes in the `variant_id` card, not the name: VCF IDs are frequently `.`,
-so names must be systematic.
+No default. A default of 5000 would import SpliceAI's window into a general-purpose
+tool — right for SpliceAI, absurd for a 200 bp MPRA tile — and window size is the
+parameter that most changes the answer.
 
-### `alt` on REF rows is null — **DECIDED 2026-08-21**
+Separate rather than one symmetric `flank=` because asymmetric context is real for
+splice and promoter work.
 
-A REF row's `alt` design card cell is `None`, rendering as blank.
+*Correction:* an earlier draft justified splitting them by claiming SpliceAI's
+`wid//2` silently favours the left on an even window. False — `wid = 10000 + cov`
+with `cov = 2*dist_var + 1` is always odd, and the slice is exactly symmetric.
 
-Five options were compared by their behaviour in pandas, since the design card is a
-DataFrame:
+### `alleles`
 
-| `alt` on REF row | `isna()` finds it | CSV round-trip | `alt.unique()` |
-|---|---|---|---|
-| `""` | **no** | becomes `NaN` — file and memory disagree | `['', 'G', 'T']` |
-| **`None`** | **yes** | `NaN`, consistent | `['G', 'T']` — clean |
-| `"G,T"` | no | survives | `['G', 'G,T', 'T']` — phantom allele |
-| `"A"` (repeat REF) | no | survives | `['A', 'G', 'T']` |
-| `"."` | no | survives | `['.', 'G', 'T']` — magic string |
+`Literal["ref","alt","both"]`, default `"both"`. `@beartype` already raises naming
+all three valid options on a bad value, as it does for `get_kmers(case=)` and
+`get_barcodes(padding_side=)`; no hand-rolled check.
 
-`None` is the only value that is absent to `isna()`, invisible to `unique()`, and
-consistent across a CSV round-trip. `"A"` has an argument — it makes
-`df[df.ref != df.alt]` select exactly the real substitutions — but it changes what
-the column means from "the alternate allele" to "the bases this sequence carries",
-and anyone joining on `alt` against a VCF's ALT field would silently match a variant
-that does not exist. Selecting variants is better written `df[df.allele == "alt"]`,
-which is explicit and works regardless.
+### Eager, and its own `Operation` subclass
 
-### Fixed behaviour, not arguments — **DECIDED**
-Each of these was considered as an argument and rejected as configuration nobody
-would tune:
+The VCF is parsed and every window extracted up front.
 
-- **REF is verified against the FASTA; a mismatch raises.** One string comparison
-  on data already in hand, and it catches the catastrophic silent failure — an
-  hg19 VCF against an hg38 FASTA yields a complete, plausible, entirely wrong
-  library. Offering `warn`/`skip` would invite someone to ship that library.
-- **Contig names are normalised** (`chr1` ↔ `1`).
-- **Skipped, with a reported count:** symbolic alts, MNPs, off-contig windows.
-- **Zero valid records raises** rather than returning an empty pool.
-- **Sample genotypes are ignored entirely**, as AlphaGenome does.
+Laziness in PoolParty exists for state spaces that are *generated* —
+`mutagenize_orf(num_mutations=3)` is 576,156 states from one short specification.
+A VCF is a finite list already on disk. Measured: opening the FASTA costs 0.03 s, a
+random 10,001 bp window 0.18–0.34 ms, and 20,000 variants take ~3.3 s and ~0.55 GiB
+peak. Lazy would defer the same I/O, not reduce it. Memory scales with record count
+times window width, so an unfiltered ClinVar VCF (~68 GB) exhausts memory — a loud
+failure, documented in the docstring rather than guarded against.
 
-### `FILTER` column: every record is kept — **DECIDED 2026-08-21**
-
-`from_vcf` does not consult the VCF `FILTER` column. A record marked `LowQual`,
-or anything else, produces a sequence like any other.
-
-PASS-only would have been the other reasonable default, but silently discarding
-rows from a file the user handed us is the wrong failure: the library comes back
-smaller than the VCF and nothing says why.
-
-This is consistent with the skip list rather than in tension with it. Symbolic
-alts, MNPs and off-contig windows are skipped because **no sequence can be built**
-for them — there are no bases to substitute, or no window to cut. `FILTER` is a
-quality judgement made by whoever ran the variant caller, not a structural
-impossibility. The rule is: skip what cannot be represented, keep what we merely
-might not like.
-
-**Consequence:** `filter` becomes a design card key, so a user who does want
-PASS-only can select on it downstream and see exactly what they dropped.
-
-### Flanks are required, not defaulted — **DECIDED 2026-08-21**
-
-`flank_left` and `flank_right` have no default. The caller must state them.
-
-A default of 5000 would silently import SpliceAI's window into a general-purpose
-tool. It is right for SpliceAI and absurd for a 200 bp MPRA tile, and window size
-is the single most consequential parameter here — the amount of sequence context a
-model sees. Making it explicit costs one line of typing and turns an inherited
-assumption into a deliberate choice.
-
-They remain separate rather than one symmetric `flank=`, because an even-width
-window cannot be centred and SpliceAI's `wid//2` silently favours the left. Stating
-both makes that choice visible.
-
-### `alleles` — default `"both"`, unrecognised values raise — **DECIDED 2026-08-21**
-
-`alleles="both"` emits REF and ALT members; `"ref"` and `"alt"` emit one side.
-Anything else raises an error that names all three valid options, rather than a
-generic failure or a silent fallback.
-
-### Indel anchor: centre on POS, as SpliceAI does — **DECIDED 2026-08-21**
-
-VCF represents a deletion with an anchor base. Deleting the `G` from `AG` is
-written:
+**It cannot delegate to `from_seqs`.** `FromSeqsOp.design_card_keys` is fixed at
+`["seq_name", "seq_index"]` and `Operation._validate_cards` is a hard whitelist:
 
 ```
-chr1  1000  .  AG  A
+ValueError: Invalid card key(s) ['allele','alt','chrom','pos','ref'] for from_seqs.
+            Valid keys: ['seq','seq_index','seq_name','state']
 ```
 
-so `POS` points at the **anchor `A`, not the deleted `G`**. The window is centred
-on `POS`, matching `spliceai/utils.py`, which slices
-`[pos - wid//2 - 1 : pos + wid//2]` without adjusting for the anchor.
+So `from_vcf` needs a `FromVcfOp(Operation)` setting `design_card_keys` before
+`super().__init__` — the `ScoreOp` pattern at `fixed_ops/score.py:95`, which is also
+the precedent for the dynamic `info_` keys. `_get_copy_params` must carry the
+extracted windows so `copy()` does not re-read the files.
 
-This must be documented explicitly. Anyone reasoning about a deletion naturally
-assumes `POS` marks the deleted base, and for a long deletion the difference moves
-the window by the length of the deletion.
+*Correction:* an earlier draft said the design "hands the list to the existing
+`from_seqs` machinery, exactly as `from_fasta` batch mode does", and that most of
+the design was inherited. Both were wrong.
 
-### Malformed input: one boundary check — **DECIDED 2026-08-21**
+`prefix` is folded into the generated names and `prefix=None` passed downward;
+`from_seqs` raises `ValueError: Cannot specify both seq_names and prefix`, and
+`from_fasta` handles it the same way.
 
-A data line that does not split into at least 8 tab-separated fields raises,
-reporting the line number, the truncated line, and what was expected.
+### VCF parsing: standard library only
 
-That is the whole validation. `from_vcf` is not a VCF linter: it does not check
-INFO syntax, base alphabets, POS ordering, or header consistency. One check at the
-boundary catches the malformations that actually occur — space-delimited files,
-truncated lines, and files that are not VCFs at all.
+`gzip`, `io` and `re`. No `pysam`, no `cyvcf2` — both need htslib, and
+`main.tex` claims minimal dependencies.
 
-**No whitespace fallback.** A space-delimited file exists in this project's own
-data (`VEP_DNA/annotation/test.vcf`), and splitting on arbitrary whitespace to
-accommodate it would guess at intent and could mask real corruption. It is not a
-VCF; say so clearly.
+This works because `from_vcf` never needs random access. Verified against the real
+bgzipped ClinVar file (149 MB, BGZF confirmed by its `BC` extra field): stdlib
+`gzip` read 200,000 records in 0.53 s and all 3,375,801 in 8.5 s.
 
-### `num_states` — **DECIDED 2026-08-21**
+Unsupported and documented: BCF input, tabix random access. INFO percent-decoding
+is done with `urllib.parse.unquote` — 131 escaped values per 400k ClinVar records
+and no bare `%`.
 
-`num_states` is the number of sequences the pool yields, with no separate concept
-behind it. For a VCF with **N records** carrying **M ALT alleles in total**:
+**Malformed input:** a data line not splitting into at least 8 tab-separated fields
+raises, reporting the line number and what was expected. That is the whole
+validation — not a VCF linter. **No whitespace fallback**, even though a
+space-delimited file exists in this project's data
+(`VEP_DNA/annotation/test.vcf`, which is also CRLF-terminated): accommodating it
+would guess at intent. `\r` is stripped from the last field, since a well-formed
+CRLF VCF passes the field check and would otherwise corrupt every `info_` card.
 
-| `alleles` | states |
-|---|---|
-| `"alt"` | M |
-| `"ref"` | N |
-| `"both"` | N + M |
+### Module placement, traversal, fixtures
 
-Most VCFs have no multi-allelic rows, so M = N and `"both"` gives 2N.
+`base_ops/`. `fixed_ops/` holds deterministic one-in-one-out transforms; `from_vcf`
+turns a file into N states. `from_fasta` sits in `fixed_ops/` only because its
+single-coordinate mode yields one fixed sequence, and `from_vcf` has no such mode.
 
-### Out of scope for v1 — **DECIDED**
-- `pool`/`region` splicing — no clear meaning for 10^4 variant windows.
-- N-padding to gene boundaries — requires annotation.
-- Per-variant strand — requires annotation. `strand` applies to the whole call,
-  which covers the real case of a single gene on the minus strand.
-- VCF **output**. See `README.md`.
+`mode="sequential"`, hard-coded, matching `from_fasta`'s batch path. Not exposed.
 
-### State generation: eager — **DECIDED 2026-08-21**
+Fixtures are synthetic and tiny — a few-kb FASTA and a ten-line VCF, `.fai`
+generated at test time. **No reference genomes or real VCFs in this repository.**
 
-`from_vcf` parses the VCF, extracts every window, and hands the list to the
-existing `from_seqs` machinery, exactly as `from_fasta` batch mode does.
+### Out of scope for v1
 
-A lazy variant was argued for and rejected. The argument for it was that PoolParty
-declares libraries without materialising them, so a source op that reads everything
-into memory violates the architecture. That conflates two different things:
-**laziness exists for state spaces that are *generated*** — `mutagenize_orf(
-num_mutations=3)` is 576,156 states from one short specification, and materialising
-that is what the DAG exists to avoid. A VCF is a finite list already sitting on
-disk. Reading it is not a combinatorial explosion; it is input.
+`pool`/`region` splicing; N-padding to gene boundaries and per-variant strand (both
+need annotation); VCF **output** (see `README.md`); `docs/operations/from_vcf.rst`
+must be written, with entries in `source_operations.rst`.
 
-Measured, on GRCh38 with ClinVar coordinates over `/mnt/c`:
+## Verification at implementation time
 
-| | |
-|---|---|
-| `Fasta()` open, 194 contigs | 0.03 s |
-| One random 10,001 bp window via `.fai` | 0.18–0.25 ms |
-| 20,000 variants (saturation scale), eager | ~0.4 GB, ~4 s |
-| 200,000 variants | ~4 GB |
-| All of ClinVar (3,375,801 records) | ~68 GB — will not run |
-
-Lazy would not have reduced the I/O, only deferred it: each window is read once
-either way. It would also have cost a `Fasta` handle whose lifetime must survive
-operation copies, for a benefit that only appears at a scale nobody designs a
-library at.
-
-**Consequence to document, not to guard against:** memory scales with record count
-times window width. A user pointing this at an unfiltered ClinVar VCF will exhaust
-memory. That is a loud failure, not a silent wrong answer, and the docstring should
-say plainly that the whole VCF is read into memory and large files should be
-pre-filtered.
-
-### VCF parsing: stdlib — **DECIDED 2026-08-21**
-
-No new dependency. `gzip`, `io` and `re` ship with Python, so nothing is added to
-`pyproject.toml` — which matters because `main.tex:148` claims minimal
-dependencies, and `pysam`/`cyvcf2` both require htslib.
-
-This works because **`from_vcf` never needs random access.** It iterates every
-record. Verified against a real bgzipped ClinVar file (149 MB, BGZF confirmed by
-its `BC` extra field): stdlib `gzip` read 200,000 records in 0.6 s, and all
-3,375,801 in 9 s.
-
-Not supported, and documented as such: BCF (binary) input, and tabix random access.
-Neither is needed.
-
-Risks accepted: INFO percent-encoding must be decoded by hand (~5 lines, and only
-matters for `info:` card keys). Everything else in the VCF spec that is hard —
-structural variants, breakends, multi-sample genotypes — we skip or discard anyway.
-
-### Module placement: `base_ops/` — **DECIDED 2026-08-21**
-
-Not a judgement call — it is what the directories mean. `fixed_operation` takes
-`seq_from_seqs_fn: Callable[[list[str]], str]`: **one output sequence per input
-state**. So `fixed_ops/` holds deterministic transforms (`rc`, `upper`, `lower`,
-`slice_seq`, `add_prefix`, `join`, `clear_gaps`) and `base_ops/` holds operations
-that create or multiply states (`mutagenize`, `recombine`, `shuffle_seq`,
-`get_kmers`, `get_barcodes`, `from_seqs`, `from_iupac`, `from_motif`).
-
-`from_fasta` sits in `fixed_ops/` because its single-coordinate mode yields one
-fixed sequence; its batch mode delegates out to `from_seqs` in `base_ops/`.
-`from_vcf` has no single-record mode and turns a file into N states, so it belongs
-in `base_ops/`.
-
-### `mode="sequential"`, hard-coded — **DECIDED 2026-08-21**
-
-Not exposed as an argument. `from_fasta`'s batch path already hard-codes
-`mode="sequential"` when calling `from_seqs`, so this follows precedent rather than
-inventing a special case. A VCF is an ordered list and the natural traversal is
-file order.
-
-### Test fixtures — **DECIDED 2026-08-21**
-
-Synthetic and tiny: a few-kb FASTA and a ten-line VCF, with the `.fai` generated at
-test time rather than committed.
-
-**No reference genomes or real VCFs in this repository.** hg38 is ~3 GB, a ClinVar
-VCF ~150 MB, and `.git` is already 95 MB.
-
-## Verification available at implementation time
-
-Both files needed to test against real data already exist locally and must **not**
-be copied into this repository:
+Read-only, not copied into this repository:
 
 - `KinneyLab/xin_collab/data/Homo_sapiens.GRCh38.dna.primary_assembly.fa` (+ `.fai`)
-- `KinneyLab/VEP_DNA/clinvar_hg38/clinvar.vcf.gz`
+- `KinneyLab/VEP_DNA/clinvar_hg38/clinvar.vcf.gz` — 3,375,801 records
+- `KinneyLab/VEP_DNA/splicevardb_x_clinvar_snv.vcf` — 8,490 records, `chr1`-style
 
-Note that the ClinVar file uses `1`-style contig names while UCSC-derived FASTAs
-use `chr1`, so this pair is a live test of contig normalisation.
+**Contig normalisation** is exercised by the *splicevardb* file against the Ensembl
+FASTA — `chr1` against `1`. An earlier draft named the ClinVar/Ensembl pair for
+this; both are `1`-style, so that pair tests nothing.
 
-The strongest correctness check is that SpliceAI's own window construction is
-reproducible: with `flank_left = flank_right = 5000`, `from_vcf` should emit
-byte-identical sequences to `spliceai/utils.py` for the same records. That is also
-what R2 2b asks for -- a comparison of pool outputs against another tool.
+**SpliceAI reproduction** is a partial check only. SpliceAI's default `-D 50` gives
+`wid = 10101`, so matching it needs flanks of **5050**, not 5000. Even then, byte
+identity holds only for `len(REF) == 1` — SpliceAI holds the window fixed at `wid`,
+so its ALT is `wid - len(REF) + len(ALT)`, while this design keeps `flank_right`
+fixed. Verified: for `AGG>A` at flank 5050, SpliceAI emits 10101/10099 and this
+design 10103/10101. Restrict the comparison to SNVs and insertions, and expect
+further divergence from SpliceAI's gene-boundary N-padding and per-gene
+reverse-complement, neither of which is adopted.

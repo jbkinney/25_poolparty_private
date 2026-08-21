@@ -25,18 +25,27 @@ than presenting `from_vcf` as answering it.
 
 ## A second scoping limit
 
-R3 names SpliceAI, EVE, AlphaMissense, PolyPhen. Those are not one class of tool:
+R3 names **SpliceAI, EVE, AlphaMissense and PolyPhen**. Those are not one class of
+tool, and only one of the four takes a DNA window:
 
-| Model | Input | Served by `from_vcf` |
-|---|---|---|
-| SpliceAI | DNA window, one-hot | **yes** |
-| AlphaGenome | DNA interval, one-hot | **yes** |
-| AlphaMissense | protein FASTA + MSA | no |
-| EVE | multiple sequence alignment | no |
+| Model | Named by R3 | Input | Served by `from_vcf` |
+|---|---|---|---|
+| SpliceAI | yes | DNA window, one-hot | **partly** — see below |
+| AlphaMissense | yes | protein FASTA + MSA | no |
+| EVE | yes | multiple sequence alignment | no |
+| PolyPhen | yes | protein sequence + alignment | no |
+| AlphaGenome | no (added for reference) | DNA interval, one-hot | **partly** |
 
-The protein/MSA half needs transcript-aware translation — which is what VEP does,
-and is the part `from_vcf` cannot reach. Verified against each repository; see
-`PRIOR_ART.md`.
+The three protein tools need transcript-aware translation from a genomic variant to
+an amino-acid change — which is exactly what VEP does, and is the part `from_vcf`
+cannot reach.
+
+**"Partly", not "yes", for the two DNA models.** SpliceAI's input depends on
+gene-boundary N-padding and per-gene reverse-complement, so the same variant yields
+different sequences for different overlapping genes. Both are annotation-dependent
+and both are out of scope here, so `from_vcf` windows are close approximations, not
+identical inputs, for minus-strand genes and variants near transcript boundaries.
+Verified against each repository; see `PRIOR_ART.md`.
 
 ## Files
 
@@ -47,5 +56,9 @@ and is the part `from_vcf` cannot reach. Verified against each repository; see
 
 ## Status
 
-**Design complete.** Nineteen decisions recorded in `DESIGN.md`, each with its
-reasoning. Nothing implemented; nothing in `poolparty-statecounter/` modified.
+**Design complete, revised 2026-08-21** after three independent reviews
+(correctness, adversarial, simplicity). Seven decisions were reversed and four
+factual claims corrected; `DESIGN.md` records the current reasoning and the
+corrections, not the superseded arguments.
+
+Nothing implemented; nothing in `poolparty-statecounter/` modified.
