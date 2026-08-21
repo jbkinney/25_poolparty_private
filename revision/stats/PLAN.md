@@ -955,25 +955,65 @@ revertable in the history:
 
 ### Environment
 
-**The `poolparty_dev` conda environment. No venv** (decision 21).
+**The `poolparty_dev` conda environment, with `PYTHONPATH` redirection. No venv,
+and no new environment** (decision 21).
 
 ```
 /home/leo/anaconda3/envs/poolparty_dev   Python 3.10.19, pytest 9.0.2
 ```
 
-Its editable installs of `poolparty` and `statetracker` point at the **main**
-checkout, so inside the worktree imports must be redirected:
+**The trap.** That environment holds editable installs of both `poolparty` and
+`statetracker`, and both `.pth` files pin to the **main** checkout
+(`poolparty-statecounter/poolparty/src` and `.../statetracker/src`). So inside a
+worktree, `import poolparty` loads the *main* checkout's code. Every test would
+pass or fail against the wrong tree, silently.
+
+Demonstrated, not assumed. A fake worktree was built from copies of both source
+trees with a sentinel attribute planted in it, and the real suite run against it:
+
+| Check | Result |
+|---|---|
+| Bare `python` with `PYTHONPATH` | imports the fake tree; sentinel present |
+| **Under `pytest`**, running the fake tree's own tests | 41 passed, and a probe test *inside* pytest confirmed `poolparty.__file__` resolved to the fake tree |
+| **Negative control** — same command, `PYTHONPATH` omitted | imports from the **main** checkout; sentinel absent; the probe test fails |
+
+The pytest row is the one that needed checking and is easy to skip: `pytest`
+manipulates `sys.path` itself, and `poolparty/tests/__init__.py` exists, so
+rootdir insertion is definitely happening. `PYTHONPATH` still wins. Redirect
+**both** packages — `statetracker` is pinned by its own `.pth`. (It is byte-identical
+between `main` and `origin/main` here, since none of the 12 upstream commits touch
+`statetracker/`, but a half-redirected import graph is not a state to rely on.)
+
+**The guard.** Prefixing `PYTHONPATH` by hand on every invocation is discipline,
+and discipline fails *silently* — which is the exact failure mode being guarded
+against. So it is a mechanism instead. `revision/stats/pptest` sets the paths and
+then refuses to start unless both packages actually resolve under the named tree:
+
+```
+pptest <worktree-root> poolparty/tests            # runs, after printing what it resolved
+pptest <wrong-tree>    poolparty/tests
+  REFUSING TO RUN: poolparty resolves to .../poolparty-statecounter/poolparty/src/...,
+                   not under .../<wrong-tree>
+```
+
+Both behaviours were tested. The script is 20 lines and is committed beside this
+plan so it survives the session; if it is ever lost, the equivalent one-liner is
 
 ```
 PYTHONPATH=<worktree>/poolparty/src:<worktree>/statetracker/src \
   /home/leo/anaconda3/envs/poolparty_dev/bin/python -m pytest poolparty/tests
 ```
 
-Verified with a sentinel package that `PYTHONPATH` takes precedence over the
-`.pth` editable install. Nothing is installed and no new environment is created.
-**Print `poolparty.__file__` before trusting any test run in the worktree** — a
-silent fall-through to the main checkout would invalidate the "2,929 tests still
-pass" claim.
+— run only after confirming `poolparty.__file__` points into the worktree.
+
+**Rejected.** A dedicated `poolparty_stats` conda env with editable installs from
+the worktree would be more robust — plain `pytest` would simply be correct, with
+no wrapper to remember — but it costs a few minutes of setup and another
+environment; the zero-setup option was chosen deliberately, and the guard covers
+the gap. Re-installing editable from the worktree into `poolparty_dev` is **off
+the table**: it repoints that environment globally, so the two live ORF worktree
+sessions and anyone using the main checkout would silently start importing this
+branch.
 
 ### Order of work
 
