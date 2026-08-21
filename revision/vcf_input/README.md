@@ -47,12 +47,5 @@ and is the part `from_vcf` cannot reach. Verified against each repository; see
 
 ## Status
 
-Nothing implemented. Nothing in `poolparty-statecounter/` has been modified. This
-directory holds a design under discussion.
-
-The two architectural questions are settled: state generation is **eager**, and VCF
-parsing uses the **standard library**, adding no dependency. Both are argued with
-measurements in `DESIGN.md`.
-
-All design questions are settled. What remains is implementation, and confirming
-three low-stakes placement choices noted at the end of `DESIGN.md`.
+**Design complete.** Nineteen decisions recorded in `DESIGN.md`, each with its
+reasoning. Nothing implemented; nothing in `poolparty-statecounter/` modified.

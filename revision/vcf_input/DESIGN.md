@@ -1,7 +1,8 @@
 # `from_vcf` — design
 
 Status of every item is marked. **DECIDED** items were settled in discussion;
-**OPEN** items are not. Nothing is blocking implementation.
+Every design question is now settled; there are no OPEN items. What remains is
+implementation.
 
 ## Proposed signature
 
@@ -11,8 +12,8 @@ def from_vcf(
     fasta_path,
     *,
     alleles="both",        # "ref" | "alt" | "both"
-    flank_left=5000,
-    flank_right=5000,
+    flank_left,               # required, no default
+    flank_right,              # required, no default
     strand="+",
     # inherited from the existing source ops, unchanged
     prefix=None, style=None, cards=None,
@@ -63,8 +64,33 @@ if your model needs uniform input.*
 ### Multi-allelic: 1 REF + N ALT — **DECIDED**
 A row with two ALT alleles and `alleles="both"` yields three states, not two pairs.
 The REF window is identical for both alleles and duplicating it would misstate the
-library size. Pairing for ALT − REF is recoverable through the shared
-`variant_id`.
+library size.
+
+Worked example. One VCF record with two ALT alleles:
+
+```
+chr1  1000  rs123  A  G,T
+```
+
+With `alleles="both"` this yields three states:
+
+| # | `allele` | `ref` | `alt` | sequence |
+|---|---|---|---|---|
+| 1 | `ref` | `A` | *(empty)* | window with `A` at the centre |
+| 2 | `alt` | `A` | `G` | window with `G` |
+| 3 | `alt` | `A` | `T` | window with `T` |
+
+**`alt` is empty on a REF row.** There are two ALT alleles but only one REF
+sequence, so no single ALT belongs to it. Filling it with `G,T` would imply a
+sequence containing both, and repeating `A` would imply a substitution that did not
+happen.
+
+**Pairing is on `(chrom, pos, ref)`, not on `variant_id`.** An earlier version of
+this document said `variant_id` — that was wrong. The VCF `ID` column is optional
+and is `.` in most variant-caller output, so every record would share one value and
+pairing would collapse. `(chrom, pos, ref)` identifies the record, and all three are
+already card keys. To score ALT − REF for state 2, take the row with the same
+`(chrom, pos, ref)` and `allele == "ref"`.
 
 ### Coordinate conventions — **DECIDED**
 
@@ -147,6 +173,71 @@ might not like.
 **Consequence:** `filter` becomes a design card key, so a user who does want
 PASS-only can select on it downstream and see exactly what they dropped.
 
+### Flanks are required, not defaulted — **DECIDED 2026-08-21**
+
+`flank_left` and `flank_right` have no default. The caller must state them.
+
+A default of 5000 would silently import SpliceAI's window into a general-purpose
+tool. It is right for SpliceAI and absurd for a 200 bp MPRA tile, and window size
+is the single most consequential parameter here — the amount of sequence context a
+model sees. Making it explicit costs one line of typing and turns an inherited
+assumption into a deliberate choice.
+
+They remain separate rather than one symmetric `flank=`, because an even-width
+window cannot be centred and SpliceAI's `wid//2` silently favours the left. Stating
+both makes that choice visible.
+
+### `alleles` — default `"both"`, unrecognised values raise — **DECIDED 2026-08-21**
+
+`alleles="both"` emits REF and ALT members; `"ref"` and `"alt"` emit one side.
+Anything else raises an error that names all three valid options, rather than a
+generic failure or a silent fallback.
+
+### Indel anchor: centre on POS, as SpliceAI does — **DECIDED 2026-08-21**
+
+VCF represents a deletion with an anchor base. Deleting the `G` from `AG` is
+written:
+
+```
+chr1  1000  .  AG  A
+```
+
+so `POS` points at the **anchor `A`, not the deleted `G`**. The window is centred
+on `POS`, matching `spliceai/utils.py`, which slices
+`[pos - wid//2 - 1 : pos + wid//2]` without adjusting for the anchor.
+
+This must be documented explicitly. Anyone reasoning about a deletion naturally
+assumes `POS` marks the deleted base, and for a long deletion the difference moves
+the window by the length of the deletion.
+
+### Malformed input: one boundary check — **DECIDED 2026-08-21**
+
+A data line that does not split into at least 8 tab-separated fields raises,
+reporting the line number, the truncated line, and what was expected.
+
+That is the whole validation. `from_vcf` is not a VCF linter: it does not check
+INFO syntax, base alphabets, POS ordering, or header consistency. One check at the
+boundary catches the malformations that actually occur — space-delimited files,
+truncated lines, and files that are not VCFs at all.
+
+**No whitespace fallback.** A space-delimited file exists in this project's own
+data (`VEP_DNA/annotation/test.vcf`), and splitting on arbitrary whitespace to
+accommodate it would guess at intent and could mask real corruption. It is not a
+VCF; say so clearly.
+
+### `num_states` — **DECIDED 2026-08-21**
+
+`num_states` is the number of sequences the pool yields, with no separate concept
+behind it. For a VCF with **N records** carrying **M ALT alleles in total**:
+
+| `alleles` | states |
+|---|---|
+| `"alt"` | M |
+| `"ref"` | N |
+| `"both"` | N + M |
+
+Most VCFs have no multi-allelic rows, so M = N and `"both"` gives 2N.
+
 ### Out of scope for v1 — **DECIDED**
 - `pool`/`region` splicing — no clear meaning for 10^4 variant windows.
 - N-padding to gene boundaries — requires annotation.
@@ -206,13 +297,34 @@ Risks accepted: INFO percent-encoding must be decoded by hand (~5 lines, and onl
 matters for `info:` card keys). Everything else in the VCF spec that is hard —
 structural variants, breakends, multi-sample genotypes — we skip or discard anyway.
 
-## Open — low stakes, awaiting confirmation
+### Module placement: `base_ops/` — **DECIDED 2026-08-21**
 
-| Item | Recommendation |
-|---|---|
-| **Module placement** | `base_ops/`. `from_fasta` sits in `fixed_ops/` because it has a single-coordinate mode that yields one fixed sequence; `from_vcf` has no such mode — a VCF is inherently a list and every record is a library member — so it is purely state-multiplying. |
-| **`mode`** | Hard-code `"sequential"`, not exposed. This is not a special case: `from_fasta`'s batch path already hard-codes `mode="sequential"` when it calls `from_seqs`. `from_vcf` is batch-shaped only, so the precedent applies directly. |
-| **Test fixtures** | Synthetic and tiny — a few-kb FASTA and a ten-line VCF, `.fai` generated rather than committed. **No reference genomes or real VCFs in this repository**: hg38 is ~3 GB, a ClinVar VCF ~150 MB, and `.git` is already 95 MB. |
+Not a judgement call — it is what the directories mean. `fixed_operation` takes
+`seq_from_seqs_fn: Callable[[list[str]], str]`: **one output sequence per input
+state**. So `fixed_ops/` holds deterministic transforms (`rc`, `upper`, `lower`,
+`slice_seq`, `add_prefix`, `join`, `clear_gaps`) and `base_ops/` holds operations
+that create or multiply states (`mutagenize`, `recombine`, `shuffle_seq`,
+`get_kmers`, `get_barcodes`, `from_seqs`, `from_iupac`, `from_motif`).
+
+`from_fasta` sits in `fixed_ops/` because its single-coordinate mode yields one
+fixed sequence; its batch mode delegates out to `from_seqs` in `base_ops/`.
+`from_vcf` has no single-record mode and turns a file into N states, so it belongs
+in `base_ops/`.
+
+### `mode="sequential"`, hard-coded — **DECIDED 2026-08-21**
+
+Not exposed as an argument. `from_fasta`'s batch path already hard-codes
+`mode="sequential"` when calling `from_seqs`, so this follows precedent rather than
+inventing a special case. A VCF is an ordered list and the natural traversal is
+file order.
+
+### Test fixtures — **DECIDED 2026-08-21**
+
+Synthetic and tiny: a few-kb FASTA and a ten-line VCF, with the `.fai` generated at
+test time rather than committed.
+
+**No reference genomes or real VCFs in this repository.** hg38 is ~3 GB, a ClinVar
+VCF ~150 MB, and `.git` is already 95 MB.
 
 ## Verification available at implementation time
 
