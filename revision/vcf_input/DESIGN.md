@@ -1,7 +1,7 @@
 # `from_vcf` — design
 
 Status of every item is marked. **DECIDED** items were settled in discussion;
-**OPEN** items are not, and two of them block implementation.
+**OPEN** items are not. Nothing is blocking implementation.
 
 ## Proposed signature
 
@@ -135,42 +135,57 @@ would tune:
   which covers the real case of a single gene on the minus strand.
 - VCF **output**. See `README.md`.
 
-## Open — blocking implementation
+### State generation: eager — **DECIDED 2026-08-21**
 
-### Lazy or eager state generation — **OPEN**
-`from_fasta` batch mode materialises every sequence before handing the list to
-`from_seqs`. Copied here, a ClinVar-scale VCF (~3M records) at 10 kb windows is
-~30 GB of strings.
+`from_vcf` parses the VCF, extracts every window, and hands the list to the
+existing `from_seqs` machinery, exactly as `from_fasta` batch mode does.
 
-PoolParty's operations are already lazy per row and `pyfaidx` does cheap random
-access through the `.fai` index, so a lazy `from_vcf` could store only
-`(chrom, pos, ref, alt)` per record — tens of bytes — and slice the reference when
-a row is requested. That is ~100 MB of metadata for 3M records instead of 30 GB.
+A lazy variant was argued for and rejected. The argument for it was that PoolParty
+declares libraries without materialising them, so a source op that reads everything
+into memory violates the architecture. That conflates two different things:
+**laziness exists for state spaces that are *generated*** — `mutagenize_orf(
+num_mutations=3)` is 576,156 states from one short specification, and materialising
+that is what the DAG exists to avoid. A VCF is a finite list already sitting on
+disk. Reading it is not a combinatorial explosion; it is input.
 
-| | Eager | Lazy |
-|---|---|---|
-| Work | Delegate to `from_seqs` | Custom Operation |
-| Ceiling | ~10^4–10^5 records | whole-VCF |
-| Laziness claim | broken at the source | preserved |
+Measured, on GRCh38 with ClinVar coordinates over `/mnt/c`:
 
-MAVE-scale libraries are thousands of variants, so eager would work for R3's case.
-But "libraries are declared, sequences generated only on request" is the paper's
-central architectural claim, and a source operation that violates it is exactly
-what a referee would notice. **Recommendation: lazy.**
+| | |
+|---|---|
+| `Fasta()` open, 194 contigs | 0.03 s |
+| One random 10,001 bp window via `.fai` | 0.18–0.25 ms |
+| 20,000 variants (saturation scale), eager | ~0.4 GB, ~4 s |
+| 200,000 variants | ~4 GB |
+| All of ClinVar (3,375,801 records) | ~68 GB — will not run |
 
-### VCF parsing — dependency or stdlib — **OPEN**
-Current dependencies are `numpy`, `pandas`, `beartype`, `statetracker`, `pyfaidx`,
-`typing_extensions`. No `pysam`, no `cyvcf2`. `main.tex:148` claims minimal
-dependencies.
+Lazy would not have reduced the I/O, only deferred it: each window is read once
+either way. It would also have cost a `Fasta` handle whose lifetime must survive
+operation copies, for a benefit that only appears at a scale nobody designs a
+library at.
 
-`pysam` and `cyvcf2` both require htslib and are a common source of install
-failure. The thing that makes them unnecessary: **`from_vcf` never needs random
-access.** It iterates every record, and bgzipped VCFs are valid gzip streams, so
-stdlib `gzip` reads `.vcf.gz` sequentially without tabix. A ~50-line parser
-covering `CHROM POS ID REF ALT FILTER INFO` adds nothing to the dependency list.
+**Consequence to document, not to guard against:** memory scales with record count
+times window width. A user pointing this at an unfiltered ClinVar VCF will exhaust
+memory. That is a loud failure, not a silent wrong answer, and the docstring should
+say plainly that the whole VCF is read into memory and large files should be
+pre-filtered.
 
-**Recommendation: stdlib parser**, documenting that indexed random access is
-unsupported because it is not needed.
+### VCF parsing: stdlib — **DECIDED 2026-08-21**
+
+No new dependency. `gzip`, `io` and `re` ship with Python, so nothing is added to
+`pyproject.toml` — which matters because `main.tex:148` claims minimal
+dependencies, and `pysam`/`cyvcf2` both require htslib.
+
+This works because **`from_vcf` never needs random access.** It iterates every
+record. Verified against a real bgzipped ClinVar file (149 MB, BGZF confirmed by
+its `BC` extra field): stdlib `gzip` read 200,000 records in 0.6 s, and all
+3,375,801 in 9 s.
+
+Not supported, and documented as such: BCF (binary) input, and tabix random access.
+Neither is needed.
+
+Risks accepted: INFO percent-encoding must be decoded by hand (~5 lines, and only
+matters for `info:` card keys). Everything else in the VCF spec that is hard —
+structural variants, breakends, multi-sample genotypes — we skip or discard anyway.
 
 ## Open — not blocking
 

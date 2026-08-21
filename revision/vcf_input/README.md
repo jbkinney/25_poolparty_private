@@ -50,5 +50,9 @@ and is the part `from_vcf` cannot reach. Verified against each repository; see
 Nothing implemented. Nothing in `poolparty-statecounter/` has been modified. This
 directory holds a design under discussion.
 
-**Blocking implementation:** lazy vs eager state generation, and whether VCF
-parsing adds a dependency. Both in `DESIGN.md`.
+The two architectural questions are settled: state generation is **eager**, and VCF
+parsing uses the **standard library**, adding no dependency. Both are argued with
+measurements in `DESIGN.md`.
+
+**Still open:** the `FILTER` default, which is a scientific choice rather than an
+engineering one.
