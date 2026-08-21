@@ -173,6 +173,49 @@ is the right primary reproduction target.
 **Fix:** expose the marker name, or derive it from `deletion_length` / the operation's
 prefix, so distinct lengths get distinct regions.
 
+### B4. Prefixed insertion scans cannot be copied or deep-copied
+
+Verified on the Phase 2 ORF-scan branch `feature/orf-indel-scans` (2026-08-21).
+Both generic `insertion_scan` and the new `insertion_scan_orf` add a
+`PassthroughOp` when any of `prefix`, `prefix_position`, or `prefix_insert` is
+provided. The resulting pool generates and composes correctly, but `copy()` and
+`deepcopy()` fail:
+
+```python
+import poolparty as pp
+
+with pp.Party():
+    pool = pp.insertion_scan(
+        "AAACCC", "TAG", mode="sequential", prefix="variant"
+    )
+    pool.copy()
+```
+
+```text
+TypeError: PassthroughOp.__init__() got an unexpected keyword argument 'name'
+```
+
+The same failure occurs with `insertion_scan_orf` and with either of the other
+two prefix arguments. Unprefixed insertion scans copy and deep-copy successfully.
+Normal generation, molecular output, design cards, state counts, naming, and
+downstream composition are unaffected.
+
+**Root cause.** The generic operation-copy machinery reconstructs an operation
+with `name=`, but `PassthroughOp.__init__` does not accept that argument. Adding
+the argument alone is not a complete fix: the insertion naming callback is a
+closure over the original position and insertion state objects, so a deep copy
+could still calculate names from the original DAG rather than its copied states.
+
+**Fix direction.** Replace the closure-based naming wrapper with one reusable,
+state-rebindable naming operation used by both generic and ORF insertion scans.
+Its position and insertion state dependencies must be explicit so `copy()` and
+`deepcopy()` can rebind them to the copied DAG. Fix this once in generic
+infrastructure; do not add an ORF-only workaround.
+
+**Status:** unresolved and intentionally out of scope for the ORF indel-scan
+feature. It is release-blocking only if copying a prefixed insertion pool is a
+required supported workflow.
+
 ## C. Behaviour worth documenting as limitations
 
 Verified live; all are correct behaviour that will surprise users.
