@@ -57,7 +57,8 @@ recombine     shuffle_scan    mutagenize_orf
 unaffected. `insertion_multiscan` and `annotate_orf` are unresolved — both failed on
 the uniform control too, for unrelated reasons, so they were not isolated.
 
-A pool containing only SNVs has uniform length and none of this applies.
+A pool containing only SNVs has uniform length and none of this applies — the
+`variant_type` card exists to make that filter trivial.
 
 *Correction:* an earlier draft justified this by claiming variable-length pools
 already occur via `deletion_scan(deletion_marker=None)`. Measured false —
@@ -93,9 +94,11 @@ State counts over ClinVar (3,375,801 records, 3,056,153 distinct sites):
 1_939398_G_INS      a variant at this site
 ```
 
-gnomAD/GTEx form, underscore-separated. Underscores rather than AlphaGenome's
-display form `chr1:12345:A>G`, because PoolParty exports FASTA and a `>` inside a
-header is hostile to parsers. This also avoids resembling `from_fasta`'s
+GTEx form, underscore-separated — `chr22_1024_A_C` minus the optional build suffix.
+This is a published convention with a parser in AlphaGenome, whose `VariantFormat`
+enum recognises it alongside gnomAD (`22-1024-A-C`) and its own default
+(`chr22:1024:A>C`). The colon form is unusable here because PoolParty exports FASTA
+and a `>` inside a header is hostile to parsers. This also avoids resembling `from_fasta`'s
 `{chrom}:{start}-{stop}({strand})` names, which use 0-based coordinates.
 
 **No `.ref`/`.alt` suffix.** Once each reference appears once per site, reference and
@@ -119,8 +122,8 @@ that case. This affects 28 of 3,375,801 ClinVar records and none of the
 
 ### Design cards
 
-`chrom` · `pos` · `ref` · `alt` · `allele` · `variant_id` · `filter` ·
-`window_start` · `window_stop`, plus `info_`-prefixed keys on request.
+`chrom` · `pos` · `ref` · `alt` · `allele` · `variant_type` · `variant_id` ·
+`filter` · `window_start` · `window_stop`, plus `info_`-prefixed keys on request.
 
 Carrying the VCF `ID` column and selected `INFO` fields is what puts ClinVar and
 gnomAD identifiers on every sequence — the part that actually answers R3, obtained
@@ -130,14 +133,32 @@ on the input side.
 several variants, so no single ALT belongs to it. `None` rather than `""` because
 only `None` is found by `isna()` and survives a CSV round-trip.
 
+`variant_type` is `"snv"`, `"insertion"` or `"deletion"`, following AlphaGenome's
+classification (`genome.py`): `snv` when both alleles are one base, otherwise
+`insertion` or `deletion` by which is longer.
+
+It earns a key because it makes the variable-length limitation navigable rather than
+merely documented. The seven operations that refuse a variable-length pool all work
+on a SNV-only pool, and `variant_type` turns that into one filter instead of the
+user re-deriving it from `len(ref)` and `len(alt)`:
+
+```python
+df[df.variant_type == "snv"]     # uniform length; all seven operations available
+```
+
+AlphaGenome also exposes `is_frameshift` and `is_structural`. Neither is adopted:
+frameshift is a property of the coding context rather than the variant alone, and
+`structural` is an arbitrary 50 bp threshold.
+
 Two mechanics to respect. With list-style `cards=[...]`, `generate_library` prefixes
 every column with the operation name, giving `op[0]:from_vcf.allele`; bare column
 names require dict-style `cards={'alt': 'alt', ...}`. And `info_AF` rather than
 `info:AF`, because a colon makes the column unusable with `df.query()`.
 
-This is nine static keys against a package maximum of five. The deviation is
+This is ten static keys against a package maximum of five. The deviation is
 deliberate: the identity fields are what make the pool traceable to its input, which
-is the feature.
+is the feature, and `variant_type` is what makes the variable-length limitation
+workable.
 
 ### Coordinates: `pos` 1-based, windows 0-based half-open
 
