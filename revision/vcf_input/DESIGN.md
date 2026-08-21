@@ -86,8 +86,8 @@ offset; the correct value is `(pos - 1) - window_start`. No card key is added fo
 it, because by construction the variant always begins at offset `flank_left`.
 
 ### Design card keys — **DECIDED**
-`chrom` · `pos` · `ref` · `alt` · `allele` · `variant_id` · `window_start` ·
-`window_stop`, plus `info:`-prefixed keys on request, e.g.
+`chrom` · `pos` · `ref` · `alt` · `allele` · `variant_id` · `filter` ·
+`window_start` · `window_stop`, plus `info:`-prefixed keys on request, e.g.
 `cards=['chrom', 'pos', 'info:AF', 'info:CLNSIG']`.
 
 Carrying the VCF `ID` column and selected `INFO` fields through to design cards is
@@ -127,6 +127,25 @@ would tune:
 - **Skipped, with a reported count:** symbolic alts, MNPs, off-contig windows.
 - **Zero valid records raises** rather than returning an empty pool.
 - **Sample genotypes are ignored entirely**, as AlphaGenome does.
+
+### `FILTER` column: every record is kept — **DECIDED 2026-08-21**
+
+`from_vcf` does not consult the VCF `FILTER` column. A record marked `LowQual`,
+or anything else, produces a sequence like any other.
+
+PASS-only would have been the other reasonable default, but silently discarding
+rows from a file the user handed us is the wrong failure: the library comes back
+smaller than the VCF and nothing says why.
+
+This is consistent with the skip list rather than in tension with it. Symbolic
+alts, MNPs and off-contig windows are skipped because **no sequence can be built**
+for them — there are no bases to substitute, or no window to cut. `FILTER` is a
+quality judgement made by whoever ran the variant caller, not a structural
+impossibility. The rule is: skip what cannot be represented, keep what we merely
+might not like.
+
+**Consequence:** `filter` becomes a design card key, so a user who does want
+PASS-only can select on it downstream and see exactly what they dropped.
 
 ### Out of scope for v1 — **DECIDED**
 - `pool`/`region` splicing — no clear meaning for 10^4 variant windows.
@@ -187,11 +206,26 @@ Risks accepted: INFO percent-encoding must be decoded by hand (~5 lines, and onl
 matters for `info:` card keys). Everything else in the VCF spec that is hard —
 structural variants, breakends, multi-sample genotypes — we skip or discard anyway.
 
-## Open — not blocking
+## Open — low stakes, awaiting confirmation
 
-| Item | Note |
+| Item | Recommendation |
 |---|---|
-| **`FILTER` default** | PASS-only is what most pipelines assume, but silently dropping records from a user's VCF should be loud. A scientific default, not an engineering one. No recommendation. |
-| **`mode` default** | Every other source op defaults to `"random"`. A VCF is an ordered list, which argues for `"sequential"` — but that adds a special case to an API whose value is not having special cases. No confident recommendation. |
-| **Module placement** | `base_ops/` rather than `fixed_ops/`, since it is inherently state-multiplying. `from_fasta` sits in `fixed_ops/` but delegates to `from_seqs` in batch mode. Low stakes. |
-| **Test fixtures** | Synthetic, tiny — a few-kb FASTA and a ten-line VCF. Generate the `.fai` rather than committing it. **No reference genomes or real VCFs in this repository**: hg38 is ~3 GB, a ClinVar VCF ~100 MB, and `.git` is already 95 MB. |
+| **Module placement** | `base_ops/`. `from_fasta` sits in `fixed_ops/` because it has a single-coordinate mode that yields one fixed sequence; `from_vcf` has no such mode — a VCF is inherently a list and every record is a library member — so it is purely state-multiplying. |
+| **`mode`** | Hard-code `"sequential"`, not exposed. This is not a special case: `from_fasta`'s batch path already hard-codes `mode="sequential"` when it calls `from_seqs`. `from_vcf` is batch-shaped only, so the precedent applies directly. |
+| **Test fixtures** | Synthetic and tiny — a few-kb FASTA and a ten-line VCF, `.fai` generated rather than committed. **No reference genomes or real VCFs in this repository**: hg38 is ~3 GB, a ClinVar VCF ~150 MB, and `.git` is already 95 MB. |
+
+## Verification available at implementation time
+
+Both files needed to test against real data already exist locally and must **not**
+be copied into this repository:
+
+- `KinneyLab/xin_collab/data/Homo_sapiens.GRCh38.dna.primary_assembly.fa` (+ `.fai`)
+- `KinneyLab/VEP_DNA/clinvar_hg38/clinvar.vcf.gz`
+
+Note that the ClinVar file uses `1`-style contig names while UCSC-derived FASTAs
+use `chr1`, so this pair is a live test of contig normalisation.
+
+The strongest correctness check is that SpliceAI's own window construction is
+reproducible: with `flank_left = flank_right = 5000`, `from_vcf` should emit
+byte-identical sequences to `spliceai/utils.py` for the same records. That is also
+what R2 2b asks for -- a comparison of pool outputs against another tool.

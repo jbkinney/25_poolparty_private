@@ -54,5 +54,5 @@ The two architectural questions are settled: state generation is **eager**, and 
 parsing uses the **standard library**, adding no dependency. Both are argued with
 measurements in `DESIGN.md`.
 
-**Still open:** the `FILTER` default, which is a scientific choice rather than an
-engineering one.
+All design questions are settled. What remains is implementation, and confirming
+three low-stakes placement choices noted at the end of `DESIGN.md`.
