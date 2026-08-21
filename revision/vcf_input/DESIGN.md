@@ -1,8 +1,7 @@
 # `from_vcf` — design
 
-Status of every item is marked. **DECIDED** items were settled in discussion;
-Every design question is now settled; there are no OPEN items. What remains is
-implementation.
+Every design question is settled. Each decision below records the reasoning, not
+just the outcome, so it is not re-litigated from memory. Nothing is implemented.
 
 ## Proposed signature
 
@@ -11,18 +10,21 @@ def from_vcf(
     vcf_path,
     fasta_path,
     *,
+    flank_left,            # required
+    flank_right,           # required
     alleles="both",        # "ref" | "alt" | "both"
-    flank_left,               # required, no default
-    flank_right,              # required, no default
     strand="+",
-    # inherited from the existing source ops, unchanged
-    prefix=None, style=None, cards=None,
-    mode=..., num_states=None, iter_order=None,
+    # inherited from the existing source ops
+    prefix=None, style=None, cards=None, iter_order=None,
 ) -> DnaPool
 ```
 
-Six new arguments. Everything else is the argument surface `from_fasta` and
-`from_seqs` already expose.
+Required-after-defaulted is legal here because everything after `*` is
+keyword-only; omitting a flank raises `TypeError: missing 2 required keyword-only
+arguments`. `mode` and `num_states` are **not** exposed — see the decisions below.
+
+Six new arguments; everything else is surface `from_fasta` and `from_seqs` already
+expose.
 
 ## Why this is shaped like `from_fasta`
 
