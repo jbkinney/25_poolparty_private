@@ -53,9 +53,11 @@ subseq_scan   deletion_scan   insertion_scan   deletion_multiscan
 recombine     shuffle_scan    mutagenize_orf
 ```
 
-`mutagenize`, `shuffle_seq`, `rc`, `upper`, `filter` and the export operations are
-unaffected. `insertion_multiscan` and `annotate_orf` are unresolved — both failed on
-the uniform control too, for unrelated reasons, so they were not isolated.
+`shuffle_seq`, `rc`, `upper`, `filter` and the export operations are unaffected.
+`mutagenize` is affected only in `mode="sequential"`, which needs a known
+`seq_length`; with `mutation_rate` it works. `insertion_multiscan` and
+`annotate_orf` are unresolved — both failed on the uniform control too, for
+unrelated reasons, so they were not isolated.
 
 A pool containing only SNVs has uniform length and none of this applies — the
 `variant_type` card exists to make that filter trivial.
@@ -190,10 +192,12 @@ difference moves the window by its length.
 Sequences are the reference plus strand. `pp.rc()` is exported and composes, so
 `pp.rc(from_vcf(...))` covers the reverse-complement case without an argument.
 
-Dropping it also removes a contradiction: with `strand="-"` the name would report
-plus-strand bases (`…_A_G`) while the sequence carried their complements, and
-nothing in the name or cards recorded which had been done. `from_fasta` avoids this
-by putting strand in the name; here it is simpler not to offer the option.
+*Correction, 2026-08-21:* an earlier draft justified dropping the argument by
+saying it would leave the name reporting plus-strand bases while the sequence
+carried their complements, with nothing recording which. That argument does not
+hold — `pp.rc(from_vcf(...))` produces exactly the same mismatch, since `rc`
+contributes nothing to the name. The real reason to omit `strand` is narrower: it
+would duplicate an operation that already exists and composes.
 
 ### Guards — fixed behaviour, each reporting a count
 
@@ -304,8 +308,11 @@ raises, reporting the line number and what was expected. That is the whole
 validation — not a VCF linter. **No whitespace fallback**, even though a
 space-delimited file exists in this project's data
 (`VEP_DNA/annotation/test.vcf`, which is also CRLF-terminated): accommodating it
-would guess at intent. `\r` is stripped from the last field, since a well-formed
-CRLF VCF passes the field check and would otherwise corrupt every `info_` card.
+would guess at intent. *Correction, 2026-08-21:* an earlier draft said `\r` must be stripped because a
+well-formed CRLF VCF would otherwise corrupt every `info_` card. Measured false —
+both `open()` and `gzip.open(..., "rt")` use universal newlines and translate
+`\r\n` to `\n` before the parser sees the line. The stripping was dead code and the
+test asserting it was vacuous; both were removed.
 
 ### Module placement, traversal, fixtures
 
