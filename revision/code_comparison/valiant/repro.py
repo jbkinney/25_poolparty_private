@@ -9,7 +9,7 @@ library exactly (2,339 of 2,339 oligos) and passes their own check_brca1_pep.sh
 md5 validation, so the ground truth here is trustworthy despite being self-generated.
 
 Requires poolparty >= 1a29b22 on main (deletion_scan_orf, insertion_scan_orf).
-See valiant_brca1_modified.md.
+See comparison.md.
 
     python3 repro_valiant_brca1_modified.py
 """
@@ -25,7 +25,7 @@ from poolparty.codon_table import STANDARD_GENETIC_CODE as G
 # VaLiAnT's clone is a sibling of this repository. Large inputs and VaLiAnT's own
 # output live there, never in this repository. Override with VALIANT_EXAMPLE_DATA.
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_DEFAULT = os.path.normpath(os.path.join(_HERE, "..", "..", "..",
+_DEFAULT = os.path.normpath(os.path.join(_HERE, "..", "..", "..", "..",
                                          "VaLiAnT", "examples", "sge"))
 DATA_DIR = os.path.abspath(os.environ.get("VALIANT_EXAMPLE_DATA", _DEFAULT))
 FASTA = os.path.join(DATA_DIR, "ref", "chr17.fa")

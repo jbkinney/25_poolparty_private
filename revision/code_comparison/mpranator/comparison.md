@@ -290,7 +290,7 @@ orientation.
 
 | Tool | Target | Result |
 |---|---|---|
-| **VaLiAnT** | `brca1_pep`, BRCA1 exons 2-5 SGE | **2,339 / 2,339 exact** — see `valiant_brca1_pep.md` |
+| **VaLiAnT** | `brca1_pep`, BRCA1 exons 2-5 SGE | **2,339 / 2,339 exact** — see `valiant/comparison.md` |
 | **MPRAnator** | MPRA Motif Use Case | **976 / 976 exact** (arrangement level) |
 | **tangermeme** | Tutorial B3 — motif-pair spacing sweeps | not started; pip-installable, so runnable head-to-head |
 
