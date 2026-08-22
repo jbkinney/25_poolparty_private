@@ -104,12 +104,25 @@ hold.
 
 ## Caption
 
-Written for a reader, not a referee. `main.tex` already uses *codon*, *exon*,
-*intron*, *transcript*, *reading frame* and *codon usage*, so those need no gloss.
-It never uses **targeton**, **phase**, **CDS**, **adaptor** or **minus strand** —
-so `targeton`, `phase` and `CDS` are avoided outright, and `adaptor` is glossed by
-context as a sequencing adaptor. The panel labels `r1`, `r2`, `r3` come from
-VaLiAnT's input file, so the caption ties them to plain words once.
+Written for a reader, not a referee.
+
+**The line is tool coinage, not technical vocabulary.** Field-conventional terms are
+fine unglossed — *codon*, *exon*, *intron*, *transcript*, *reading frame*, *in
+frame*, *phase*, *CDS*, *adaptor*, *minus strand*, *stop codon*, *codon usage
+table*. A reader of this journal knows them, and paraphrasing them makes the caption
+longer and vaguer, not clearer.
+
+What must not appear unexplained is vocabulary invented by the tool being described:
+
+| VaLiAnT coinage | Handling |
+|---|---|
+| **targeton** | avoided. Its own term for the designed region; carries no meaning outside the tool |
+| **r1 / r2 / r3** | unavoidable — they label panel A and appear as columns in panel B — so tied to plain words once: *"exon 2 in the middle, flanked by 25 bp of intron on either side (labelled r2, r1 and r3 …)"* |
+| **action vector**, **ext_vector** | avoided; described by what they do |
+| mutator names **aa**, **stop**, **inframe** | shown in panel B, described in the caption by their effect rather than their names |
+
+Avoiding `targeton` is preferred but not absolute — one use with a gloss would be
+acceptable if the sentence needed it. It does not.
 
 > **Supplementary Figure N. The same variant library, specified in VaLiAnT and in
 > PoolParty.**
@@ -117,11 +130,9 @@ VaLiAnT's input file, so the caption ties them to plain words once.
 > **(A)** The library. A 245 bp stretch of BRCA1 serves as the template: exon 2 in
 > the middle, flanked by 25 bp of intron on either side (labelled r2, r1 and r3 in
 > VaLiAnT's input table). Within the exon, each codon in turn is replaced by every
-> other amino acid, replaced by a stop codon, or deleted without shifting the reading
-> frame — 357 variants in all, each carrying sequencing adaptors at both ends. The
-> exon holds 17 complete codons; the single base at one end and the two at the other
-> belong to codons shared with the neighbouring exons, and both tools leave them
-> alone.
+> other amino acid, replaced by a stop codon, or deleted in frame — 357 variants in all, each carrying sequencing adaptors at both ends. The
+> exon holds 17 complete codons; its terminal codons are split across the
+> neighbouring exons, and both tools leave those bases unchanged.
 >
 > **(B)** VaLiAnT runs from the command line, and the design is written into three
 > files: a table giving the coordinates of the region and which changes to make where,
@@ -133,8 +144,8 @@ VaLiAnT's input file, so the caption ties them to plain words once.
 >
 > The two libraries are identical base for base, adaptors included. The arrow marks
 > the one value PoolParty cannot work out for itself: VaLiAnT reads the transcript
-> annotation to find where the exon's codons begin, whereas PoolParty is given that
-> position directly. Agreement also needs both tools to use the same codon usage
+> annotation's phase field to locate the first complete codon, whereas PoolParty is
+> given that position directly. Agreement also needs both tools to use the same codon usage
 > table, since VaLiAnT chooses CGG for arginine where PoolParty's default chooses
 > AGA. The library shown is not one of VaLiAnT's own worked examples; we defined it,
 > using their coordinates for BRCA1 exon 2.
