@@ -2,10 +2,9 @@
 
 Implementation plan for `pp.stats()` / `pool.stats()`.
 
-**Status: approved. Ready to implement.** Nothing in the package, its docs, or the
-manuscript has been modified. Every number below was measured against `poolparty`
-0.1.0 at commit `1bb0179`. Implementation runs in the `poolparty_dev` conda
-environment — see §15.
+**Status: implemented on `feature/pool-stats`. See §16 for what shipped and how
+it differs from this plan.** Every number below was measured against `poolparty`
+0.1.0. Implementation ran in the `poolparty_dev` conda environment — see §15.
 
 ---
 
@@ -48,6 +47,9 @@ never changes a design or a library.
 | 19 | **The dict subclass is private.** `_StatsDict`, not exported; return annotated `dict[str, Any]`. See §4 | yes |
 | 20 | **One branch**, `feature/pool-stats`, in a git worktree off `origin/main`. See §15 | yes |
 | 21 | **Environment: the `poolparty_dev` conda env, no venv.** See §15 | yes |
+| 22 | **A bare `pool.stats()` on a design with no fixed size raises** (option A of the two considered). It does not fall back to a default draw | yes |
+| 23 | **History is not squashed.** The wrong turn in the export fix stays on the record; the commits must be read in order | yes |
+| 24 | **FASTA now warns when it omits a filtered-out sequence** — one warning per call, naming the count. Pre-existing behaviour, own commit, droppable | yes |
 
 ### Rationale for the decisions that were debated
 
@@ -1032,3 +1034,64 @@ branch.
 gets nothing and opening the PR is what runs the matrix: Ubuntu × Python
 3.10/3.11/3.12, plus macOS and Windows on 3.11. Run the suite locally first and
 treat the PR as the real gate.
+
+---
+
+## 16. What shipped, and where it differs from this plan
+
+Branch `feature/pool-stats`, five commits on `4f125f2`. 16 files, +2040 / −37.
+Suite 3,076 passed / 14 xfailed (base 2,974). Sphinx exit 0 with no warning
+located in any touched file. The paste-ready PR text is in `PR_DESCRIPTION.md`
+beside this file.
+
+| Commit | Subject |
+|---|---|
+| `2ddedb1` | export `num_cycles` fix — **contains a regression, corrected by `cc82dc0`** |
+| `437e45a` | the `stats` feature |
+| `cc82dc0` | corrects `2ddedb1`'s predicate; extracts the shared `_draws_fresh_sequences` |
+| `f6345d6` | the three review passes' findings |
+| `ae5e3d4` | FASTA null-omission warning (decision 24) |
+
+### Where the implementation diverged from the plan
+
+| Plan said | Shipped | Why |
+|---|---|---|
+| §13: the export fix is "roughly five lines in one loop", stopping when a chunk comes back short | ~90 lines across four writers; `num_cycles` counts states and nulls are dropped in the export loop | A short chunk marks a *cycle boundary*, not exhaustion. Two earlier attempts were wrong: the first broke cycling (`num_cycles=2` returned one cycle), the second was exact only when `chunk_size ≥ num_states` |
+| §13: scope the fix to the `num_cycles` path | Scoped further, to `num_cycles` **and** designs whose states determine their sequences | A random operation without `num_states` is seeded from the row counter, so the top-up was producing fresh sequences. `2ddedb1` missed this and lost rows; `cc82dc0` fixes it |
+| §4: `_LAYOUT` + `_format_value` drive the printed report | Straight-line formatting | The table declared 4 rows for a 7-row section, appended the rest behind a comparison against its own heading string, and could not interpolate the homopolymer threshold into a label. Removing it made the report *more* informative |
+| §4: `stats()` pins `init_state=0` for reproducibility | Pins the seed as well, and restores the pool's cursor and seed afterwards | Pinning the state alone was not enough: the same design reported different numbers depending on what had been generated from the pool earlier, and `stats()` left the cursor moved, changing what a later `generate_library` returned |
+| §10: add a line to `tests/test_types.py::TestAllExports` | Not done; asserted in `test_stats.py` instead | That class tests `poolparty.types.__all__`, not the package exports. The plan misread it |
+| §11: the item-2c agent owns `docs/api.rst` | One `autofunction` added here | A feature absent from the API reference is incomplete. Different section from their filter entries; flagged in the PR |
+| §4: `utils/__init__.py` gains nothing beyond the new helper | First attempt re-exported seven sequence-property helpers; reverted under review | Nothing imported them from there, five already had a top-level path, and it was never asked for. `pp.longest_homopolymer` joins its siblings instead |
+
+### What review caught that implementation missed
+
+Three independent passes; every finding reproduced before being acted on.
+
+- **A regression in `2ddedb1`** — rows silently dropped on random-mode designs,
+  seeded exports made chunk-size dependent, and the `generate_library` exhaustion
+  warning suppressed. Three symptoms, one wrong predicate.
+- **`stats()` mutated the pool** and was not reproducible across pool history,
+  contradicting the docstring, the docs and the changelog.
+- **`stats(num_cycles=1)` on an open-ended design** silently reported on one
+  sequence where the docs said it would raise.
+- **A bare string** was measured one character per sequence.
+- **The slow-comparison warning fired after generation**, arriving two minutes
+  late on GB1.
+- **The `num_states` correction was itself wrong** — "upper bound" replaced with
+  the accurate "neither an upper nor a lower bound". This was the claim the
+  change existed to fix (§3c).
+- **The tests had a blind spot**: pinning the export predicate true passed all
+  3,038 tests, because the guard meant to cover the `num_seqs` path used an
+  unfiltered pool where both branches agree. Nine previously-surviving mutations
+  are now caught.
+- **One review finding was rejected**: the `.fasta` vs `.csv`/`.jsonl`
+  null-counting split is pre-existing, not introduced here. It became decision 24
+  rather than a bug fix.
+
+### Still open
+
+- Push and open the PR (not done; nothing pushed).
+- Tell the item-2c agent about `docs/api.rst` and `docs/operations/library_size.rst`.
+- The manuscript paragraph and supplementary table for item 1a. The §8 numbers
+  are reproduced by the shipped code, so the table is a script run.
