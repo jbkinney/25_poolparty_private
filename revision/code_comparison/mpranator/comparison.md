@@ -7,6 +7,81 @@ ground truth and returned the **5,856** total its documentation states.
 Answers referee **R2 2b** (overlap of pool elements, and investigation of the unique
 elements) and contributes to **R1 #5**.
 
+
+---
+
+## DECISION, 2026-08-22: no figure, and no numerical claim
+
+**MPRAnator cannot currently generate a library, so no comparison of outputs against
+it is published.** The results below are kept as internal evidence and are not cited
+in the manuscript or the response letter.
+
+### What was checked, and when
+
+| Resource | State (checked 2026-08-22) |
+|---|---|
+| `genomegeek.com/`, `/MPRA/Motifs/`, `/MPRA/SNPs/`, `/MPRA/documentation/` | **HTTP 200** — the site serves |
+| **POST `/MPRA/Motifs/Results/`** with the parameters from its own documented use case, valid CSRF token | **HTTP 500**, with and without the `ordering` field |
+| Installable package | none — no `setup.py`, PyPI 404, bioconda 404 |
+| Source repository | 1 commit, 2015-12-27, no LICENSE |
+
+The distinction matters for anything we write: **the server is not down.** The pages
+load. What fails is the design endpoint, on MPRAnator's own published example. A
+claim that "the web service is down" would be checked in seconds and found wrong.
+
+### MPRA Design Tools is in the same condition
+
+The other MPRA-specific tool in Table 2, checked the same day:
+
+| Resource | State |
+|---|---|
+| Shiny app `andrewghazi.shinyapps.io/designmpra/` | **404** |
+| CRAN `mpradesigntools` | **404** |
+| Bioconductor `packages/mpradesigntools/` | serves **"Bioconductor — Removed Packages"** — the package was removed |
+| GitHub `andrewGhazi/designMPRA` | reachable; last push **2017-09-26** |
+
+So **neither** assay-specific MPRA design tool in Table 2 can be run today. That is a
+finding about the state of tooling, and it belongs in the response letter as one
+factual line — not as a comparison in our favour.
+
+### Why no numerical claim
+
+The work below reproduced MPRAnator's documented total exactly, and PoolParty
+matches its enumeration exactly once the interval-of-substitution rule is set aside
+(6,840 of 6,840; see the addendum). Neither number is published, because **a
+numerical result asserted without the evidence behind it is worse than no claim**: a
+referee either takes it on faith or asks to see it, and showing it means publishing
+the figure we decided against.
+
+What the letter says instead is that a comparison was not possible, and why.
+
+### Consequence for motif placement
+
+Three tools score full marks on `combinatorial_multi_motif_placement` in Table 2 —
+PoolParty, MPRAnator and tangermeme. With MPRAnator unrunnable, **tangermeme is the
+only tool besides PoolParty against which motif placement can actually be compared.**
+It is also the only one for `shuffling`, where the same two are the sole full marks.
+That makes tangermeme the natural second worked comparison, not a fallback.
+
+### Addendum: the two-statement form
+
+Recorded because it took a while to find. MPRAnator's interval of substitution gates
+only the **leftmost** motif to a multiple of *n*, which PoolParty can express only as
+"insert 0 under `ordered` mode" — hence the 15 Pools and the nested loop below. Set
+that interval to 1 and the rule disappears, and the two tools agree exactly with:
+
+```python
+bg      = pp.annotate_region(pp.from_seq(BACKGROUND), "core", extent=(15, 75))
+library = pp.insertion_multiscan(bg, 3, [pp.from_seq(m) for m in MOTIFS],
+                                 region="core", replace=True,
+                                 min_spacing=6, max_spacing=24,
+                                 insertion_mode="unordered", mode="sequential")
+```
+
+6,840 states, exact set match against their algorithm. `extent=(15, 75)` carries the
+edge constraint declaratively — `(15, 76)` gives 7,980 and breaks the match, so the
+bound is doing real work. Two statements against 15 Pools.
+
 ---
 
 ## 1. The example, and why this one

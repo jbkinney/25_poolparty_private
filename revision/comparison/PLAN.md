@@ -79,8 +79,8 @@ Moved to the response letter. See "Selection" above.
 | Tool | Status |
 |---|---|
 | VaLiAnT | Installable (pip / Docker `quay.io/wtsicgp/valiant` / Singularity, Python >=3.11) but **dormant** — last push 2024-04-22, zero GitHub releases, not on PyPI or bioconda, AGPL-3.0 |
-| MPRAnator | **Not installable at all** — web service only, partly working; repo has 1 commit, 0 releases, **no LICENSE file** |
-| MPRA Design Tools | **Not installable**; advertised web service dead |
+| MPRAnator | **Not installable** — web service only, no package. Pages serve (HTTP 200) but the design endpoint returns **HTTP 500** on its own documented use case, checked 2026-08-22. Repo has 1 commit (2015-12-27), 0 releases, **no LICENSE file** |
+| MPRA Design Tools | **Not installable** — Shiny app 404, CRAN 404, and Bioconductor serves *"Removed Packages"*. GitHub reachable, last push 2017-09-26. Checked 2026-08-22 |
 | Mutation Maker | The URL printed in its paper (`github.com/Merck/Mutation_Maker`) is **HTTP 404**; a live author-maintained fork exists at `github.com/ra100/Mutation_Maker` |
 
 So a pool-overlap diff against MPRAnator / MPRA Design Tools cannot be run. Say so
