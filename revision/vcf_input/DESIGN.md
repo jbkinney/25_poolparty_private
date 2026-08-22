@@ -4,10 +4,16 @@ Reads a VCF plus a reference FASTA and returns a `DnaPool` of windows around eac
 variant. Answers part of Reviewer 3's comment; see `README.md` for what it does and
 does not claim.
 
-**Revised 2026-08-21** after three independent reviews (correctness, adversarial,
-simplicity). Seven decisions were reversed and four factual claims corrected; the
-superseded reasoning has been removed rather than annotated. Nothing is
-implemented.
+**Implemented and revised 2026-08-22**, on branch `from-vcf` of
+`poolparty-statetracker`. Three rounds of independent review (correctness,
+adversarial, simplicity) ran against the code; each round's fixes introduced
+regressions in the same guard sequence, so the final pass rebuilt that sequence
+from an explicit table which now lives in `_read_windows`'s docstring — **that
+table, not this file, is authoritative on check ordering.**
+
+This document records why each decision was taken. Where it once specified
+behaviour that the implementation contradicted, the implementation won and the
+entry has been corrected; those corrections are marked.
 
 ## Signature
 
@@ -18,13 +24,20 @@ def from_vcf(
     flank_left,
     flank_right,
     *,
-    alleles="both",        # Literal["ref","alt","both"]
+    alleles="both",             # Literal["ref","alt","both"]
+    variant_types=None,         # subset of snv/substitution/insertion/deletion
+    max_allele_length=100,      # None disables
+    info_fields=None,           # INFO keys -> info_<KEY> cards
     prefix=None, style=None, cards=None, iter_order=None,
 ) -> DnaPool
 ```
 
-Five arguments, four of them positional. `mode`, `num_states` and `strand` are not
+Seven arguments, four of them positional. `mode`, `num_states` and `strand` are not
 exposed; see the decisions below.
+
+*Corrected 2026-08-22:* this block previously read "five arguments" and omitted
+`variant_types`, `max_allele_length` and `info_fields`, two of which the body of
+this document already required.
 
 ## Decisions
 
@@ -87,6 +100,11 @@ State counts over ClinVar (3,375,801 records, 3,056,153 distinct sites):
 | `"ref"` | 3,056,153 |
 | `"both"` | 6,431,954 |
 
+*Corrected 2026-08-22:* these counts predate `max_allele_length`, which now
+defaults to 100 and so discards 3,520 ClinVar records before any window is cut.
+They also predate the rule that a site filtered out by `variant_types` contributes
+no reference window.
+
 `num_states` is exactly the number of sequences the pool yields.
 
 ### Sequence naming, and no allele suffix
@@ -145,7 +163,9 @@ on a SNV-only pool, and `variant_type` turns that into one filter instead of the
 user re-deriving it from `len(ref)` and `len(alt)`:
 
 ```python
-df[df.variant_type == "snv"]     # uniform length; all seven operations available
+# Corrected 2026-08-22. PoolParty has no card-based filtering, so this cannot be
+# done at the pool level; the shipped remedy is the variant_types argument.
+from_vcf(..., variant_types=["snv"])     # uniform length; the seven operations accept it
 ```
 
 AlphaGenome also exposes `is_frameshift` and `is_structural`. Neither is adopted:
@@ -216,8 +236,8 @@ which is a score column.
 against the FASTA with `.upper()` on both sides, following
 `spliceai/utils.py:117` — soft-masked references (UCSC `hg38.fa`, Ensembl `dna_sm`)
 are lowercase over roughly half the genome, and a case-sensitive comparison would
-reject every variant in a repeat region. A mismatch logs and skips the record rather
-than raising; an hg19 VCF against an hg38 FASTA then fails visibly on essentially
+reject every variant in a repeat region. A mismatch logs and skips the record, and
+the call raises only when more than 20% of compared references disagree — an hg19 VCF against an hg38 FASTA then fails visibly on essentially
 every record, which is the diagnosis, while a handful of oddities do not abort the
 run.
 
@@ -351,3 +371,57 @@ fixed. Verified: for `AGG>A` at flank 5050, SpliceAI emits 10101/10099 and this
 design 10103/10101. Restrict the comparison to SNVs and insertions, and expect
 further divergence from SpliceAI's gene-boundary N-padding and per-gene
 reverse-complement, neither of which is adopted.
+
+## Settled during implementation
+
+Decisions the three review rounds forced, which this document did not anticipate.
+
+**A fourth variant type.** `substitution` — equal numbers of bases, more than one.
+Chosen over `mnp` on measured usage: across the eleven surveyed tool papers, `MNP`
+appears **0** times and `substitution` **17** times in 5 papers. AlphaGenome offers
+no precedent — for an equal-length multi-base variant all five of its predicates
+return `False`, which a boolean API can do and a single string field cannot.
+Affects 10,637 ClinVar records, previously labelled `deletion`.
+
+**`variant_types` as an argument.** The remedy this document originally recommended
+— filtering a DataFrame on the `variant_type` card — cannot restore a pool's
+`seq_length`, and `pp.filter` sees only the sequence string. Only `['snv']` yields
+a uniform pool; substitutions vary in width, so a pool containing them does not.
+
+**Windows are uppercased.** On a soft-masked reference the flanks came from the
+FASTA in lowercase and the alternate from the VCF in uppercase, so a
+reference/variant pair differed in case as well as base at the variant position —
+an artifact of provenance, not data. Soft-mask annotation is therefore not
+preserved. SpliceAI likewise uppercases before encoding.
+
+**Two classes of skip, and one exception.** A record-level failure means no window
+can be cut, so the site contributes nothing. An allele-level failure normally
+leaves the reference window in place — the site is real and only that allele is
+unusable. The exception is `variant_types`: once the caller has filtered by type, a
+site with no surviving allele is one they excluded, whatever made its alleles
+unusable. Getting this wrong produced orphan reference windows in two successive
+rounds.
+
+**The mismatch rate applies at any file size.** A 20-record floor was tried and
+removed: it silently withdrew the guard for small files, which is where a wrong
+reference goes unnoticed, and files at 60–70% mismatch returned displaced pools.
+
+**Per-allele `INFO` is not split.** A `Number=A` field such as `AF` on a
+multi-allelic record gives every alternate the whole comma-separated value.
+Splitting needs the header's `Number=` declaration; the shipped behaviour is
+documented rather than fixed, pointing at `bcftools norm -m-`.
+
+## What review cost, and why it is recorded
+
+Three rounds, each finding real defects, and the first two rounds' fixes each
+introducing new ones — every time in the ordering of the same guard sequence,
+because each fix was reasoned about in isolation. Two lessons worth keeping:
+
+- **Write the sequence down before changing it.** The table in `_read_windows`
+  exists because reordering guards without one produced three regressions.
+- **A test that pins a fix must be able to fail.** Mutation testing found 13
+  survivors after round two, including two of that round's own advertised fixes.
+  The causes were mundane: a fixture contig exactly as long as the constant under
+  test, a `REF` of `NNN` compared against a FASTA that was also `NNN`, a flank-gap
+  test with the gap in only one flank.
+

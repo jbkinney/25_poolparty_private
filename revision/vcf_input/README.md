@@ -56,9 +56,15 @@ Verified against each repository; see `PRIOR_ART.md`.
 
 ## Status
 
-**Design complete, revised 2026-08-21** after three independent reviews
-(correctness, adversarial, simplicity). Seven decisions were reversed and four
-factual claims corrected; `DESIGN.md` records the current reasoning and the
-corrections, not the superseded arguments.
+**Implemented 2026-08-22.** Four commits on branch `from-vcf` of
+`poolparty-statetracker`, in the worktree at `KinneyLab/poolparty-from-vcf/`.
+Nothing pushed, and the package's `main` checkout is untouched.
 
-Nothing implemented; nothing in `poolparty-statecounter/` modified.
+Three rounds of independent review ran against the code. `DESIGN.md` records the
+reasoning and the corrections; the authoritative statement of guard ordering is
+the table in `_read_windows`'s docstring, which the final pass was rebuilt from.
+
+Changed in the package, all additive: `base_ops/from_vcf.py`,
+`tests/test_from_vcf.py`, `docs/operations/from_vcf.rst`, plus one registration
+each in `docs/api.rst`, `docs/operations/source_operations.rst`,
+`CHANGELOG.md`, and the two `__init__.py` files.
