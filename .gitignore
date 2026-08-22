@@ -30,3 +30,10 @@ bioinfo/papers/
 
 # Other
 *.tmp
+
+# Large third-party artefacts fetched by revision/code_comparison scripts.
+# Never versioned: retrievable from the tools' own repositories.
+*.fa
+*.fa.gz
+*.fai
+*_meta.csv
