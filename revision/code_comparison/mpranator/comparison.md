@@ -204,7 +204,7 @@ Only defect 1 affects the comparison, and only by changing the tile length. The
 
 ## 5. PoolParty reproduction
 
-`repro_mpranator_motifs.py` in this directory. The structural mapping:
+`repro.py` in this directory. The structural mapping:
 
 | MPRAnator | PoolParty |
 |---|---|

@@ -6,10 +6,10 @@ Two independent implementations are compared:
                   published description and source reading. Their code is
                   all-rights-reserved (no LICENCE file) and is NOT vendored;
                   running their own modules reproduces these same 976 arrangements
-                  and the documented 5,856 total. See mpranator_motif_usecase.md.
+                  and the documented 5,856 total. See comparison.md.
   build()      -- the PoolParty expression of the same design.
 
-    python3 repro_mpranator_motifs.py
+    python3 repro.py
 """
 
 import itertools

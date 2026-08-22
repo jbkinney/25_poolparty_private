@@ -11,7 +11,7 @@ md5 validation, so the ground truth here is trustworthy despite being self-gener
 Requires poolparty >= 1a29b22 on main (deletion_scan_orf, insertion_scan_orf).
 See comparison.md.
 
-    python3 repro_valiant_brca1_modified.py
+    python3 repro.py
 """
 
 import copy
