@@ -3,29 +3,35 @@
 Answers Reviewer 2 item 1a, which asked how many sequences in a pool are unique
 versus duplicates, how far apart they are, and how often homopolymers appear.
 
-Base `4f125f2`. 16 files, +2040 / −37.
+Base `4f125f2`. 16 files, +2075 / −40, in 7 commits.
 
 ## What you are approving
 
-Three separable subjects, at different levels of risk:
+Four separable subjects, at different levels of risk:
 
 | Subject | Commits | Risk |
 |---|---|---|
-| **`stats` readout** — a new read-only function | `437e45a`, most of `f6345d6` | **None.** Pure addition; cannot change existing output |
+| **`stats` readout** — a new read-only function | `437e45a`, most of `f6345d6`, most of `424a1ae` | **None.** Pure addition; cannot change existing output |
 | **`num_cycles` export fix** | `2ddedb1`, `cc82dc0`, part of `f6345d6` | Changes what `to_df`/`to_file` return on filtered pools |
 | **FASTA null warning** | `ae5e3d4` | Emits a `UserWarning` where none was emitted before |
+| **Documentation** | `d5106ba`, most of `424a1ae` | Docs only, including three corrections to statements that were already wrong before this branch |
 
-For the feature alone, drop `2ddedb1`, `cc82dc0` and `ae5e3d4`.
+For the feature alone, drop `2ddedb1`, `cc82dc0` and `ae5e3d4`; nothing in the
+`stats` code depends on them.
 
-**Read the commits in order.** `2ddedb1` argues for a rule that `cc82dc0`
-overturns — see §2. Reading only the first gives you the wrong rule. The history
-is unsquashed on purpose.
+**Read the commits in order, and read the last one.** Two commits correct an
+earlier commit on this branch: `cc82dc0` overturns a rule `2ddedb1` argues for
+(§2), and `424a1ae` fixes a defect `f6345d6` introduced (§5). Reading either
+earlier commit alone gives you a wrong rule and code that is not what shipped.
+The history is unsquashed on purpose.
 
 ## Where to start
 
 `src/poolparty/stats.py` and `src/poolparty/utils/stats_utils.py` are the new
-logic (~500 lines). `pool_mixins/export_mixin.py` is the behaviour change (~90
-lines). The remaining ~1,400 lines are tests and docs.
+logic (~510 lines). `pool_mixins/export_mixin.py` is the behaviour change (~90
+lines). The remaining ~1,400 lines are tests and docs. If you read only one
+thing, read `_generate_rows` in `stats.py` — it decides how much of a design
+gets measured, and both defects fixed within the branch were in that area.
 
 ## 1. The new readout
 
@@ -147,23 +153,59 @@ own commit so it can be dropped.
 
 ## 4. Documentation corrections
 
+Four statements in the existing docs were wrong before this branch:
+
 - `num_states` was described as the number of *distinct sequences* a pool
   produces. It is a state count, and neither an upper nor a lower bound.
 - `library_size.rst` listed `filter` as reducing `num_states`. It does not.
+- The same table listed `sample` as reducing it. Sampling 999 states from 256
+  raises the count, so that row now reads "sets a new size".
 - `calc_dust` cited Hancock & Armstrong (1994), which describes a different
   algorithm. Now cites Morgulis et al. (2006).
 
+Two statements added earlier on this branch were also wrong and are corrected in
+`424a1ae`: `num_states` called a "floor" for an open-ended design, in the same
+file that says two paragraphs earlier it is neither bound — and a floor is a
+lower bound; and gap characters said to "count as characters", which holds for
+length, homopolymer runs and DUST but not for GC, since `calc_gc` ignores
+anything outside ACGT.
+
 ## Verification
 
-- **3,076 tests pass, 14 xfailed** (base 2,974).
+- **3,077 tests pass, 14 xfailed** (base 2,974).
 - Sphinx exits 0 with no warning located in any file this branch touches.
 - `ruff check` and `format --check` clean on every file added or edited.
-- Three independent review passes — correctness, API design, tests — each
-  verifying claims by running code. One finding was rejected as pre-existing.
+- Four independent review passes — correctness, API design, tests, and a
+  documentation pass whose voice assessment was written and sealed before the
+  diff was visible. Each verified claims by running code rather than reading it.
+  Two findings were rejected as pre-existing rather than introduced here, and
+  three were declined as adding words readers do not need.
 - Nine mutations the first version of the suite accepted are now caught,
   including pinning the export predicate true (8 failures) and discarding the
   `seed` argument (3).
-- The printed example above is verified character-for-character against output.
+- The printed example above is verified character-for-character against output,
+  and all 25 documented keys are cross-checked against what the code returns.
+
+## 5. Two defects were found and fixed within the branch
+
+Both are already fixed in the diff you are reviewing; they are listed because
+the commits are unsquashed and you will meet them in the history.
+
+`2ddedb1` scoped the `num_cycles` change too broadly. A random operation built
+without `num_states` is seeded from the row counter, so for those designs the
+top-up it removed had been producing fresh sequences rather than repeats, and
+rows were lost — silently, because the change also suppressed the warning that
+would have said so. `cc82dc0` corrects the predicate and shares it with `stats`,
+so the export path and the readout cannot disagree about what a design's size
+means.
+
+`f6345d6` added the restore that makes `stats()` leave the pool untouched, but
+read the saved cursor with a `None` default and put it back only when it was not
+`None`. A pool that had never generated therefore kept a cursor it did not
+start with, and its first real `generate_library` returned the wrong window.
+`424a1ae` distinguishes absent from zero with a sentinel. The test missed it
+because it generated before calling `stats`, so it only exercised the
+restore-a-value path; the added test fails without the fix.
 
 ## Reviewer notes
 
