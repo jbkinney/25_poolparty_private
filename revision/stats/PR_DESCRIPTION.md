@@ -209,6 +209,10 @@ restore-a-value path; the added test fails without the fix.
 
 ## Reviewer notes
 
+- Two `.. _label:` anchors are new to the docs tree, which has none. They exist
+  because the `num_states` explanation now lives in one file and is referenced
+  from another instead of being duplicated in both, and because two of the four
+  references are intra-page, which `:doc:` cannot express.
 - `docs/api.rst` and `docs/operations/library_size.rst` are also touched by the
   separate item-2c work. Different sections; worth landing in a known order.
 - The `!` in `cc82dc0` is relative to `2ddedb1`, not to base. Nothing here is
