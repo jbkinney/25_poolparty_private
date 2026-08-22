@@ -127,28 +127,34 @@ acceptable if the sentence needed it. It does not.
 > **Supplementary Figure N. The same variant library, specified in VaLiAnT and in
 > PoolParty.**
 >
-> **(A)** The library. A 245 bp stretch of BRCA1 serves as the template: exon 2 in
-> the middle, flanked by 25 bp of intron on either side (labelled r2, r1 and r3 in
-> VaLiAnT's input table). Within the exon, each codon in turn is replaced by every
-> other amino acid, replaced by a stop codon, or deleted in frame — 357 variants in all, each carrying sequencing adaptors at both ends. The
-> exon holds 17 complete codons; its terminal codons are split across the
-> neighbouring exons, and both tools leave those bases unchanged.
+> **(A)** The library. Within exon 2 of BRCA1, each codon in turn is replaced by
+> every other amino acid, replaced by a stop codon, or deleted in frame — 357
+> variants, each carrying sequencing adaptors. The exon contains 17 complete codons;
+> its terminal codons are split across the neighbouring exons and are left unchanged.
+> VaLiAnT's input table labels the exon r2, and the flanking intron r1 and r3.
 >
-> **(B)** VaLiAnT runs from the command line, and the design is written into three
-> files: a table giving the coordinates of the region and which changes to make where,
-> the transcript annotation for the gene, and the reference chromosome. The table is
-> shown with its rows and columns transposed to fit, and only the one line of the
-> annotation that matters here is reproduced.
+> **(B)** VaLiAnT runs from the command line, with the design written into three
+> files: a table of coordinates and the changes to make in them, the gene's
+> transcript annotation, and the reference chromosome (table transposed, annotation
+> abridged).
 >
-> **(C)** The same design in PoolParty, as seven statements of Python.
+> **(C)** The same design in PoolParty.
 >
-> The two libraries are identical base for base, adaptors included. The arrow marks
-> the one value PoolParty cannot work out for itself: VaLiAnT reads the transcript
-> annotation's phase field to locate the first complete codon, whereas PoolParty is
-> given that position directly. Agreement also needs both tools to use the same codon usage
-> table, since VaLiAnT chooses CGG for arginine where PoolParty's default chooses
-> AGA. The library shown is not one of VaLiAnT's own worked examples; we defined it,
-> using their coordinates for BRCA1 exon 2.
+> The two libraries are identical base for base, adaptors included, once both tools
+> use the same codon usage table. The arrow marks the one value PoolParty cannot
+> derive: VaLiAnT reads the annotation's phase field to locate the first complete
+> codon, whereas PoolParty is given that position. This library is not one of
+> VaLiAnT's worked examples; we defined it using their coordinates for BRCA1 exon 2.
+
+**193 words.** Trimmed from 267 by cutting what the figure already shows (the 25 /
+54 / 25 structure), compressing figure mechanics to a parenthetical, dropping the
+statement count from panel C, and folding the codon-table caveat into the result
+sentence.
+
+**If R2 2b is answered in the paper rather than the response letter**, restore the
+specifics: *VaLiAnT chooses CGG for arginine where PoolParty's default chooses AGA.*
+Naming them makes clear the disagreement is a single parameter for a single residue,
+which is more defensible than an unqualified "same codon usage table".
 
 Deliberately not in the caption: that the same installation reproduces VaLiAnT's
 shipped `brca1_pep` library exactly (2,339 of 2,339) and passes its `md5`
