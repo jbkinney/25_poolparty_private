@@ -66,5 +66,5 @@ the table in `_read_windows`'s docstring, which the final pass was rebuilt from.
 
 Changed in the package, all additive: `base_ops/from_vcf.py`,
 `tests/test_from_vcf.py`, `docs/operations/from_vcf.rst`, plus one registration
-each in `docs/api.rst`, `docs/operations/source_operations.rst`,
-`CHANGELOG.md`, and the two `__init__.py` files.
+each in `docs/api.rst`, `docs/operations/source_operations.rst`, `CHANGELOG.md` and the
+two `__init__.py` files — all paths relative to `poolparty-from-vcf/poolparty/`.
