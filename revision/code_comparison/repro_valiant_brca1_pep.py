@@ -1,112 +1,151 @@
-"""Reproduce VaLiAnT's brca1_pep library in PoolParty and diff it, exon by exon.
+"""Reproduce VaLiAnT's brca1_pep library in PoolParty, from published inputs only.
 
-Ground truth is VaLiAnT's own committed expected output, which its repository
-validates by md5sum -- VaLiAnT itself is never installed. The four _meta.csv files
-are downloaded on first run.
+Nothing is read from VaLiAnT's output except the 2,339 sequences being checked
+against. The four inputs used are all published in VaLiAnT's own repository:
+the targeton TSV, chr17.fa, the transcript GTF, and the PAM protection VCF.
 
-See valiant_brca1_pep.md for the full write-up.
+Division of labour, stated plainly because it is the point:
+
+  PoolParty  reference extraction (from_fasta, strand-aware) and variant
+             generation (mutagenize_orf + deletion_scan_orf + stack)
+  harness    applies the PAM protection VCF, and reads the GTF's CDS phase to
+             work out which region and reading frame to mutate
+
+PoolParty is not annotation-aware. Choosing the region and frame is the user's
+job, and that is the transcript_annotation_aware concession in Table 2.
+
+Requires poolparty >= the merge of feature/orf-indel-scans (deletion_scan_orf).
+See valiant_brca1_pep.md.
 
     python3 repro_valiant_brca1_pep.py
 """
 
 import copy
 import csv
+import gzip
 import os
+import shutil
 import urllib.request
 
 import poolparty as pp
 from poolparty.codon_table import STANDARD_GENETIC_CODE as G
 
-RAW = ("https://raw.githubusercontent.com/cancerit/VaLiAnT/develop/"
-       "examples/sge/brca1/brca1_pep_output_exp")
-META = [
-    "chr17_43115634_43115878_minus_sgRNA_ex2_meta.csv",
-    "chr17_43106355_43106599_minus_sgRNA_ex3_meta.csv",
-    "chr17_43104794_43105038_minus_sgRNA_ex4_meta.csv",
-    "chr17_43104080_43104330_minus_sgRNA_ex5_meta.csv",
-]
+RAW = "https://raw.githubusercontent.com/cancerit/VaLiAnT/develop/examples/sge"
+FASTA = "chr17.fa"
+
+# From parameter_input_files/brca1_pep_targeton_input.txt (1-based inclusive) and
+# the GTF CDS phase. All four rows carry action_vector "(),(aa,inframe),()".
+#            ref_start  ref_end   r2_start  r2_end   gtf_phase
+TARGETON = {"ex2": (43115634, 43115878, 43115726, 43115779, 1),
+            "ex3": (43106355, 43106599, 43106456, 43106533, 1),
+            "ex4": (43104794, 43105038, 43104868, 43104956, 1),
+            "ex5": (43104080, 43104330, 43104122, 43104261, 2)}
+
+# From parameter_input_files/brca1_protection_edits.vcf. Plus-strand REF/ALT.
+PAM = {"ex2": {43115764: ("C", "T"), 43115770: ("C", "T")},
+       "ex3": {43106509: ("G", "A"), 43106506: ("C", "T")},
+       "ex4": {43104953: ("G", "A"), 43104950: ("T", "C")},
+       "ex5": {43104167: ("G", "A"), 43104164: ("A", "G")}}
+
+META = {ex: f"chr17_{a}_{b}_minus_sgRNA_{ex}_meta.csv"
+        for ex, (a, b, _, _, _) in TARGETON.items()}
+
+COMP = str.maketrans("ACGTacgt", "TGCAtgca")
 
 
 def fetch():
-    for f in META:
+    """Ground truth and the reference. chr17.fa unpacks to 85 MB."""
+    for ex, f in META.items():
         if not os.path.exists(f):
             print(f"  downloading {f}")
-            urllib.request.urlretrieve(f"{RAW}/{f}", f)
-
-
-def rc(seq):
-    return seq.translate(str.maketrans("ACGT", "TGCA"))[::-1]
+            urllib.request.urlretrieve(f"{RAW}/brca1/brca1_pep_output_exp/{f}", f)
+    if not os.path.exists(FASTA):
+        print("  downloading chr17.fa.gz (26 MB, unpacks to 85 MB)")
+        urllib.request.urlretrieve(f"{RAW}/ref/chr17.fa.gz", "chr17.fa.gz")
+        with gzip.open("chr17.fa.gz", "rb") as fi, open(FASTA, "wb") as fo:
+            shutil.copyfileobj(fi, fo)
 
 
 def valiant_codon_preference():
-    """VaLiAnT picks CGG for arginine; PoolParty's table puts AGA first.
+    """VaLiAnT picks CGG for arginine where PoolParty's table puts AGA first.
 
-    That single entry is the entire difference between 95% and 100% agreement.
+    That single entry is the whole difference between 95% and 100% agreement.
     """
     code = copy.deepcopy(dict(G))
     code["R"] = ["CGG"] + [c for c in code["R"] if c != "CGG"]
     return code
 
 
-def reproduce(meta_csv, use_valiant_code):
-    rows = list(csv.DictReader(open(meta_csv)))
-    pam = rows[0]["pam_seq"]          # variants build on the PAM-protected reference
-    length = len(pam)
-    ref_start = int(rows[0]["ref_start"])
-    sense = rc(pam)                   # minus strand, so the CDS reads 5'->3' here
+def orf_extent(ref_end, r2_start, r2_end, phase):
+    """Sense-strand ORF extent, from the targeton row and the GTF phase alone.
 
-    # plus-strand codon start i  ->  sense-strand start  length - 3 - i
-    starts = sorted({length - 3 - (int(x["mut_position"]) - ref_start)
-                     for x in rows if x["mutator"] == "aa"})
-    a, b = starts[0], starts[-1] + 3
+    These are minus-strand targetons, so from_fasta(strand='-') returns the
+    sense strand and sense index i corresponds to genomic (ref_end - i).
+
+    GTF phase counts from the transcript 5' end, which on the minus strand is
+    r2's GENOMIC RIGHT edge. Those `phase` bases belong to a codon that began in
+    the previous exon; the leftover at the other end belongs to a codon that
+    continues into the next one. Both are skipped -- VaLiAnT substitutes an amino
+    acid only where it holds the whole codon.
+    """
+    n_codons = ((r2_end - r2_start + 1) - phase) // 3
+    start = (ref_end - r2_end) + phase
+    return start, start + 3 * n_codons, n_codons
+
+
+def reproduce(ex):
+    ref_start, ref_end, r2_start, r2_end, phase = TARGETON[ex]
+    a, b, n_codons = orf_extent(ref_end, r2_start, r2_end, phase)
 
     pp.init()
-    if use_valiant_code:
-        pp.set_genetic_code(valiant_codon_preference())
+    pp.set_genetic_code(valiant_codon_preference())
 
+    # PoolParty extracts the targeton and reverse-complements it (strand='-').
+    tgt = pp.from_fasta(FASTA, ("chr17", ref_start - 1, ref_end, "-"))
+    sense = tgt.to_df(num_cycles=1, show_progress=False)["seq"][0].upper()
+
+    # PAM protection edits, mapped into sense coordinates. The assertion makes a
+    # coordinate or strand error fail loudly instead of producing a plausible
+    # but wrong library.
+    chars = list(sense)
+    for pos, (ref, alt) in PAM[ex].items():
+        i = ref_end - pos
+        assert chars[i] == ref.translate(COMP), f"{ex}: PAM REF mismatch at {pos}"
+        chars[i] = alt.translate(COMP)
+    sense = "".join(chars)
+
+    # PoolParty generates the variants.
     p = pp.annotate_orf(pp.from_seq(sense), region_name="cds", extent=(a, b), frame=1)
-
-    # VaLiAnT `aa`: 19 substitutions per codon. Frame comes from the OrfRegion.
     aa = pp.mutagenize_orf(p, region="cds", num_mutations=1,
                            mutation_type="missense_only_first",
-                           mode="sequential", prefix="aa")
+                           mode="sequential", prefix="aa")        # 19 per codon
+    inframe = pp.deletion_scan_orf(p, deletion_codons=1, deletion_marker=None,
+                                   region="cds", mode="sequential", prefix="del")
+    lib = pp.stack([aa, inframe])                                 # 1 per codon
 
-    # VaLiAnT `inframe`: delete each complete codon. The slice step of 3 supplies
-    # codon alignment -- deletion_scan does not read the frame from the OrfRegion.
-    inframe = pp.deletion_scan(p, deletion_length=3, deletion_marker=None,
-                               region="cds", positions=slice(0, None, 3),
-                               mode="sequential", prefix="del")
+    ours = set(lib.to_df(num_cycles=1, show_progress=False)["seq"])
+    theirs = {r["mseq_no_adapt"] for r in csv.DictReader(open(META[ex]))}
 
-    lib = pp.stack([aa, inframe])
-    seqs = list(lib.to_df(num_cycles=1, show_progress=False)["seq"])
-    ours, theirs = set(seqs), {x["mseq_no_adapt"] for x in rows}
-
-    return dict(exon=meta_csv.split("_sgRNA_")[1][:3], tgt_len=length,
-                codons=len(starts), extent=(a, b), aa=aa.num_states,
-                dele=inframe.num_states, states=lib.num_states,
-                distinct=len(ours), theirs=len(theirs),
+    return dict(ex=ex, phase=phase, codons=n_codons, extent=(a, b),
+                states=lib.num_states, distinct=len(ours), theirs=len(theirs),
                 match=len(ours & theirs), only_ours=len(ours - theirs),
                 only_theirs=len(theirs - ours))
 
 
 def main():
     fetch()
-    files = sorted(META, key=lambda f: f.split("_sgRNA_")[1])
-    for label, flag in (("PoolParty default codon table", False),
-                        ("VaLiAnT codon preference", True)):
-        print(f"\n=== {label} ===")
-        print(f"{'exon':5}{'tgt':>5}{'codons':>7}{'extent':>12}{'aa':>6}{'del':>5}"
-              f"{'states':>7}{'distinct':>9}{'theirs':>7}{'exact':>7}{'%':>7}")
-        tot_match = tot_theirs = 0
-        for f in files:
-            r = reproduce(f, flag)
-            tot_match += r["match"]
-            tot_theirs += r["theirs"]
-            print(f"{r['exon']:5}{r['tgt_len']:>5}{r['codons']:>7}{str(r['extent']):>12}"
-                  f"{r['aa']:>6}{r['dele']:>5}{r['states']:>7}{r['distinct']:>9}"
-                  f"{r['theirs']:>7}{r['match']:>7}{100*r['match']/r['theirs']:>6.1f}%")
-        print(f"{'ALL':5}{'':5}{'':7}{'':12}{'':6}{'':5}{'':7}{'':9}"
-              f"{tot_theirs:>7}{tot_match:>7}{100*tot_match/tot_theirs:>6.1f}%")
+    print(f"\n{'exon':6}{'phase':>6}{'codons':>7}{'extent':>13}{'states':>8}"
+          f"{'distinct':>9}{'theirs':>8}{'exact':>7}{'%':>8}")
+    tot_match = tot_theirs = 0
+    for ex in TARGETON:
+        r = reproduce(ex)
+        tot_match += r["match"]
+        tot_theirs += r["theirs"]
+        print(f"  {r['ex']:4}{r['phase']:>6}{r['codons']:>7}{str(r['extent']):>13}"
+              f"{r['states']:>8}{r['distinct']:>9}{r['theirs']:>8}{r['match']:>7}"
+              f"{100 * r['match'] / r['theirs']:>7.1f}%")
+    print(f"  {'ALL':4}{'':6}{'':7}{'':13}{'':8}{'':9}{tot_theirs:>8}{tot_match:>7}"
+          f"{100 * tot_match / tot_theirs:>7.1f}%")
 
 
 if __name__ == "__main__":
