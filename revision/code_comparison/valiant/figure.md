@@ -104,26 +104,46 @@ hold.
 
 ## Caption
 
-> **Supplementary Figure N. One library specified in VaLiAnT and in PoolParty.**
-> **(A)** The library: BRCA1 exon 2 on the minus strand of chr17, with 25 nt of
-> intronic flank either side, every codon substituted to each other amino acid
-> (`aa`, 19 per codon) and to a stop codon (`stop`), and each codon deleted in frame
-> (`inframe`) — 357 oligos, each carrying P5 and P7 adaptors. The exon is not
-> codon-aligned: one base at its 3′ end and two at its 5′ end belong to codons split
-> across the neighbouring exons and are not mutated by either tool. **(B)** VaLiAnT
-> 4.0.0 takes three input files and a command-line invocation; `targeton.tsv` is
-> shown transposed for legibility, and only the CDS record of the transcript
-> annotation is shown. **(C)** The same library in PoolParty. The arrow marks the
-> reading frame, which VaLiAnT derives from the transcript annotation and PoolParty
-> requires as an argument. **The two libraries are byte-identical: all 357 oligos,
-> including adaptors.** Agreement requires one shared parameter, the codon usage
-> table — VaLiAnT selects CGG for arginine where PoolParty's default selects AGA;
-> without aligning it, 340 of 357 oligos match. This library is not a VaLiAnT shipped
-> example: it is their BRCA1 exon 2 targeton with `stop` added and PAM protection
-> removed. The same VaLiAnT installation reproduces their shipped `brca1_pep`
-> library exactly, 2,339 of 2,339 oligos, and passes its own `md5` validation.
+Written for a reader, not a referee. `main.tex` already uses *codon*, *exon*,
+*intron*, *transcript*, *reading frame* and *codon usage*, so those need no gloss.
+It never uses **targeton**, **phase**, **CDS**, **adaptor** or **minus strand** —
+so `targeton`, `phase` and `CDS` are avoided outright, and `adaptor` is glossed by
+context as a sequencing adaptor. The panel labels `r1`, `r2`, `r3` come from
+VaLiAnT's input file, so the caption ties them to plain words once.
 
----
+> **Supplementary Figure N. The same variant library, specified in VaLiAnT and in
+> PoolParty.**
+>
+> **(A)** The library. A 245 bp stretch of BRCA1 serves as the template: exon 2 in
+> the middle, flanked by 25 bp of intron on either side (labelled r2, r1 and r3 in
+> VaLiAnT's input table). Within the exon, each codon in turn is replaced by every
+> other amino acid, replaced by a stop codon, or deleted without shifting the reading
+> frame — 357 variants in all, each carrying sequencing adaptors at both ends. The
+> exon holds 17 complete codons; the single base at one end and the two at the other
+> belong to codons shared with the neighbouring exons, and both tools leave them
+> alone.
+>
+> **(B)** VaLiAnT runs from the command line, and the design is written into three
+> files: a table giving the coordinates of the region and which changes to make where,
+> the transcript annotation for the gene, and the reference chromosome. The table is
+> shown with its rows and columns transposed to fit, and only the one line of the
+> annotation that matters here is reproduced.
+>
+> **(C)** The same design in PoolParty, as seven statements of Python.
+>
+> The two libraries are identical base for base, adaptors included. The arrow marks
+> the one value PoolParty cannot work out for itself: VaLiAnT reads the transcript
+> annotation to find where the exon's codons begin, whereas PoolParty is given that
+> position directly. Agreement also needs both tools to use the same codon usage
+> table, since VaLiAnT chooses CGG for arginine where PoolParty's default chooses
+> AGA. The library shown is not one of VaLiAnT's own worked examples; we defined it,
+> using their coordinates for BRCA1 exon 2.
+
+Deliberately not in the caption: that the same installation reproduces VaLiAnT's
+shipped `brca1_pep` library exactly (2,339 of 2,339) and passes its `md5`
+validation. That licenses the ground truth, but it is provenance for a referee, not
+information for a reader — it belongs in the supplementary text or the response
+letter.
 
 ## Cut from an earlier draft, and why
 
