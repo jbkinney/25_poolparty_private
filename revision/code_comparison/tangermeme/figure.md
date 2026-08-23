@@ -36,9 +36,9 @@ invites a line count, it is the wrong layout.
 │      cards={"start": "cryptic_position"})                                 │
 │  df = library.to_df(num_cycles=1)                                         │
 │                                                                          │
-│      seq                    cryptic_sequence   cryptic_position          │
-│      TATATCTATAT...         GTAGTGGAA          51                        │
-│      TATATCTATAT...         GTAGTGGAA          52                        │
+│      seq                    cryptic_position   cryptic_sequence          │
+│      TATATCTATAT...         51                 GTAGTGGAA                 │
+│      TATATCTATAT...         52                 GTAGTGGAA                 │
 │      ...                                                                 │
 └──────────────────────────────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────────────────────────────┐
