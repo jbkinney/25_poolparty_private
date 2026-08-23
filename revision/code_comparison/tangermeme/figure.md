@@ -3,10 +3,10 @@
 Design record. See `comparison.md` for the verification and the corrections made
 along the way.
 
-**Orientation:** landscape, matching `../valiant/figure.md`. **Width available:**
-552 pt at `\textwidth`, which is 131 characters at 7 pt. Panel (A) spans the full
-width with its content centred; (B) and (C) sit side by side at 64 characters each
-with a 2-character gutter.
+**Shape:** upright, full width, wide aspect — see `../README.md` for the width
+budget and the shared drawing spec. Full width holds 130 characters; panel (A)
+spans it with its content centred, and (B) and (C) sit side by side at 64
+characters each with a 2-character gutter.
 
 Side by side puts statement 1 of (B) beside statement 1 of (C). Stacked, the reader
 holds one panel in memory while travelling to the other — which is the mode in

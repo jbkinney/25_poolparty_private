@@ -3,9 +3,13 @@
 Design record. The rendered figure is not in this repository yet; this file is the
 specification it should be drawn from, and the source of the caption text.
 
-**Orientation:** landscape. **Width available:** 552 pt at `\textwidth` in
-`sn-jnl`. **Code type size:** 7 pt monospace (≈ 4.2 pt/char), so a half-width
-column holds ≈ 66 characters and full width ≈ 131.
+**Shape:** upright, full width, wide aspect — see `../README.md` for the width
+budget and the shared drawing spec. Full width holds ≈ 130 characters, so a
+half-width column holds ≈ 64.
+
+An earlier version of this record specified a landscape page at 552 pt. The
+manuscript has no sideways float, and the character budget is the same either way,
+so the layout below is unaffected — only the justification changed.
 
 The PoolParty code is reformatted to a narrow column — one or two arguments per
 line — because its natural formatting runs to 86 characters and will not fit
