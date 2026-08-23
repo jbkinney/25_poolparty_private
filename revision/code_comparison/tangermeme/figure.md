@@ -3,10 +3,15 @@
 Design record. See `comparison.md` for the verification and the corrections made
 along the way.
 
-**Orientation:** undecided. The widest line is ~88 characters, which fits full
-width at 7 pt (89 chars) in portrait. Since (B) and (C) became code-only they are
-~6 lines each, so landscape side-by-side is now viable as well — at the cost of
-reflowing the code to roughly 66 characters per column.
+**Orientation:** landscape, matching `../valiant/figure.md`. **Width available:**
+552 pt at `\textwidth`, which is 131 characters at 7 pt. Panel (A) spans the full
+width with its content centred; (B) and (C) sit side by side at 64 characters each
+with a 2-character gutter.
+
+Side by side puts statement 1 of (B) beside statement 1 of (C). Stacked, the reader
+holds one panel in memory while travelling to the other — which is the mode in
+which they start counting lines instead of reading them. The two code-comparison
+figures also read as a pair, so they share a form.
 
 **This is not a conciseness figure.** Three statements each side. If the layout
 invites a line count, it is the wrong layout.
@@ -16,37 +21,30 @@ invites a line count, it is the wrong layout.
 ## Layout
 
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│ (A)  The library                                                         │
-│                                                                          │
-│      201 bp region, canonical 5'ss at position 100                       │
-│      ┌────────────┬───┬──────────────────┐                               │
-│      │  51 - 89   │ ● │    107 - 167     │   100 scan positions          │
-│      └────────────┴───┴──────────────────┘                               │
-│                     ▲                                                    │
-│              canonical 5'ss (skipped)                                    │
-│                                                                          │
-│      2,000 cryptic 5'ss  x  100 positions  =  200,000 sequences          │
-└──────────────────────────────────────────────────────────────────────────┘
-┌──────────────────────────────────────────────────────────────────────────┐
-│ (B)  PoolParty                                                           │
-│                                                                          │
-│  cryptic_pool = pp.from_seqs(cryptic_sites, mode="sequential",           │
-│                              cards={"seq": "cryptic_sequence"})          │
-│  library = pp.from_seq(target_region).replacement_scan(                  │
-│      cryptic_pool, positions=SCAN_POSITIONS, mode="sequential",          │
-│      cards={"start": "cryptic_position"})                                │
-│  df = library.generate_library()                                         │
-└──────────────────────────────────────────────────────────────────────────┘
-┌──────────────────────────────────────────────────────────────────────────┐
-│ (C)  tangermeme                                                          │
-│                                                                          │
-│  target_ohe  = one_hot_encode(target_region).unsqueeze(0) \              │
-│                    .expand(len(cryptic_sites), -1, -1)                   │
-│  cryptic_ohe = torch.stack([one_hot_encode(s) for s in cryptic_sites])   │
-│  library_ohe = torch.stack([substitute(target_ohe, cryptic_ohe, start=p) │
-│                             for p in SCAN_POSITIONS])                    │
-└──────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ (A)  The library                                                                                                               │
+│                                                                                                                                │
+│                                   201 bp region, canonical 5'ss at position 100                                                │
+│                                   ┌────────────┬───┬──────────────────┐                                                        │
+│                                   │  51 - 89   │ ● │    107 - 167     │   100 scan positions                                   │
+│                                   └────────────┴───┴──────────────────┘                                                        │
+│                                                    ▲                                                                           │
+│                                             canonical 5'ss (skipped)                                                           │
+│                                                                                                                                │
+│                                   2,000 cryptic 5'ss  x  100 positions  =  200,000 sequences                                   │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐  ┌──────────────────────────────────────────────────────────────┐
+│ (B)  PoolParty                                               │  │ (C)  tangermeme                                              │
+│                                                              │  │                                                              │
+│  cryptic_pool = pp.from_seqs(                                │  │  target_ohe  = (one_hot_encode(target_region)                │
+│      cryptic_sites, mode="sequential",                       │  │                 .unsqueeze(0)                                │
+│      cards={"seq": "cryptic_sequence"})                      │  │                 .expand(len(cryptic_sites), -1, -1))         │
+│  library = pp.from_seq(target_region).replacement_scan(      │  │  cryptic_ohe = torch.stack(                                  │
+│      cryptic_pool, positions=SCAN_POSITIONS,                 │  │      [one_hot_encode(s) for s in cryptic_sites])             │
+│      mode="sequential",                                      │  │  library_ohe = torch.stack(                                  │
+│      cards={"start": "cryptic_position"})                    │  │      [substitute(target_ohe, cryptic_ohe, start=p)           │
+│  df = library.generate_library()                             │  │       for p in SCAN_POSITIONS])                              │
+└──────────────────────────────────────────────────────────────┘  └──────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -77,6 +75,11 @@ pools sample rather than enumerate.
 The dict form of `cards=` is deliberate. The list shorthand `cards=["start"]` also
 works, but names the column `op[6]:replacement_scan(region_scan).start`. The dict
 costs a few characters and buys the reader the meaning of what is recorded.
+
+The code is reflowed to 64 characters per column, and `repro.py` is reflowed to
+match, so the figure and the script stay literally identical. The narrower width
+is not only a cost: panel (C)'s backslash continuation becomes a parenthesized
+method chain, which is what PEP 8 prefers.
 
 Do **not** put the `transpose`/`flatten` reorder, the `characters` decode, or the
 DataFrame construction in panel C. All three are comparison scaffolding, and

@@ -66,10 +66,12 @@ def build_poolparty():
     target_region, cryptic_sites = inputs()
 
     pp.init()
-    cryptic_pool = pp.from_seqs(cryptic_sites, mode="sequential",
-                                cards={"seq": "cryptic_sequence"})
+    cryptic_pool = pp.from_seqs(
+        cryptic_sites, mode="sequential",
+        cards={"seq": "cryptic_sequence"})
     library = pp.from_seq(target_region).replacement_scan(
-        cryptic_pool, positions=SCAN_POSITIONS, mode="sequential",
+        cryptic_pool, positions=SCAN_POSITIONS,
+        mode="sequential",
         cards={"start": "cryptic_position"})
 
     print(f"  num_states = {library.num_states:,}  (nothing generated yet)")
@@ -93,11 +95,14 @@ def build_tangermeme():
 
     target_region, cryptic_sites = inputs()
 
-    target_ohe = one_hot_encode(target_region).unsqueeze(0).expand(
-        len(cryptic_sites), -1, -1)
-    cryptic_ohe = torch.stack([one_hot_encode(site) for site in cryptic_sites])
-    library_ohe = torch.stack([substitute(target_ohe, cryptic_ohe, start=p)
-                               for p in SCAN_POSITIONS])
+    target_ohe = (one_hot_encode(target_region)
+                  .unsqueeze(0)
+                  .expand(len(cryptic_sites), -1, -1))
+    cryptic_ohe = torch.stack(
+        [one_hot_encode(site) for site in cryptic_sites])
+    library_ohe = torch.stack(
+        [substitute(target_ohe, cryptic_ohe, start=p)
+         for p in SCAN_POSITIONS])
 
     mb = library_ohe.element_size() * library_ohe.nelement() / 1e6
     print(f"  library_ohe {tuple(library_ohe.shape)}  {mb:.0f} MB, "
