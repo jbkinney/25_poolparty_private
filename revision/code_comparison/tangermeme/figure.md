@@ -29,12 +29,12 @@ invites a line count, it is the wrong layout.
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ (B)  PoolParty                                                           │
 │                                                                          │
-│  cryptic_pool = pp.from_seqs(cryptic_sites, mode="sequential",            │
-│                              cards={"seq": "cryptic_sequence"})           │
-│  library = pp.from_seq(target_region).replacement_scan(                   │
-│      cryptic_pool, positions=SCAN_POSITIONS, mode="sequential",           │
-│      cards={"start": "cryptic_position"})                                 │
-│  df = library.to_df(num_cycles=1)                                         │
+│  cryptic_pool = pp.from_seqs(cryptic_sites, mode="sequential",           │
+│                              cards={"seq": "cryptic_sequence"})          │
+│  library = pp.from_seq(target_region).replacement_scan(                  │
+│      cryptic_pool, positions=SCAN_POSITIONS, mode="sequential",          │
+│      cards={"start": "cryptic_position"})                                │
+│  df = library.to_df(num_cycles=1)                                        │
 │                                                                          │
 │      seq                    cryptic_position   cryptic_sequence          │
 │      TATATCTATAT...         51                 GTAGTGGAA                 │
@@ -44,11 +44,11 @@ invites a line count, it is the wrong layout.
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ (C)  tangermeme                                                          │
 │                                                                          │
-│  target_ohe  = one_hot_encode(target_region).unsqueeze(0) \               │
-│                    .expand(len(cryptic_sites), -1, -1)                    │
-│  cryptic_ohe = torch.stack([one_hot_encode(s) for s in cryptic_sites])    │
-│  library_ohe = torch.stack([substitute(target_ohe, cryptic_ohe, start=p)  │
-│                             for p in SCAN_POSITIONS])                     │
+│  target_ohe  = one_hot_encode(target_region).unsqueeze(0) \              │
+│                    .expand(len(cryptic_sites), -1, -1)                   │
+│  cryptic_ohe = torch.stack([one_hot_encode(s) for s in cryptic_sites])   │
+│  library_ohe = torch.stack([substitute(target_ohe, cryptic_ohe, start=p) │
+│                             for p in SCAN_POSITIONS])                    │
 │                                                                          │
 │      library_ohe.shape = (100, 2000, 4, 201)                             │
 │                           ▲     ▲                                        │
@@ -67,6 +67,10 @@ non-contiguous list, not a range.
 **(B)** Show three rows of the output table. That the design parameters arrive as
 **columns** is the whole contrast with (C), and it needs to be visible, not
 described.
+
+The table shown is a subset. `to_df` also returns a `name` column, which is
+empty here because nothing in this library is named. Do not add it to match a
+raw `to_df` dump — it would put a column of blanks in the figure.
 
 **(C)** Show the returned **shape**, annotated. `(100, 2000, 4, 201)` with the
 first two axes labelled says what the tensor is and where the provenance lives —
@@ -98,12 +102,12 @@ strings.
 > around the canonical site are excluded. This is the GT arm of the surrogate-modelling
 > library of Fig. N; the matched control arm is built the same way.
 >
-> **(B)** In PoolParty, the two design parameters are returned as columns alongside
-> each sequence, and no sequence is generated until requested.
+> **(B)** In PoolParty, the cryptic site and its position are returned as columns
+> beside each sequence. No sequence is generated until requested.
 >
-> **(C)** In tangermeme, the same substitutions are applied one batch per position,
-> and the library is returned as a one-hot tensor whose axes carry the design
-> parameters implicitly.
+> **(C)** In tangermeme, the substitutions are applied one batch per position and
+> returned as a one-hot tensor. The site and position are not returned; each is
+> recoverable from a sequence's index along one axis.
 >
 > The two libraries contain the identical 200,000 sequences, verified against the
 > published design cards. The tools differ in what they return rather than in what
