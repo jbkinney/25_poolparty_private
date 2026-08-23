@@ -3,8 +3,10 @@
 Design record. See `comparison.md` for the verification and the corrections made
 along the way.
 
-**Orientation:** portrait is sufficient. Both panels are three statements; the
-widest line is ~88 characters, which fits full width at 7 pt (89 chars).
+**Orientation:** undecided. The widest line is ~88 characters, which fits full
+width at 7 pt (89 chars) in portrait. Since (B) and (C) became code-only they are
+~6 lines each, so landscape side-by-side is now viable as well — at the cost of
+reflowing the code to roughly 66 characters per column.
 
 **This is not a conciseness figure.** Three statements each side. If the layout
 invites a line count, it is the wrong layout.
@@ -34,12 +36,7 @@ invites a line count, it is the wrong layout.
 │  library = pp.from_seq(target_region).replacement_scan(                  │
 │      cryptic_pool, positions=SCAN_POSITIONS, mode="sequential",          │
 │      cards={"start": "cryptic_position"})                                │
-│  df = library.to_df(num_cycles=1)                                        │
-│                                                                          │
-│      seq                    cryptic_position   cryptic_sequence          │
-│      TATATCTATAT...         51                 GTAGTGGAA                 │
-│      TATATCTATAT...         52                 GTAGTGGAA                 │
-│      ...                                                                 │
+│  df = library.generate_library()                                         │
 └──────────────────────────────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────────────────────────────┐
 │ (C)  tangermeme                                                          │
@@ -49,10 +46,6 @@ invites a line count, it is the wrong layout.
 │  cryptic_ohe = torch.stack([one_hot_encode(s) for s in cryptic_sites])   │
 │  library_ohe = torch.stack([substitute(target_ohe, cryptic_ohe, start=p) │
 │                             for p in SCAN_POSITIONS])                    │
-│                                                                          │
-│      library_ohe.shape = (100, 2000, 4, 201)                             │
-│                           ▲     ▲                                        │
-│                     position  cryptic site                               │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -64,18 +57,26 @@ invites a line count, it is the wrong layout.
 because the canonical site sits at 100. `SCAN_POSITIONS` is an explicit
 non-contiguous list, not a range.
 
-**(B)** Show three rows of the output table. That the design parameters arrive as
-**columns** is the whole contrast with (C), and it needs to be visible, not
-described.
+**(B) and (C)** Code only. Neither panel displays output. An earlier version showed
+PoolParty's output table against tangermeme's returned tensor shape; that made the
+PoolParty panel read as the heavier one, because a table with headers and rows
+outweighs a 4-tuple even when both are faithful. Panel (A) already states what the
+library contains, so the panels need only show how each tool builds it.
 
-The table shown is a subset. `to_df` also returns a `name` column, which is
-empty here because nothing in this library is named. Do not add it to match a
-raw `to_df` dump — it would put a column of blanks in the figure.
+The return types stay legible from the code — `generate_library()` against
+`torch.stack` — and the `cards=` arguments name the columns PoolParty attaches.
+Those arguments are load-bearing: without them the figure claims only that both
+tools produce 200,000 sequences, which is the conciseness reading this design
+rejects. `mode="sequential"` is load-bearing for the same reason — without it the
+pools sample rather than enumerate.
 
-**(C)** Show the returned **shape**, annotated. `(100, 2000, 4, 201)` with the
-first two axes labelled says what the tensor is and where the provenance lives —
-in the layout rather than in columns. No table, because tangermeme does not
-produce one.
+`generate_library()` rather than `to_df()`: it is the documented idiom (78 uses in
+`docs/`, 8 in `examples/`, against 6 and 0 for `to_df`), and it is shorter, since
+`num_cycles=1` is its default. Both return the same columns.
+
+The dict form of `cards=` is deliberate. The list shorthand `cards=["start"]` also
+works, but names the column `op[6]:replacement_scan(region_scan).start`. The dict
+costs a few characters and buys the reader the meaning of what is recorded.
 
 Do **not** put the `transpose`/`flatten` reorder, the `characters` decode, or the
 DataFrame construction in panel C. All three are comparison scaffolding, and
@@ -103,7 +104,8 @@ strings.
 > library of Fig. N; the matched control arm is built the same way.
 >
 > **(B)** In PoolParty, the cryptic site and its position are returned as columns
-> beside each sequence. No sequence is generated until requested.
+> beside each sequence, named by the `cards` arguments. No sequence is generated
+> until requested.
 >
 > **(C)** In tangermeme, the substitutions are applied one batch per position and
 > returned as a one-hot tensor. The site and position are not returned; each is

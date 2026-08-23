@@ -67,13 +67,13 @@ def build_poolparty():
 
     pp.init()
     cryptic_pool = pp.from_seqs(cryptic_sites, mode="sequential",
-                               cards={"seq": "cryptic_sequence"})
+                                cards={"seq": "cryptic_sequence"})
     library = pp.from_seq(target_region).replacement_scan(
         cryptic_pool, positions=SCAN_POSITIONS, mode="sequential",
         cards={"start": "cryptic_position"})
 
     print(f"  num_states = {library.num_states:,}  (nothing generated yet)")
-    df = library.to_df(num_cycles=1, show_progress=False)
+    df = library.generate_library()
     return df.rename(columns={"seq": "full_sequence"})[KEY]
 
 
