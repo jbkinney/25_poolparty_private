@@ -1,0 +1,22 @@
+\begin{table}[p]
+\centering
+\footnotesize
+\caption{\textbf{Runtime and memory for the three worked examples.} Each example
+was generated at the size shown using a single core. Generation times are means
+$\pm$ SD over five replicate runs. Peak memory is maximum resident set size and
+includes the fixed memory used by Python and the example DAG. DAG construction
+does not depend on library size and is reported separately. The SpliceAI
+library comprises two matched 200,000-sequence pools (cryptic GT and disrupted
+GA) generated separately; values are for one pool, and the full library takes
+twice as long.}
+\label{tab:benchmark-summary}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Example & Library size & Time (s) & Sequence/s & Memory (MB) & DAG (s)\\
+\midrule
+GB1 deep mutational scan & 547,230 & $132.24 \pm 5.76$ & 4,138 & 487 & 0.22\\
+MPRA regulatory grammar & 24,000 & $9.22 \pm 0.22$ & 2,602 & 127 & 0.06\\
+SpliceAI surrogate & 200,000 & $11.93 \pm 0.27$ & 16,758 & 208 & 0.05\\
+\botrule
+\end{tabular}
+\end{table}

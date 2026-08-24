@@ -1,0 +1,503 @@
+% PoolParty: streamlined design of DNA sequence libraries in Python
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL baseline_submission.tex   Mon Aug 24 15:57:23 2026
+%DIF ADD manuscript_clean.tex      Mon Aug 24 15:57:23 2026
+% BMC Bioinformatics - Software article
+% Class: sn-jnl.cls (Springer Nature template)
+% Build: latexmk -pdf main.tex
+
+\documentclass[pdflatex,sn-vancouver-num,referee,oneside]{sn-jnl}
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+% UTF-8 + Greek letters: required by entries in references.bib
+% (e.g. "\sigma70" in LaFleur2024, and Latin diacritics in author names).
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textgreek}
+\usepackage[mathlines]{lineno}
+%DIF 16c16
+%DIF < \graphicspath{{figs/}}
+%DIF -------
+\graphicspath{{assets/}} %DIF > 
+%DIF -------
+
+% The sn-jnl class defaults to a narrow journal-production text block.
+% Use a standard US Letter submission layout while keeping the Springer/BMC class.
+\geometry{reset,letterpaper,margin=1in}
+
+% Override sn-jnl.cls's italic \descriptionlabel (line 1144) with bold, to
+% match BMC's IFA convention for "Availability and requirements" and
+% "List of abbreviations" item labels.
+\renewcommand{\descriptionlabel}[1]{\hspace\labelsep\bfseries #1}
+
+\raggedbottom
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{{\protect\color{red}\sout{#1}}} %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+\providecommand{\DIFmodbegin}{} %DIF PREAMBLE
+\providecommand{\DIFmodend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+\providecommand{\DIFscaledelfig}{0.5}
+%DIF HIGHLIGHTGRAPHICS PREAMBLE %DIF PREAMBLE
+\RequirePackage{settobox} %DIF PREAMBLE
+\RequirePackage{letltxmacro} %DIF PREAMBLE
+\newsavebox{\DIFdelgraphicsbox} %DIF PREAMBLE
+\newlength{\DIFdelgraphicswidth} %DIF PREAMBLE
+\newlength{\DIFdelgraphicsheight} %DIF PREAMBLE
+% store original definition of \includegraphics %DIF PREAMBLE
+\LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
+\providecommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
+\providecommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
+\sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
+\settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
+\parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
+\setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
+\begin{picture}(1,1)% %DIF PREAMBLE
+\thicklines\linethickness{2pt} %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
+\end{picture}% %DIF PREAMBLE
+}\hspace*{3pt}}} %DIF PREAMBLE
+} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbegin}{\DIFdelbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelend}{\DIFdelend} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbegin}{\DIFOaddbegin \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbegin}{\DIFOdelbegin \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbeginFL}{\DIFaddbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddendFL}{\DIFaddendFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbeginFL}{\DIFdelbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelendFL}{\DIFdelendFL} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbeginFL}{\DIFOaddbeginFL \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbeginFL}{\DIFOdelbeginFL \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+%DIF AMSMATHULEM PREAMBLE %DIF PREAMBLE
+\makeatletter %DIF PREAMBLE
+\let\sout@orig\sout %DIF PREAMBLE
+\renewcommand{\sout}[1]{\ifmmode\text{\sout@orig{\ensuremath{#1}}}\else\sout@orig{#1}\fi} %DIF PREAMBLE
+\makeatother %DIF PREAMBLE
+%DIF COLORLISTINGS PREAMBLE %DIF PREAMBLE
+\RequirePackage{listings} %DIF PREAMBLE
+\RequirePackage{color} %DIF PREAMBLE
+\lstdefinelanguage{DIFcode}{ %DIF PREAMBLE
+%DIF DIFCODE_UNDERLINE %DIF PREAMBLE
+  moredelim=[il][\color{red}\sout]{\%DIF\ <\ }, %DIF PREAMBLE
+  moredelim=[il][\color{blue}\uwave]{\%DIF\ >\ } %DIF PREAMBLE
+} %DIF PREAMBLE
+\lstdefinestyle{DIFverbatimstyle}{ %DIF PREAMBLE
+	language=DIFcode, %DIF PREAMBLE
+	basicstyle=\ttfamily, %DIF PREAMBLE
+	columns=fullflexible, %DIF PREAMBLE
+	keepspaces=true %DIF PREAMBLE
+} %DIF PREAMBLE
+\lstnewenvironment{DIFverbatim}[1][]{\lstset{style=DIFverbatimstyle}}{} %DIF PREAMBLE
+\lstnewenvironment{DIFverbatim*}[1][]{\lstset{style=DIFverbatimstyle,showspaces=true}}{} %DIF PREAMBLE
+\lstset{extendedchars=\true,inputencoding=utf8}
+
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+\begin{document}
+
+\title[PoolParty]{PoolParty: streamlined design of DNA sequence libraries in Python}
+
+\author[1]{\fnm{Zhihan} \sur{Liu}}\email{zhliu@cshl.edu}
+\author[1]{\fnm{Aidan} \sur{Cordero}}\email{aicorder@cshl.edu}
+\author*[1]{\fnm{Justin B.} \sur{Kinney}}\email{jkinney@cshl.edu}
+
+\affil*[1]{\orgdiv{Simons Center for Quantitative Biology},
+           \orgname{Cold Spring Harbor Laboratory},
+           \orgaddress{\street{1 Bungtown Rd.},
+                       \city{Cold Spring Harbor},
+                       \state{New York},
+                       \postcode{11724},
+                       \country{United States}}}
+
+\DIFdelbegin %DIFDELCMD < \abstract{%
+%DIFDELCMD < \textbf{Background:}
+%DIFDELCMD < Computationally designed DNA sequence libraries are essential components of
+%DIFDELCMD < massively parallel reporter assays (MPRAs), deep mutational scanning (DMS)
+%DIFDELCMD < experiments, and other multiplex assays of variant effect (MAVEs).
+%DIFDELCMD < They are also increasingly used in silico to analyze genomic AI models.
+%DIFDELCMD < Designing these libraries, however, remains tedious and error-prone due to
+%DIFDELCMD < the lack of purpose-built software.\\
+%DIFDELCMD < 
+
+%DIFDELCMD < \textbf{Results:}
+%DIFDELCMD < Here we describe PoolParty, a Python package that streamlines the design of
+%DIFDELCMD < complex oligo pools using a simple but flexible API. In PoolParty, each
+%DIFDELCMD < library is represented by a computational
+%DIFDELCMD < graph that can be specified in just a few lines of code. Over 50 built-in
+%DIFDELCMD < operations cover nucleotide- and codon-level mutagenesis, motif insertion,
+%DIFDELCMD < barcode generation, and more. PoolParty automatically generates informative
+%DIFDELCMD < names for each sequence and provides ``design cards'' detailing how each
+%DIFDELCMD < sequence was generated. Visualization methods let users quickly audit library
+%DIFDELCMD < content and inspect the underlying graph. PoolParty thus transforms oligo
+%DIFDELCMD < pool design from a tedious task requiring custom functions and scripts into
+%DIFDELCMD < a structured, transparent, and reproducible process.\\
+%DIFDELCMD < 
+
+%DIFDELCMD < \textbf{Conclusions:}
+%DIFDELCMD < PoolParty should substantially ease the design of DMS, MPRA, and other
+%DIFDELCMD < multiplex assay libraries. Its design cards should also help researchers
+%DIFDELCMD < systematically probe and interpret genomic AI models, and PoolParty can be
+%DIFDELCMD < extended to support new assay types and analysis strategies as they emerge.
+%DIFDELCMD < }
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \abstract{%
+\textbf{Background:}
+Computationally designed DNA sequence libraries are essential components of
+massively parallel reporter assays (MPRAs), deep mutational scanning (DMS)
+experiments, and other multiplex assays of variant effect (MAVEs).
+They are also increasingly used in silico to analyze genomic AI models.
+Designing these libraries, however, remains tedious and error-prone due to
+the scarcity of purpose-built software.\\
+
+\textbf{Results:}
+Here we describe PoolParty, a Python package that streamlines the design of
+complex oligo pools using a simple but flexible API. In PoolParty, each
+library is represented by a computational
+graph that can be specified in just a few lines of code. Over 50 built-in
+operations cover nucleotide- and codon-level mutagenesis, motif insertion,
+barcode generation, and more. PoolParty automatically generates informative
+names for each sequence and provides ``design cards'' detailing how each
+sequence was generated. Visualization methods let users quickly audit library
+content and inspect the underlying graph. PoolParty thus transforms oligo
+pool design from a tedious task requiring custom functions and scripts into
+a structured, transparent, and reproducible process.\\
+
+\textbf{Conclusions:}
+PoolParty should substantially ease the design of DMS, MPRA, and other
+multiplex assay libraries. Its design cards should also help researchers
+systematically probe and interpret genomic AI models, and PoolParty can be
+extended to support new assay types and analysis strategies as they emerge.
+}
+\DIFaddend 
+
+\keywords{sequence design, library design, massively parallel reporter assay,
+deep mutational scanning, multiplex assay of variant effect, genomic AI,
+in silico experiments, Python software, directed acyclic graph}
+
+\modulolinenumbers[1]
+\linenumbers
+\maketitle
+
+\section{Background}\label{sec:background}
+
+Designed libraries of DNA sequences (oligonucleotide pools) have become essential tools in functional genomics. In massively parallel reporter assays (MPRAs), complex libraries of DNA sequences are routinely used to measure the regulatory activities of tens of thousands of candidate regulatory elements or their variants in a single experiment \citep{Patwardhan2009cw, Kinney2010tn, Melnikov2012dw, Kwasnieski2012hu, Sharon2012io, Mogno2013cf, Levo2014hl, Inoue2015cs, Vvedenskaya2015ih, Urtecho2018hu, Klein2020, Romero2023, LaFleur2024aa}. In deep mutational scanning (DMS) experiments, coding sequences that have been either systematically or randomly mutagenized are commonly used to map protein fitness landscapes \citep{Fowler2010gt, Hietpas2011bp, Fowler2014gq, Olson2014iq, Adams2016dka, Findlay2018kd, Starr2020aa}. Oligo pools can also be used in high-throughput biochemical assays, such as measurements of transcription factor specificity \citep{Berger2006wp, Maerkl2007tv, Noyes2008vr, Gordan2013, Le2018cr, Shen2018ip, Khetan2025_paditseq}. These are all examples of multiplex assays of variant effect (MAVEs), a large and expanding family of high-throughput methods that quantitatively link sequence to function at scale \citep{Kinney2019jc, Starita2017ec, Weile2018gm}. Designed sequence libraries are also used beyond the wet lab: they are increasingly employed in silico to probe the behavior of genomic AI models \citep{Avsec2021bpnet, Toneyan2024creme, Seitz2024squid, Seitz2025, Nagai2026review} and to augment genomic AI training data \citep{Lee2023}.
+
+Computationally designing these libraries is straightforward in principle, but in practice it is often tedious and prone to error. Typical applications require oligo pools comprising multiple types of variant sequences. A DMS library, for example, might combine exhaustive single-amino-acid substitutions, sampled higher-order mutants, multiple copies of wild-type and control sequences, and barcodes---each generated by a different procedure and subject to different coverage requirements. An MPRA library might tile multiple transcription factor binding sites across a regulatory element in all possible permutations and orientations, then assign each variant multiple barcodes. Coordinating this kind of combinatorial logic in a one-off script quickly becomes unwieldy, and often produces errors that are hard to catch.
+
+Existing tools can help with parts of this process\DIFdelbegin \DIFdel{, but none provide a unified framework for library design}\DIFdelend . General-purpose sequence
+toolkits \DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{Cock2009df, Pereira2015wj, Klie2023kg, Schreiber2025nd} }\hskip0pt%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\citep{Cock2009df, Pereira2015wj, Klie2023kg} }\hskip0pt%DIFAUXCMD
+}\DIFaddend can manipulate
+individual sequences but have no notion of a variant library as a structured
+object. Consequently, users must write custom scripts to handle the
+combinatorial logic themselves. Several \DIFdelbegin \DIFdel{assay-specific }\DIFdelend \DIFaddbegin \DIFadd{other }\DIFaddend tools automate library design \DIFdelbegin \DIFdel{for particular experimental formats}\DIFdelend \DIFaddbegin \DIFadd{or
+sequence perturbation for particular applications}\DIFaddend . For example, VaLiAnT
+\citep{Barbon2022th} generates \DIFdelbegin \DIFdel{exhaustive single-position variant libraries for DMS and
+saturation genome editing, including }\DIFdelend \DIFaddbegin \DIFadd{mutational scanning libraries of both coding and
+noncoding regions; supported mutation types include }\DIFaddend single-nucleotide
+substitutions, \DIFdelbegin \DIFdel{alanine scans}\DIFdelend \DIFaddbegin \DIFadd{amino acid substitutions}\DIFaddend , and in-frame deletions. For MPRAs,
+MPRAnator
+\citep{GeorgakopoulosSoares2017gb} provides modules for motif placement, SNP
+design, and negative control generation \citep[see also][]{Ghazi2018aa}. \DIFaddbegin \DIFadd{For in
+silico sequence experiments, tangermeme \mbox{%DIFAUXCMD
+\citep{Schreiber2025nd} }\hskip0pt%DIFAUXCMD
+supports
+sequence perturbation and analysis of genomic deep learning models. }\DIFaddend However,
+each of these tools is \DIFdelbegin \DIFdel{tied to a specific assay type and}\DIFdelend \DIFaddbegin \DIFadd{targeted to specific applications and, as a result, no
+individual tool can generate the full range of library designs in common use.
+For example, VaLiAnT }\DIFaddend does not support \DIFdelbegin \DIFdel{combinatorial designs or mixed mutagenesis strategies. While some annotate each variant with the specific mutations it carries, none record the broader design parameters governing how each sequence was generated---parameters that can serve directly as covariates in downstream analyses}\DIFdelend \DIFaddbegin \DIFadd{regulatory sequence libraries containing
+random combinations of transcription factor binding sites; MPRAnator does not
+support codon-aware mutagenesis of protein-coding sequences; tangermeme does
+not provide metadata describing the construction of each individual sequence}\DIFaddend .
+
+Here we present PoolParty, a Python package that enables the streamlined design of complex DNA sequence libraries. In PoolParty, libraries are represented as objects called \emph{Pools}, while individual steps in the sequence generation process are called \emph{Operations}. Using a concise and transparent syntax, users chain together Operations into a directed acyclic graph (DAG)---an approach inspired by deep learning frameworks---that yields the desired Pool. The DAG describes the high-level logic used to generate sequences, while the procedural details and bookkeeping are handled internally. Importantly, no sequences are generated until the user requests them, so users can explore and test multiple design options without \DIFdelbegin \DIFdel{triggering expensive computations}\DIFdelend \DIFaddbegin \DIFadd{generating each full library}\DIFaddend . When sequences are generated, each is automatically assigned an informative name and paired with a \emph{design card} that records the specific procedures used to construct it. We demonstrate PoolParty through three example applications: a DMS library for protein GB1, an MPRA library probing transcriptional regulatory grammar, and an in silico experiment characterizing SpliceAI \citep{Jaganathan2019ps}, in which design cards provide the covariates for surrogate modeling.
+
+\section{Implementation}\label{sec:implementation}
+
+\subsection{Pools and Operations}\label{subsec:pools-and-operations}
+
+PoolParty is built around two core abstractions: Pools and Operations. Pools represent collections of sequences---either the final library that the user wishes to generate, or intermediate sets of sequences out of which the final library is constructed. Operations represent the steps used to create Pools. When designing a library, users chain together multiple Operations into a DAG that yields the desired Pool, called the \emph{root Pool}. Sequences are then generated on demand from the root Pool. By delaying sequence generation until it is explicitly requested, users can test many different library designs before committing to generating the full library. For example, users can inspect a few sampled sequences from each one of multiple proposed designs.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\textwidth]{figure1}
+\caption{\textbf{PoolParty builds libraries from Pools and Operations.}
+\textbf{(A)} Pools represent collections of sequences, and Operations generate new Pools based on their inputs (left). Users chain Operations into a directed acyclic graph (DAG) that specifies the desired library. Operations fall into four functional categories: source, transformation, composition, and state (right).
+\textbf{(B)} Sequence generation proceeds in two steps: state assignment and sequence construction. For each desired sequence, PoolParty passes to the root Pool a number (called the \emph{state}) that specifies which sequence to generate. During state assignment (left), this state is propagated backward through the DAG, resolving the internal state of every Operation along the way. During sequence construction (right), each Operation generates and combines sequence fragments according to its assigned state, producing the final sequence at the root Pool. When multiple Pools are combined by \texttt{stack}, only one parent is active for a given state; inactive branches receive no state (\texttt{None}) and are shown as grey arrows.
+\textbf{(C)} Example workflow. The template sequence contains a user-specified region (called ``tag'') that is targeted for both mutagenesis and deletion scanning. Left: the DAG specifying the sequence library. Center: the design card DataFrame returned by the DAG. Right: styled sequence output, with colors indicating mutations (red), deletions (green), and the tagged region (blue).}
+\label{fig:figure1}
+\end{figure}
+
+PoolParty provides over 50 built-in Operations that users can choose from when constructing DAGs. Each Operation takes zero or more Pools as input and returns exactly one Pool as output. It is useful to think of Operations as falling into four functional categories (Fig.~\ref{fig:figure1}A): source, transformation, composition, and state Operations. \emph{Source Operations} create the initial Pools from which all downstream Pools are constructed. The Pools they create may represent user-specified sequences \DIFaddbegin \DIFadd{loaded directly or from FASTA and VCF files}\DIFaddend , DNA sequences generated using position weight matrices (PWMs) or IUPAC motifs, random k-mers, barcodes, and so on. \emph{Transformation Operations} modify sequence content, e.g., generating sequence variants through point mutations, insertions, deletions, recombination, or shuffling. Specialized codon-aware Operations are provided for transformations that operate on open reading frames. \emph{Composition Operations} combine sequences from multiple parent Pools, either by concatenating parent sequences end-to-end (the \texttt{join} Operation) or by merging multiple Pools into one Pool (the \texttt{stack} Operation). \emph{State Operations} affect which sequences are in a Pool and how they are ordered, and include methods to select, reorder, filter, and replicate sequences. \DIFaddbegin \DIFadd{Filtering can be based on sequence length, GC content, homopolymer length, sequence complexity, restriction enzyme recognition sites, or arbitrary user-defined criteria.
+}\DIFaddend 
+
+\subsection{Sequence generation}\label{subsec:sequence-generation}
+
+To generate a sequence library, PoolParty iterates through a series of
+\emph{states}. Each state is an integer that, together with a random seed,
+uniquely determines a sequence. The generation of each individual sequence
+proceeds in two steps\DIFdelbegin \DIFdel{, }\DIFdelend \DIFaddbegin \DIFadd{: }\DIFaddend state assignment and sequence construction
+(Fig.~\ref{fig:figure1}B\DIFdelbegin \DIFdel{), a process that }\DIFdelend \DIFaddbegin \DIFadd{; Additional file 1: Fig.~S1). This process }\DIFaddend begins when the corresponding
+state is passed to the root Pool. State assignment involves a
+\emph{backward pass} through the DAG\DIFaddbegin \DIFadd{, from the root Pool toward the initial
+Pools}\DIFaddend . Each Pool passes the state it receives to \DIFdelbegin \DIFdel{its upstream Operation }\DIFdelend \DIFaddbegin \DIFadd{the Operation that created it}\DIFaddend .
+Each Operation then decomposes this state into an \emph{internal state} (which
+it keeps) and zero or more \emph{component states}, each of which is passed to a
+distinct \DIFdelbegin \DIFdel{upstream Pool }\DIFdelend \DIFaddbegin \DIFadd{input Pool of that Operation}\DIFaddend . Sequence construction then occurs during
+a \emph{forward pass} through the DAG\DIFaddbegin \DIFadd{, from the initial Pools toward the root
+Pool}\DIFaddend : each Operation constructs a sequence based on its internal state and the
+sequences \DIFdelbegin \DIFdel{received from the upstream }\DIFdelend \DIFaddbegin \DIFadd{returned by its input }\DIFaddend Pools, then passes this sequence to the \DIFdelbegin \DIFdel{downstream Pool }\DIFdelend \DIFaddbegin \DIFadd{Pool it
+creates}\DIFaddend . The final constructed sequence is then received from the root Pool and
+recorded.
+
+\subsection{Operation modes}\label{subsec:operation-modes}
+
+The specific way that each Operation interprets its internal state is determined by its \emph{mode}.
+
+\begin{itemize}
+\item In \emph{sequential mode}, the Operation exhaustively enumerates a finite set of sequence designs. For example, when \texttt{mutagenize} is instructed to generate single-nucleotide mutations in sequential mode, it yields one variant for each possible character change at each target position. Its internal state specifies which mutation to apply at which position.
+
+\item In \emph{random mode}, the Operation samples sequence designs stochastically. For example, when \texttt{mutagenize} operates in random mode, it randomly selects which positions to mutate and which mutations to introduce. Its internal state, combined with a master seed, determines the specific random draws, ensuring reproducibility.
+
+\item In \emph{fixed mode}, there is no internal state. Rather, output sequences are uniquely determined by the input sequences. One example is \texttt{join}, which concatenates its input sequences without modification.
+\end{itemize}
+
+\subsection{StateTracker}\label{subsec:statetracker}
+
+The way each Operation decomposes the state it receives during the backward pass is designed to reverse the way it constructs sequences during the forward pass. For most Operations, the set of possible output states is the Cartesian product of the possible internal states and the possible states of each input Pool. In such cases, the Operation uses mixed-radix decomposition to split the received state into its component states. The \texttt{stack} Operation is different: its output states are the disjoint union of its input Pool states. The \texttt{stack} Operation therefore uses the state it receives to select which input Pool to use, and to instruct this Pool (but not the other Pools) which sequence to return. Keeping track of these rules across a complex DAG requires specialized bookkeeping. We therefore developed a back-end package called StateTracker that automates state composition and decomposition during forward and backward passes through the DAG.
+
+\subsection{Sequence regions}\label{subsec:sequence-regions}
+
+One may want to perform different Operations on different parts of a sequence. To facilitate this, PoolParty lets users mark regions of interest within sequences using XML-style tags. PoolParty supports both opening/closing tag pairs (e.g., \texttt{AAA<cre>CCCGGG</cre>TTT}) and self-closing tags (e.g., \texttt{ACGT<ins/>ACGT}). Operations can then be instructed to act only on a specified region, as illustrated in Fig.\ \ref{fig:figure1}C. Tags persist through the DAG and remain valid even when upstream Operations change the content of a region. Multiple Operations can thus target modifications to the same region in series.
+
+\subsection{Sequence metadata}\label{subsec:sequence-metadata}
+
+It is often useful to record how each sequence within a library was constructed. PoolParty provides three complementary ways to do this (Fig.~\ref{fig:figure1}C).
+
+\begin{itemize}
+\item \emph{Design cards} record the specific changes applied to each sequence by each Operation. Users specify which Operations and Operation-specific variables to track\DIFaddbegin \DIFadd{, including user-defined sequence scores computed with the }\texttt{\DIFadd{score}} \DIFadd{Operation}\DIFaddend . As each sequence is generated, the root Pool returns it together with a design card that records the tracked variable values for that sequence. PoolParty compiles these into a DataFrame in which each row contains a generated sequence and its design card.
+
+\item \emph{Sequence names} summarize at a glance how each sequence was constructed. Users assign a prefix to each Operation they wish to track. PoolParty then pairs each prefix with the corresponding Operation's internal state to form a token (e.g., \texttt{mut\_03}), and concatenates these tokens to form the sequence's name. For example, \texttt{wt.mut\_03.bc\_01} might denote a wild-type sequence with mutation variant number 3 and barcode number 1.
+
+\item \emph{Sequence styling} allows sequences to be annotated with colors and formatted text that reflects each one's construction history. For example, \texttt{mutagenize} can be instructed to mark the positions it mutates in bold yellow text, making these positions stand out from the rest of the sequence. This formatting is accomplished using ANSI escape codes, so that output renders correctly in command-line terminals, Jupyter notebooks, and other environments that support basic text formatting. These styles combine in a natural manner as sequences propagate through the DAG. For example, a mutated position can be underlined even if it occurs within a sequence region that is already colored blue.
+\end{itemize}
+
+\DIFaddbegin \DIFadd{PoolParty also provides a }\texttt{\DIFadd{stats}} \DIFadd{method for summarizing a DNA Pool,
+including its unique and duplicate sequence counts, pairwise Hamming distances,
+and homopolymer frequencies.
+}
+
+\DIFaddend \subsection{Implementation and extensibility}\label{subsec:implementation-and-extensibility}
+
+PoolParty requires Python 3.10 or later, is designed to have minimal dependencies, and is distributed via PyPI. Documentation, tutorials, and example notebooks are available on the ReadTheDocs and GitHub project websites. PoolParty is also extensible: users can create new Operation types by subclassing the Operation base class and implementing a few required methods. Custom Operations automatically inherit support for state tracking, design card generation, and visualization, allowing researchers to add domain-specific functionality without reimplementing core infrastructure.
+
+\subsection{SpliceAI surrogate analysis}\label{subsec:spliceai-surrogate-analysis}
+
+This section provides technical details for the surrogate modeling analysis presented in Results. Using the human 5' splice site (5'ss) position weight matrix \citep{Wong2018quantitative}, we sampled 9-mers representing cryptic 5'ss sequences and scored them with MaxEntScan \citep{Yeo2004me}. Sequences were binned into 100 MaxEntScan score (hereafter, strength) quantiles, and 20 sequences were drawn from each bin (2,000 total). Each 9-mer was inserted at 100 positions flanking the canonical 5'ss of SMN2 exon~7 and paired with a matched control in which the GT dinucleotide was disrupted (T$>$A at $+2$).
+
+\DIFdelbegin \DIFdel{We predicted SpliceAI }\DIFdelend \DIFaddbegin \DIFadd{SpliceAI \mbox{%DIFAUXCMD
+\citep{Jaganathan2019ps} }\hskip0pt%DIFAUXCMD
+is a genomic deep learning model for splice-site prediction in humans. We used the five-model ensemble to predict the canonical }\DIFaddend 5'ss \DIFdelbegin \DIFdel{probabilities at the canonical site using the five-model ensemble of \mbox{%DIFAUXCMD
+\citet{Jaganathan2019ps} }\hskip0pt%DIFAUXCMD
+with }\DIFdelend \DIFaddbegin \DIFadd{probability using }\DIFaddend $\pm$5~kb of genomic context (GRCh38). For each library-control pair, we computed the difference in logit-transformed predictions at the canonical 5'ss. These per-sequence values were averaged within each cell of the resulting $100 \times 100$ position-by-strength grid.
+
+We fit generalized additive models (GAMs) to the cell means using pyGAM \citep{Serven2018pg}, with smooth terms for position, strength, and their interaction. Models were weighted by the inverse variance of each cell mean. Exonic and intronic regions were modeled separately. Model performance was evaluated by checkerboard cross-validation of the grid.
+
+\subsection{Use of large language models}\label{subsec:llm-disclosure}
+
+Large language models (Claude Opus 4.5 and 4.6, Anthropic) were used to assist with code development, debugging, documentation writing, and copy-editing of the manuscript. The authors are responsible for all final code and text.
+
+\section{Results}\label{sec:results}
+
+\subsection{Example 1: DMS library for protein GB1}\label{subsec:example1-dms-gb1}
+
+As a first example, we use PoolParty to reconstruct and extend the library used in a DMS experiment on protein GB1 by \citet{Olson2014iq}, adding random higher-order mutants and wild-type replicates to the original design. Their library contained the wild-type GB1 coding sequence, all single amino acid substitutions (excluding the start codon), and nearly all possible pairs of amino acid substitutions. This library is substantially larger than most DMS libraries, containing over half a million variants. Its inclusion of so many pairwise variants has helped it become a benchmark dataset in the quantitative modeling of protein sequence-function relationships \citep{Otwinowski2018jb, Otwinowski2018jj, Tareen2022dh, Faure2024mn}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figure2}
+\caption{\textbf{A deep mutational scanning (DMS) library for protein GB1.}
+\textbf{(A)} DAG and representative sequences for each of the four library components: replicates of the wild-type sequence, all single amino acid substitutions, all pairwise amino acid substitutions, and random higher-order mutants. Mutated codons are highlighted with amino acid translations shown beneath.
+\textbf{(B)} Python code implementing the DAG.
+\textbf{(C)} Design cards reporting the library component, mutation positions, and amino acid changes for representative variants.
+\textbf{(D)} DAG structure displayed by \texttt{print\_dag()}.}
+\label{fig:figure2}
+\end{figure}
+
+Fig.\ \ref{fig:figure2}A illustrates the DAG used to construct this library; the corresponding Python code is shown in Fig.\ \ref{fig:figure2}B. First, we use the \texttt{from\_seq} Operation to define a Pool named \texttt{orf\_pool} that represents the wild-type GB1 coding sequence. This Pool is then passed to four separate Operations that define the four library components. The first is a \texttt{repeat} Operation that produces 100 copies of the wild-type sequence. The second and third are \texttt{mutagenize\_orf} Operations running in sequential mode: one generates all 1,045 single amino acid substitutions, and the other generates all 536,085 pairwise amino acid substitutions. The fourth is a \texttt{mutagenize\_orf} Operation running in random mode, which mutates each amino acid position with 10\% probability to generate 10,000 higher-order variants. We note that \texttt{mutagenize\_orf} supports multiple codon mutation types; this example uses \texttt{missense\_only\_first}, which selects the most \DIFdelbegin \DIFdel{abundant }\DIFdelend \DIFaddbegin \DIFadd{frequently used human }\DIFaddend codon for each \DIFdelbegin \DIFdel{amino acid substitution}\DIFdelend \DIFaddbegin \DIFadd{target amino acid according to the built-in codon-usage table}\DIFaddend . These four Pools are then merged by \texttt{stack} into the root Pool, yielding a library of 547,230 sequences in total. The design card for each variant (Fig.~\ref{fig:figure2}C) reports which component it belongs to, the specific mutations it contains, and the replicate index (for wild-type copies). Users can also inspect the DAG structure by calling the \texttt{print\_dag} method of the root Pool (Fig.~\ref{fig:figure2}D).
+
+\subsection{Example 2: MPRA library for regulatory grammar}\label{subsec:example2-mpra}
+
+MPRA libraries used to study regulatory grammar often vary the positions and orientations of transcription factor binding sites (TFBSs) \citep{Melnikov2012dw, Sharon2012io, King2020aa, Smith2013kn, Grossman2017aa, WeingartenGabbay2019bl, GeorgakopoulosSoares2023tf}. For example, \citet{GeorgakopoulosSoares2023tf} studied the impact of order and orientation on gene expression by testing over 200,000 sequences containing all pairwise and triplet arrangements of 18 TFBSs. Designing such libraries requires substantially more complex combinatorics than standard DMS libraries do. PoolParty, however, handles this complexity without making additional demands on the user.
+
+As a second example, we designed an MPRA library representing various arrangements of binding sites for three liver-enriched transcription factors---HNF4A, PPARA, and XBP1 (Fig.~\ref{fig:figure3}A,B). Following the oligo layout of \citet{Melnikov2012dw}, we start by creating a Pool representing a template sequence that contains a putatively inert 100~bp cis-regulatory element (CRE) region (\texttt{<cre>}) and a barcode region (\texttt{<bc>}). Next, we create a Pool representing the binding site for HNF4A. This Pool is then passed to the \texttt{flip} Operation, which yields both orientations of the site (forward and reverse complement). Pools for PPARA and XBP1 are created similarly. The template Pool and three TFBS Pools are then passed to the \texttt{insertion\_multiscan} Operation, which samples 1,000 random placements of the TFBSs within the \texttt{<cre>} region without overlap. Because \texttt{flip} runs in sequential mode, all $2^3 = 8$ orientation combinations are generated for each placement, yielding 8,000 unique CRE variants. Each sequence is then replicated three times using the \texttt{repeat} Operation. Finally, the \texttt{get\_barcodes} Operation is used to generate barcodes that are inserted into the \texttt{<bc>} region of the sequence. The result is a library of 24,000 sequences (Fig.~\ref{fig:figure3}A).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figure3}
+\caption{\textbf{A massively parallel reporter assay (MPRA) library for probing regulatory grammar.}
+\textbf{(A)} Library schematic showing TFBS placements across a 100-bp CRE in representative variants, each linked to three different barcodes.
+\textbf{(B)} Python code for library construction. TFBS Pools are initialized with forward sequences and augmented with the \texttt{flip} Operation to include both orientations.
+\textbf{(C)} Output of \texttt{print\_library}. TFBSs are colored by identity (HNF4A blue, PPARA purple, XBP1 orange); barcodes are shown in bold.}
+\label{fig:figure3}
+\end{figure}
+
+Colored text helps users inspect the architecture of the resulting sequences. After the template Pool is created, the \texttt{stylize} Operation is used to shade the \texttt{<cre>} region gray. Each TFBS Pool is also assigned a distinct color when it is created (HNF4A blue, PPARA purple, XBP1 orange); this is specified by the \texttt{style} parameter passed to \texttt{from\_seq}. Barcodes are similarly \DIFdelbegin \DIFdel{rendered }\DIFdelend \DIFaddbegin \DIFadd{set to render }\DIFaddend in bold text (Fig.~\ref{fig:figure3}B). These styles compose as sequences pass through the DAG, so that when \texttt{print\_library} is called (Fig.~\ref{fig:figure3}C), the position, order, and orientation of each binding site are immediately visible.
+
+\subsection{Example 3: Surrogate modeling of SpliceAI predictions}\label{subsec:example3-spliceai}
+
+Designed sequence libraries are also used to study genomic AI models \citep{Avsec2021bpnet, Toneyan2024creme, Seitz2024squid, Nagai2026review}. First, an in silico experiment is carried out in which the AI model scores all sequences in a library. The results are then analyzed to characterize model behavior. One useful way of analyzing these synthetic data is \emph{surrogate modeling}, in which a mathematically simple model---one whose structure and parameters are directly interpretable---is fit to the predictions.
+
+In addition to streamlining the design of sequence libraries, PoolParty facilitates in silico experiments on genomic AI models in two ways. First, because sequence design is separated from sequence generation, new sequences can be generated on demand as the experiment proceeds. Second, the design card that PoolParty returns with each sequence provides metadata that can be used directly as covariates in downstream analyses, including surrogate modeling.
+
+As a third example, we carried out a surrogate modeling study of SpliceAI\DIFdelbegin \DIFdel{\mbox{%DIFAUXCMD
+\citep{Jaganathan2019ps}}\hskip0pt%DIFAUXCMD
+}\DIFdelend , a deep learning model of mRNA splicing. We asked how the insertion of a cryptic 5'ss near an existing (canonical) 5'ss affects the model's prediction for canonical site usage. Using the 5'ss of SMN2 exon~7 as the canonical site, we used PoolParty to construct a library in which cryptic 5'ss 9-mers of varying strength \DIFaddbegin \DIFadd{(MaxEntScan score) }\DIFaddend were inserted at varying positions on either side of the canonical 5'ss (see Implementation). The specific values for cryptic site strength and position were recorded in the design cards (Fig.~\ref{fig:figure4}A).
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.75\textwidth]{figure4}
+\caption{\textbf{Surrogate modeling of SpliceAI predictions.}
+\textbf{(A)} Experimental design. Cryptic 5'ss 9-mers of varying MaxEntScan strength ($s$) are inserted at varying positions ($p$) flanking the canonical 5'ss of SMN2 exon~7. Each variant is paired with a control in which the splice-site GT dinucleotide is disrupted (GT$\to$GA). PoolParty records $s$ and $p$ in design cards. The effect of each insertion on SpliceAI predictions at the canonical 5'ss is quantified as $\Delta$logit and modeled as a function of $s$ and $p$ using a generalized additive model (GAM).
+\textbf{(B)} Mean $\Delta$logit across the strength $\times$ position grid ($100 \times 100$; each cell averages 20 distinct 9-mers). The grey band marks the canonical 5'ss region.
+\textbf{(C)} GAM predictions (including interaction term), using the same color scale as in B.
+\textbf{(D)} Partial dependence of the position term $f_1(p)$, shown separately for exon (blue) and intron (red) models. Shaded regions indicate 95\% confidence intervals; points denote mean partial residuals.
+\textbf{(E)} Partial dependence of the strength term $f_2(s)$, with conventions as in D.
+\textbf{(F)} Interaction surface $f_{12}(p,s)$ for exon and intron models.
+\textbf{(G)} Block cross-validation $R^2$ for linear and GAM models, with and without interaction terms.}
+\label{fig:figure4}
+\end{figure}
+
+Each variant was paired with a matched control in which the cryptic site was disrupted, and the effect of each insertion was quantified as the difference in logit-transformed SpliceAI-predicted probabilities at the canonical site ($\Delta$logit). Generalized additive models (GAMs) were used to separately model the effects of cryptic site insertion at exonic and intronic positions. Each of these two models has three terms, corresponding to the effects of position alone, strength alone, and interactions between these covariates (Fig.~\ref{fig:figure4}A).
+
+The GAMs closely reproduced the observed data (Fig.~\ref{fig:figure4}B,C)\DIFdelbegin \DIFdel{, with held-out $R^2$ of 0.82 for exonic and 0.71 for intronic insertions (Fig. ~\ref{fig:figure4}G). }\DIFdelend \DIFaddbegin \DIFadd{. }\DIFaddend Cryptic sites on the exonic side suppressed canonical site usage more strongly than those on the intronic side (Fig.~\ref{fig:figure4}D), with the effect peaking approximately 20~bp upstream of the canonical 5'ss. This is consistent with the observation that cryptic 5'ss are preferentially depleted near annotated ones on the exonic side \citep{Dawes2022empirical}. Stronger cryptic sites drove greater suppression in both models (Fig.~\ref{fig:figure4}E). The effects of position and strength exhibited substantial interactions (Fig.~\ref{fig:figure4}F). Through a comparison to analogous linear models, we observed that the non-linear terms and interaction terms in the GAMs substantially improved predictive performance\DIFaddbegin \DIFadd{, with held-out $R^2$ of 0.82 for exonic and 0.71 for intronic insertions }\DIFaddend (Fig.~\ref{fig:figure4}G).
+
+\DIFaddbegin \DIFadd{Runtime and peak memory benchmarks for the three examples are provided in
+Additional file 1: Fig.~S2 and Table~S1.
+}
+
+\DIFaddend \section{Discussion}\label{sec:discussion}
+
+We have presented PoolParty, a Python package that \DIFdelbegin \DIFdel{replaces }\DIFdelend \DIFaddbegin \DIFadd{provides a structured alternative to }\DIFaddend the ad hoc scripting commonly used to design oligonucleotide libraries\DIFdelbegin \DIFdel{with a declarative, composable, and flexible framework}\DIFdelend . We demonstrated PoolParty through three use cases: a DMS library for protein GB1; an MPRA library probing transcriptional regulatory grammar; and a surrogate modeling analysis of the effects of cryptic 5'ss on SpliceAI predictions. These examples illustrate the flexibility of PoolParty and its applicability to both experimental and computational studies.
+
+PoolParty was inspired by deep learning frameworks like PyTorch and TensorFlow, in which a high-level API is used to construct a DAG representing the desired neural network. The DAG then enables computation of model gradients via backpropagation. Similarly, in PoolParty, a backward pass through the DAG is used to decompose the state for a requested sequence into the specific Operation internal states needed to construct that sequence during a subsequent forward pass. This state-decomposition mechanism is a core innovation of PoolParty; it is what allows users to design complex oligo pools and test them before generating the full sequence library.
+
+We also highlight PoolParty's design cards. Design cards allow the parameters governing each sequence's construction to serve directly as covariates in downstream analyses, eliminating the need for post hoc sequence parsing. In the SpliceAI \DIFaddbegin \DIFadd{surrogate modeling }\DIFaddend example, the cryptic splice-site strength and position recorded in each design card provided the covariates used for surrogate modeling. We expect design cards to be increasingly useful as in silico experiments on genomic AI models become more common.
+
+\DIFdelbegin \DIFdel{In contrast to assay-specific }\DIFdelend \DIFaddbegin \DIFadd{PoolParty complements existing library-design }\DIFaddend tools such as VaLiAnT
+\citep{Barbon2022th} and MPRAnator \citep{GeorgakopoulosSoares2017gb} \DIFdelbegin \DIFdel{, PoolParty provides }\DIFdelend \DIFaddbegin \DIFadd{by
+providing }\DIFaddend a single framework \DIFdelbegin \DIFdel{that supports }\DIFdelend \DIFaddbegin \DIFadd{for }\DIFaddend DMS libraries, MPRA libraries, and library
+designs that combine elements of both. Its DAG-based architecture lets users
+freely compose arbitrary sequence generation and transformation operations.
+Because the DAG encodes the full construction logic, structured design-card
+metadata are generated automatically as a byproduct. \DIFaddbegin \DIFadd{Additional comparisons
+between PoolParty and existing tools are provided in Additional file 1:
+Figs.~S3 and S4 and Tables~S2 and S3.
+}\DIFaddend 
+
+PoolParty was designed to address a focused computational problem: the
+streamlined design of DNA sequence libraries. As such, it has several
+limitations. PoolParty \DIFaddbegin \DIFadd{operates on sequences, not genomic loci or transcript
+models. It can accept genomic coordinates as input to extract sequences, but
+does not interpret transcript annotations or keep track of those coordinates
+through subsequent design steps (e.g., as VaLiAnT does), making it less helpful
+for genome-editing MAVE libraries that require this context throughout their
+design. PoolParty }\DIFaddend is not a sequence optimization tool, e.g., for optimizing
+codon usage \citep{Swainston2017rb} \DIFdelbegin \DIFdel{, satisfying synthesis constraints on individual sequences }\DIFdelend \DIFaddbegin \DIFadd{or individual sequences subject to synthesis
+constraints }\DIFaddend \citep{Zulkower2020jk}, or \DIFaddbegin \DIFadd{for }\DIFaddend designing sequences guided by machine
+learning models \citep{Schreiber2025ledidi}. Nor does it address the problem of
+physically constructing DNA sequence libraries, e.g., by designing mutagenic
+primers \citep{Hiraga2021yg}. We expect that PoolParty can in many cases be
+productively paired with such complementary tools.
+
+\section{Conclusions}\label{sec:conclusions}
+
+PoolParty should substantially ease the design of DMS experiments, MPRAs, and other multiplex assays of variant effect. As genomic AI models continue to advance, PoolParty will also help researchers systematically probe and interpret the behavior of these models. Moreover, because PoolParty's composable design makes it straightforward to define new Operations, the framework can readily be extended to support novel assay types and analysis strategies as they emerge.
+
+\backmatter
+
+\section*{Availability and requirements}
+\begin{description}
+  \item[Project name:] PoolParty
+  \item[Project home page:] \url{https://github.com/jbkinney/poolparty-statetracker}
+  \item[Documentation:] \url{https://poolparty.readthedocs.io}
+  \item[Archived version:] DOI \href{https://doi.org/10.5281/zenodo.19445098}{10.5281/zenodo.19445098}
+  \item[Operating system(s):] Platform independent
+  \item[Programming language:] Python ($\geq$ 3.10)
+  \item[Other requirements:] NumPy ($\geq$ 1.20), pandas ($\geq$ 1.3), beartype ($\geq$ 0.22.9), pyfaidx ($\geq$ 0.8.1), typing\_extensions ($\geq$ 4.0). The companion \texttt{statetracker} package is installed automatically alongside PoolParty.
+  \item[License:] MIT License
+  \item[Any restrictions to use by non-academics:] None
+\end{description}
+
+\section*{List of abbreviations}
+\begin{description}
+  \item[5'ss] 5' splice site
+  \item[CRE] Cis-regulatory element
+  \item[DAG] Directed acyclic graph
+  \item[DMS] Deep mutational scanning
+  \item[GAM] Generalized additive model
+  \item[MAVE] Multiplex assay of variant effect
+  \item[MPRA] Massively parallel reporter assay
+  \item[PWM] Position weight matrix
+  \item[TFBS] Transcription factor binding site
+\end{description}
+
+\section*{Declarations}
+
+\subsection*{Ethics approval and consent to participate}
+Not applicable.
+
+\subsection*{Consent for publication}
+Not applicable.
+
+\subsection*{Availability of data and materials}
+No experimental data were generated or analyzed in this study. The sequence and software used in the paper were obtained from public sources referenced in the manuscript: the GB1 coding sequence from Olson et al.~\citep{Olson2014iq}; the MPRA backbone, TFBS sequences, and inert background sequence from Melnikov et al.~\citep{Melnikov2012dw} and Georgakopoulos-Soares et al.~\citep{GeorgakopoulosSoares2023tf}; the SMN2 exon~7 genomic context from GRCh38.p13 (RefSeq assembly accession \href{https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.39/}{GCF\_000001405.39}); the human 5' splice-site position weight matrix from Wong et al.~\citep{Wong2018quantitative}; MaxEntScan from Yeo and Burge~\citep{Yeo2004me}; and the pretrained SpliceAI model ensemble from Jaganathan et al.~\citep{Jaganathan2019ps}.
+
+\subsection*{Competing interests}
+The authors declare that they have no competing interests.
+
+\subsection*{Funding}
+This work was supported by the National Institutes of Health [R01HG011787]. Computational equipment was supported by the National Institutes of Health [S10OD028632].
+
+\subsection*{Authors' contributions}
+Z.L. conceived the project. Z.L. and J.B.K. designed the project, wrote the software, performed the analyses, and wrote the manuscript. Z.L. and A.C. wrote the documentation, developed the test suite, and deployed the software. J.B.K. supervised the research. All authors read and approved the final manuscript.
+
+\subsection*{Acknowledgements}
+We thank Jack Desmarais, Evan Seitz, and Kai Loell for helpful discussions\DIFaddbegin \DIFadd{.
+}
+
+\section*{\DIFadd{Supplementary Information}}
+
+\textbf{\DIFadd{Additional file 1 (PDF): Supplementary methods, figures, and tables.}}
+\DIFadd{Contains the benchmark methods, Figs.~S1--S4, and Tables~S1--S3}\DIFaddend .
+
+\bibliography{references}
+
+\end{document}
