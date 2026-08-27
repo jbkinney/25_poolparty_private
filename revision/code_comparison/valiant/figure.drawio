@@ -1,0 +1,95 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="valiant-comparison">
+    <mxGraphModel dx="900" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="670" pageHeight="418" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontStyle=1;" value="A" vertex="1">
+          <mxGeometry x="0.0" y="0.0" width="14.0" height="14.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=8;" value="One library: BRCA1 exon 2, three mutation types, P5/P7 adaptors" vertex="1">
+          <mxGeometry x="18.0" y="0.0" width="340.0" height="14.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=8;" value="chr17:43,115,634-43,115,878   minus strand, 245 nt" vertex="1">
+          <mxGeometry x="120.0" y="16.0" width="300.0" height="12.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=8;" value="r2 = exon 2, 54 nt" vertex="1">
+          <mxGeometry x="223.4" y="32.0" width="223.3" height="12.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F7F7F7;strokeColor=#999999;" value="" vertex="1">
+          <mxGeometry x="120.0" y="46.0" width="103.4" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F7F7F7;strokeColor=#999999;" value="" vertex="1">
+          <mxGeometry x="446.6" y="46.0" width="103.4" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="" vertex="1">
+          <mxGeometry x="223.4" y="46.0" width="223.3" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" value="" vertex="1">
+          <mxGeometry x="223.4" y="46.0" width="8.3" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" value="" vertex="1">
+          <mxGeometry x="442.5" y="46.0" width="4.1" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=7;" value="r1  25 nt" vertex="1">
+          <mxGeometry x="120.0" y="46.0" width="103.4" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=7;" value="r3  25 nt" vertex="1">
+          <mxGeometry x="446.6" y="46.0" width="103.4" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=7;" value="17 codons, 51 nt" vertex="1">
+          <mxGeometry x="231.6" y="46.0" width="210.9" height="16.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=6.5;fontColor=#666666;" value="transcript 3&#39; end" vertex="1">
+          <mxGeometry x="116.0" y="64.0" width="76.0" height="10.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=6.5;fontColor=#666666;" value="transcript 5&#39; end" vertex="1">
+          <mxGeometry x="478.0" y="64.0" width="76.0" height="10.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="1" style="endArrow=none;html=1;strokeColor=#B85450;strokeWidth=0.5;" value="" vertex="1">
+          <mxGeometry x="227.0" y="62.0" width="1.0" height="18.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=8;fontColor=#B85450;" value="2 nt &#8211; begins a codon completed in exon 3" vertex="1">
+          <mxGeometry x="132.5" y="80.0" width="190.0" height="12.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" parent="1" style="endArrow=none;html=1;strokeColor=#B85450;strokeWidth=0.5;" value="" vertex="1">
+          <mxGeometry x="444.1" y="62.0" width="1.0" height="18.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=8;fontColor=#B85450;" value="1 nt &#8211; completes a codon begun in exon 1;  phase = 1" vertex="1">
+          <mxGeometry x="326.6" y="80.0" width="236.0" height="12.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=8;" value="17 codons &#215; (19 aa + 1 in-frame deletion + 1 stop)  =  357 oligos" vertex="1">
+          <mxGeometry x="120.0" y="108.0" width="360.0" height="12.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=8;" value="P5 20 nt  +  245 nt  +  P7 21 nt  =  286 nt  (283 where a codon is deleted)" vertex="1">
+          <mxGeometry x="120.0" y="122.0" width="400.0" height="12.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontStyle=1;" value="B" vertex="1">
+          <mxGeometry x="0.0" y="146.0" width="14.0" height="14.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=9;" value="VaLiAnT 4.0.0" vertex="1">
+          <mxGeometry x="18.0" y="146.0" width="160.0" height="14.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Consolas;spacing=5;spacingLeft=8;spacingTop=6;" value="&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;targeton.tsv&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ref_chr        chr17&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ref_strand     -&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ref_start      43115634&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ref_end        43115878&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;r2_start       43115726&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;r2_end         43115779&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;ext_vector     &quot;25,25&quot;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;action_vector  &quot;(),(aa,inframe,stop),()&quot;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;ENST00000357654.9.gtf&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;CDS  43115726  43115779  .  -  1&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;chr17.fa   81 MB&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;$ valiant sge targeton.tsv ../ref/chr17.fa out \&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;'homo sapiens' 'GRCh38' \&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;--revcomp-minus-strand \&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;--adaptor-5 ... --adaptor-3 ... \&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;--gff ENST00000357654.9.gtf&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;3 input files + one command line&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry x="0.0" y="164.0" width="289.0" height="254.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontStyle=1;" value="C" vertex="1">
+          <mxGeometry x="308.8" y="146.0" width="14.0" height="14.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c25" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=9;" value="PoolParty" vertex="1">
+          <mxGeometry x="326.8" y="146.0" width="160.0" height="14.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c26" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Consolas;spacing=5;spacingLeft=8;spacingTop=6;" value="&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;ADAPTOR_5 = &lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;AATGATACGGCGACCACCGA&quot;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;ADAPTOR_3 = &lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;TCGTATGCCGTCTTCTGCTTG&quot;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;orf = pp.from_fasta(&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;chr17.fa&quot;&lt;/span&gt;, (&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;chr17&quot;&lt;/span&gt;, 43115633, 43115878, &lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;-&quot;&lt;/span&gt;)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;).annotate_orf(region_name=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;cds&quot;&lt;/span&gt;, extent=(100, 151), frame=1)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;aa = orf.mutagenize_orf(&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;region=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;cds&quot;&lt;/span&gt;, num_mutations=1,&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;mutation_type=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;missense_only_first&quot;&lt;/span&gt;, mode=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;sequential&quot;&lt;/span&gt;)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;inframe = orf.deletion_scan_orf(&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;deletion_codons=1, deletion_marker=None,&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;region=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;cds&quot;&lt;/span&gt;, mode=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;sequential&quot;&lt;/span&gt;)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;stop = orf.insertion_scan_orf(&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;TGA&quot;&lt;/span&gt;, region=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;cds&quot;&lt;/span&gt;, replace=True, mode=&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&quot;sequential&quot;&lt;/span&gt;)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;library = pp.join([ADAPTOR_5, pp.stack([aa, inframe, stop]),&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 8.3px;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ADAPTOR_3])&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry x="308.8" y="164.0" width="361.2" height="232.0" as="geometry" />
+        </mxCell>
+        <mxCell id="c27" parent="1" edge="1" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=1;strokeColor=#B85450;strokeWidth=0.75;endArrow=blockThin;endFill=1;endSize=4;exitX=0.5;exitY=1;fontSize=7;fontColor=#B85450;labelBackgroundColor=#FFFFFF;" value="transcribed by hand">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="183.4" y="296.5" as="sourcePoint" />
+            <mxPoint x="590.3" y="230.5" as="targetPoint" />
+            <Array as="points"><mxPoint x="183.4" y="204.5" /><mxPoint x="590.3" y="204.5" /></Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,61 @@
+% Table 2 - capability matrix. GENERATED from MATRIX.md - do not hand-edit.
+% Column headers: 45deg. origin=lB anchors each label at its own baseline-left,
+% so all labels share one baseline; \makebox[0pt][l] gives them zero width so
+% they add nothing to the table and cannot overflow the line. Each label then
+% starts at its column center and runs up-right. tabcolsep is 10pt so adjacent
+% diagonals clear each other (~19pt perpendicular separation).
+% A 3pt left nudge (about half a symbol width) sets each diagonal over the
+% middle of its column of symbols rather than flush with the left edge.
+% Measured: 0.00pt baseline stagger, uniform -3.5pt offset, no overfull.
+% Requires: booktabs, graphicx, wasysym (\usepackage[nointegrals]{wasysym})
+\newcommand{\hbfull}{\CIRCLE}
+\newcommand{\hbhalf}{\LEFTcircle}
+\newcommand{\hbnone}{\Circle}
+\begin{table}[tbp]
+\centering
+\footnotesize
+% (setspace override omitted: no effect inside this float)
+\setlength{\tabcolsep}{10pt}
+\caption{\textbf{Capabilities of tools for designing DNA sequence
+libraries.} \hbfull\ denotes a capability the tool provides; \hbhalf\ one provided
+with restrictions; \hbnone\ one the tool does not provide. Capabilities are counted
+only where the tool provides a dedicated operation, parameter, or mode.}
+\label{tab:capabilities}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+& \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{DNA Chisel}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{MPRA Design Tools}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{MPRAnator}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{Mutation Maker}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{Oligopool Calculator}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{\textbf{PoolParty}}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{tangermeme}} & \makebox[0pt][l]{\hspace*{-3pt}\rotatebox[origin=lB]{45}{VaLiAnT}}\\
+\midrule
+\multicolumn{9}{@{}l}{\textit{Library Specification}}\\
+\quad Library object & \hbnone & \hbhalf & \hbnone & \hbhalf & \hbhalf & \hbfull & \hbhalf & \hbnone\\
+\quad Composable operations & \hbhalf & \hbnone & \hbhalf & \hbnone & \hbfull & \hbfull & \hbhalf & \hbnone\\
+\quad Mixed variant types in one library & \hbnone & \hbfull & \hbfull & \hbhalf & \hbnone & \hbfull & \hbnone & \hbfull\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Variant Generation}}\\
+\quad Saturation mutagenesis & \hbnone & \hbnone & \hbnone & \hbnone & \hbhalf & \hbfull & \hbfull & \hbfull\\
+\quad Randomly sampled variants & \hbfull & \hbhalf & \hbfull & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone\\
+\quad Pairwise and higher-order variants & \hbfull & \hbnone & \hbfull & \hbfull & \hbhalf & \hbfull & \hbhalf & \hbnone\\
+\quad Model-guided variants & \hbfull & \hbnone & \hbnone & \hbnone & \hbnone & \hbhalf & \hbfull & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Variant Types}}\\
+\quad Codon / amino-acid substitutions & \hbfull & \hbnone & \hbnone & \hbhalf & \hbnone & \hbfull & \hbnone & \hbfull\\
+\quad Insertions and deletions & \hbnone & \hbfull & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbfull\\
+\quad Combinatorial multi-motif placement & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone\\
+\quad Recombination & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone\\
+\quad Shuffling & \hbnone & \hbnone & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Physical Construction}}\\
+\quad Synthesis-constraint checking & \hbfull & \hbhalf & \hbhalf & \hbnone & \hbfull & \hbhalf & \hbnone & \hbhalf\\
+\quad Constraint-based optimization & \hbfull & \hbhalf & \hbhalf & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
+\quad Primer design & \hbhalf & \hbnone & \hbnone & \hbfull & \hbfull & \hbnone & \hbnone & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Metadata and Inspection}}\\
+\quad Per-sequence design cards & \hbfull & \hbfull & \hbhalf & \hbfull & \hbfull & \hbfull & \hbnone & \hbfull\\
+\quad Automatic naming & \hbnone & \hbhalf & \hbfull & \hbfull & \hbhalf & \hbfull & \hbhalf & \hbfull\\
+\quad Sequence styling & \hbnone & \hbnone & \hbhalf & \hbnone & \hbnone & \hbfull & \hbnone & \hbnone\\
+\addlinespace
+\multicolumn{9}{@{}l}{\textit{Genomic Integration}}\\
+\quad Genome coordinates & \hbnone & \hbhalf & \hbfull & \hbnone & \hbnone & \hbhalf & \hbhalf & \hbfull\\
+\quad Transcript / annotation aware & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbnone & \hbfull\\
+\botrule
+\end{tabular}
+\end{table}

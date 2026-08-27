@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Run pytest against a specific poolparty worktree. Refuses to run if `import
+# poolparty` would resolve anywhere other than that worktree.
+#
+#   pptest <worktree-root> [pytest args...]
+set -euo pipefail
+TREE="$(cd "$1" && pwd)"; shift
+PY=/home/leo/anaconda3/envs/poolparty_dev/bin/python
+export PYTHONPATH="$TREE/poolparty/src:$TREE/statetracker/src${PYTHONPATH:+:$PYTHONPATH}"
+
+"$PY" - "$TREE" <<'GUARD'
+import sys, pathlib
+tree = pathlib.Path(sys.argv[1]).resolve()
+for mod in ("poolparty", "statetracker"):
+    m = __import__(mod)
+    got = pathlib.Path(m.__file__).resolve()
+    if tree not in got.parents:
+        sys.exit(f"REFUSING TO RUN: {mod} resolves to {got}, not under {tree}")
+    print(f"  {mod:12} -> {got}")
+GUARD
+
+cd "$TREE" && exec "$PY" -m pytest "$@"
