@@ -272,7 +272,7 @@ uniquely determines a sequence. The generation of each individual sequence
 proceeds in two steps: state assignment and sequence construction
 (Fig.~\ref{ms-fig:figure1}B; Additional file 1: Fig.~S1). This process begins when the corresponding
 state is passed to the root Pool. State assignment involves a
-\emph{backward pass} through the DAG, from the root Pool toward the initial
+\emph{backward pass} through the DAG, from the root Pool toward the source
 Pools. Each Pool passes the state it receives to the Operation that created it.
 Each Operation then decomposes this state into an \emph{internal state} (which
 it keeps) and zero or more \emph{component states}, each of which is passed to a
@@ -316,8 +316,8 @@ following sentence to the Pools and Operations subsection:
 \end{response}
 
 \begin{msquote}
-Filtering can be based on sequence length, GC content, homopolymer length,
-sequence complexity, restriction enzyme recognition sites, or arbitrary
+Sequences can be filtered based on sequence length, GC content, homopolymer
+length, sequence complexity, restriction enzyme recognition sites, or other
 user-defined criteria.
 \end{msquote}
 
@@ -327,10 +327,10 @@ Discussion:
 \end{response}
 
 \begin{msquote}
-PoolParty is not a sequence optimization tool, e.g., for optimizing codon usage
-\citep{Swainston2017rb} or individual sequences subject to synthesis constraints
-\citep{Zulkower2020jk}, or for designing sequences guided by machine learning
-models \citep{Schreiber2025ledidi}.
+PoolParty is also not a sequence optimization tool; it does not design sequences
+that have optimized codon usage \citep{Swainston2017rb}, that are subject to
+complex synthesis constraints \citep{Zulkower2020jk}, or that have optimal
+activity as assessed by machine learning models \citep{Schreiber2025ledidi}.
 \end{msquote}
 
 \item The name PoolParty may be confused with the existing PoolParty analysis
@@ -390,9 +390,9 @@ Existing tools can help with parts of this process.
 \end{msquote}
 
 \begin{msquote}
-We have presented PoolParty, a Python package that provides a structured
-alternative to the ad hoc scripting commonly used to design oligonucleotide
-libraries.
+We have presented PoolParty, a Python package for designing oligonucleotide
+libraries. PoolParty facilitates this task by representing libraries as directed
+acyclic graphs (DAGs) that users can construct using a simple API.
 \end{msquote}
 
 \begin{msquote}
@@ -481,9 +481,8 @@ reads:
 PoolParty operates on sequences, not genomic loci or transcript models. It can
 accept genomic coordinates as input to extract sequences, but does not
 interpret transcript annotations or keep track of those coordinates through
-subsequent design steps (e.g., as VaLiAnT does), making it less helpful for
-genome-editing MAVE libraries that require this context throughout their
-design.
+subsequent design steps (e.g., as VaLiAnT does), which may make PoolParty less
+helpful for certain genome-editing applications.
 \end{msquote}
 
 \item Line 12 -- there is not a ``lack'' of purpose-built software, replace
@@ -530,9 +529,10 @@ made the wording more specific:
 \end{response}
 
 \begin{msquote}
-Importantly, no sequences are generated until the user requests them, so users
-can explore and test multiple design options without generating each full
-library.
+Importantly, no sequences are generated until the user requests them, and it is
+simple to generate small test sets of sequences. This allows users to explore
+multiple design options without having to generate complete libraries at each
+iteration.
 \end{msquote}
 
 \item The use cases of protein coding, MPRA promoter and splice are good examples
@@ -567,8 +567,7 @@ clarified this in the text:
 \begin{msquote}
 We note that \texttt{mutagenize\_orf} supports multiple codon mutation types;
 this example uses \texttt{missense\_only\_first}, which selects the most
-frequently used human codon for each target amino acid according to the
-built-in codon-usage table.
+frequently used codon in the human genome for each target amino acid.
 \end{msquote}
 
 \item Line 235 -- SpliceAI is defined here for the first time but is introduced
@@ -636,9 +635,9 @@ statements:
 \end{response}
 
 \begin{msquote}
-We have presented PoolParty, a Python package that provides a structured
-alternative to the ad hoc scripting commonly used to design oligonucleotide
-libraries.
+We have presented PoolParty, a Python package for designing oligonucleotide
+libraries. PoolParty facilitates this task by representing libraries as directed
+acyclic graphs (DAGs) that users can construct using a simple API.
 \end{msquote}
 
 \begin{msquote}
@@ -657,9 +656,9 @@ in the Results. The revised sentence reads:
 \end{response}
 
 \begin{msquote}
-In the SpliceAI surrogate modeling example, the cryptic splice-site strength
-and position recorded in each design card provided the covariates used for
-surrogate modeling.
+For example, in the SpliceAI analysis of Fig.~\ref{ms-fig:figure4}, the cryptic
+splice-site strength and position recorded in each design card provided the
+covariates used for surrogate modeling.
 \end{msquote}
 
 \item The code is very well written and documented, and it is noted by the
