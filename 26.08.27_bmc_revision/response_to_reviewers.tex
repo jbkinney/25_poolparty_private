@@ -33,11 +33,7 @@ Zhihan Liu, Aidan Cordero, Justin B. Kinney\\[0.7em]
 \end{center}
 
 \begin{response}
-We thank the editor and the three reviewers for their consideration of our
-manuscript. This work has been greatly improved based on constructive feedback
-from all reviewers. Additional edits have been made throughout the manuscript
-to improve clarity. Below is a point-by-point response to each of the critiques
-raised.
+We thank the Editor and Reviewers for their thoughtful critiques, to which we provide a point-by-point response below. The manuscript has been improved substantially as a result of this feedback. Additional edits have also been made throughout the manuscript to improve clarity. 
 \end{response}
 
 \reviewersection{Editor Comments}
@@ -56,20 +52,7 @@ runtime, memory usage), program features, and similarities/differences in
 program outputs.
 
 \begin{response}
-We have addressed these points throughout the revision. We benchmarked
-PoolParty runtime and memory usage for all three examples, each at a range of
-library sizes. For tool comparisons, we included the ones discussed in the
-manuscript that address DNA library design or related sequence-design problems.
-We have now included two supplementary tables, S2 and S3, to give an overview
-of these tools and compare detailed design capabilities for a subset focused on
-DNA library design. For the code comparisons, we selected tools that could
-cover the use case types represented by the examples in our main text. These
-direct comparisons focus on code and generated sequences: VaLiAnT for DMS and
-tangermeme for the SpliceAI surrogate modeling example. We also tried
-MPRAnator for the MPRA example, but it could not be run at the time of testing.
-We have made substantial changes to the Background and Discussion sections to
-clarify the scope and limitations of PoolParty. Detailed responses are provided
-below.
+We now provide a more thorough comparison between PoolParty and other available tools for desinging sequence libraries, including in the Introduction, Discussion and a new Supplemental Information Supplemental document. Tables S2 and S3 compare PoolParty to a wide range of available tools, and Figs.~S3 and S4 compare PoolParty to its two closest competitors VaLiAnT and tangermeme, in specific use cases. We additionally attempted to provide a use case comparison to MPRAnator, but this tool runs through a web interface that is no longer functional. We have also benchmarked the compute and memory requirements of PoolParty on the three examples feature in the main text (Fig.~S2 and Table S1). Resource usage is shown only for PoolParty, as none of the competing tools were able to generate the specific libraries shown in those examples. 
 \end{response}
 
 \reviewersection{Reviewer 1}
@@ -83,22 +66,8 @@ libraries of increasing sizes (e.g., 1K, 10K, 100K, 500K sequences), and specify
 the test environment configuration.
 
 \begin{response}
-We thank the reviewer for pointing out this omission. We have now benchmarked
-runtime and peak memory for the three main-text examples across a range of
-library sizes. For example, the full GB1 library (547,230 sequences) took
-$132 \pm 6$~s to generate and used 487~MB of peak memory on our test machine.
-Runtime and memory both increase approximately linearly with library size,
-apart from some initial overhead, and the per-sequence cost depends on the
-operations used. We have added these results to Additional file 1: Fig.~S2 and
-Table~S1, with
-details of the benchmarking setup in the Supplementary Methods. We have added the
-following sentence to the Results section:
+The revised text benchmarks the resourcee requirements of PoolParty for each of the three examples featured in the main text (in Figs.~1, 2, and 3), using libraries of increasing size. The results are reported in the new Fig.~S1 and Table S1. The new Supplemental Information file additionally reports the machine configuration uses in these benchmarking tests. This new material is referenced in the Discussion. 
 \end{response}
-
-\begin{msquote}
-Runtime and peak memory benchmarks for the three examples are provided in
-Additional file 1: Fig.~S2 and Table~S1.
-\end{msquote}
 
 \item The paper highlights design cards as a core feature, emphasizing their use
 as covariates in downstream analyses. However, it does not evaluate whether
@@ -108,22 +77,7 @@ experiment quantifying the added information gain of design cards, or explicitly
 state in the Discussion that this validation is planned as future work.
 
 \begin{response}
-Most design cards record sequence changes introduced by PoolParty Operations as
-human-readable descriptors, which do not add additional information since they
-are fully recoverable from the final sequence. The main purpose of design cards
-is thus to save users time and effort extracting those features post-hoc from
-the constructed library using custom scripts, and to provide interpretable
-inputs for downstream grouping and modeling when the recorded sequence changes
-are themselves the object of study. In the SpliceAI surrogate example, we use
-SpliceAI to score an in silico sequence library and fit a simple surrogate model
-to those predictions. We are mainly interested in what SpliceAI has learned
-about the effects of cryptic splice site strength and position on the usage of
-a nearby canonical 5$'$ splice site, rather than in improving predictive
-performance. Since the surrogate model is intrinsically interpretable and the
-design cards directly encode cryptic site strength and relative position, its
-fitted effects have a direct biological interpretation and show how SpliceAI
-predictions respond to these two factors. These effects would be harder to
-interpret from raw sequence inputs alone.
+Design cards record the specific design choices used to construct each sequence. We claim in the paper that this can facilitate surrogate modling studies by making these design choices readily available as covariates, and support this claim by illustrating in Fig.~3 an sample analysis that does this. The does not, however, claim that the information in design cards increases the predictive performance of sequence-to-function models. 
 \end{response}
 
 \item The introduction mentions VaLiAnT and MPRAnator, noting their limitations,
@@ -133,42 +87,20 @@ on core features, and demonstrate code conciseness in at least one common use
 case, to help readers objectively assess PoolParty's advantages.
 
 \begin{response}
-We agree that a careful comparison with related tools is important for
-clarifying the scope of PoolParty. We have now added two supplementary tables
-comparing PoolParty with tools mentioned in the main text (Additional file 1:
-Tables~S2 and S3). The first gives a general
-overview of the tools and their key features, while the second one is a feature
-matrix that focuses on specific
-library-design capabilities. The comparison also includes features that
-PoolParty does not currently support, such as those related to the physical
-construction of the library and annotation-aware design.
-
-We also compared PoolParty directly with VaLiAnT and tangermeme. For VaLiAnT,
-we implemented a new BRCA1 exon 2 DMS library in both tools, and all 357
-sequences matched when both used the same codon usage table. For tangermeme, we
-used the SpliceAI example from the main text, and all 200,000 sequences matched
-after converting the one-hot output from tangermeme back to sequence strings.
-These comparisons are shown in Additional file 1: Figs.~S3 and S4. We also
-tried to include MPRAnator, but it could not be run at the time of testing.
-
-The supplementary figures show the implementations side by side. The
-PoolParty and comparison implementations are comparable in length in both
-examples; however, our main goal is to make complex library designs more
-modular and declarative so that they are easier to specify and reproduce.
+Tables S2 and S3 in the new Supplemental Information document provide a systematic comparison between PoolParty and other competing tools. Figs.~S3 and S4 further provide code comparisons between PoolParty and the two competing packages, VaLiAnT and tangermeme, in two specific use caes. As mentioned above, we additionally tried to provide a comparison to MPRAnator, but that software (which runs through a web interface) is no longer functional. The Introductiona nd Discussion have also been revised to more explicitly compare PoolParty to existing tools. 
 \end{response}
 
 \item Provide benchmarking data on runtime and memory usage across libraries of
 varying sizes.
 
 \begin{response}
-We have addressed this together with Comment 1 above.
+This is addressed in the response to Comment 1 above. 
 \end{response}
 
 \item Include a table comparing features with 2--3 existing tools.
 
 \begin{response}
-The comparison is described in our response to Comment 3 above and provided in
-Additional file 1: Tables~S2 and S3.
+This is addressed in the response to Comment 3 above. 
 \end{response}
 
 \item To further contextualize this research within the existing academic
@@ -184,13 +116,7 @@ authors supplement several relevant representative references.
 [4] \url{https://doi.org/10.1016/j.patcog.2025.112078}
 
 \begin{response}
-We thank the reviewer for these suggestions; however, having read these papers,
-it remains unclear to us how they are relevant to PoolParty. Specifically, the
-first reviews multimodal representations of small molecules for drug discovery;
-the second models single-cell transcriptomic and surface-protein measurements;
-the third reviews read mapping to pangenome graphs; and the last one is about
-circRNA--miRNA interaction prediction. None seems to relate to designed oligo
-pools; we have therefore decided not to include these citations.
+Having read these papers, we do not see how these references are relevant to PoolParty for the more general problem of sequence library design: the first paper discusses multimodal representations of small molecules for drug discovery; the second paper models single-cell transcriptomic and surface-protein measurements; the third paper discusses read mapping to pangenome graphs; and the fourth paper concerns circRNA-miRNA interaction prediction. We therefore decided to to cite these papers in the manuscript. 
 \end{response}
 
 \item Either provide empirical analysis of design cards' incremental
@@ -198,7 +124,7 @@ contribution to surrogate modeling performance, or explicitly discuss this as
 future work.
 
 \begin{response}
-Please see our response to Comment 2 above.
+This is addressed in the response to Comment 2 above. 
 \end{response}
 \end{enumerate}
 
