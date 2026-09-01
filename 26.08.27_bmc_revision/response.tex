@@ -11,7 +11,7 @@
 \usepackage[round]{natbib}
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
-\externaldocument[ms-]{manuscript_clean}
+\externaldocument[ms-]{main}
 
 \definecolor{responseblue}{HTML}{0070C0}
 \definecolor{noticegray}{HTML}{555555}
@@ -52,7 +52,9 @@ runtime, memory usage), program features, and similarities/differences in
 program outputs.
 
 \begin{response}
-We now provide a more thorough comparison between PoolParty and other available tools for desinging sequence libraries, including in the Introduction, Discussion and a new Supplemental Information Supplemental document. Tables S2 and S3 compare PoolParty to a wide range of available tools, and Figs.~S3 and S4 compare PoolParty to its two closest competitors VaLiAnT and tangermeme, in specific use cases. We additionally attempted to provide a use case comparison to MPRAnator, but this tool runs through a web interface that is no longer functional. We have also benchmarked the compute and memory requirements of PoolParty on the three examples feature in the main text (Fig.~S2 and Table S1). Resource usage is shown only for PoolParty, as none of the competing tools were able to generate the specific libraries shown in those examples. 
+We now provide a more thorough comparison between PoolParty and other available tools for designing sequence libraries, including in the Introduction, Discussion and a new Supplemental Information document. Tables S2 and S3 compare PoolParty to a wide range of available tools, and Figs.~S3 and S4 compare PoolParty to its two closest competitors, VaLiAnT and tangermeme, in specific use cases. We additionally attempted to provide a use case comparison to MPRAnator, but this tool runs through a web interface that is no longer functional. 
+
+We have also benchmarked the compute and memory requirements of PoolParty on the three examples featured in the main text (Fig.~S2 and Table S1). Resource usage is shown only for PoolParty; no competing tool is able to generate the libraries in Figs.~2 and 3, and in any case the text makes no claims about PoolParty being faster or more memory efficient than other tools.
 \end{response}
 
 \reviewersection{Reviewer 1}
@@ -66,7 +68,7 @@ libraries of increasing sizes (e.g., 1K, 10K, 100K, 500K sequences), and specify
 the test environment configuration.
 
 \begin{response}
-The revised text benchmarks the resourcee requirements of PoolParty for each of the three examples featured in the main text (in Figs.~1, 2, and 3), using libraries of increasing size. The results are reported in the new Fig.~S1 and Table S1. The new Supplemental Information file additionally reports the machine configuration uses in these benchmarking tests. This new material is referenced in the Discussion. 
+The revised text benchmarks the resource requirements of PoolParty for each of the three examples featured in the main text (in Figs.~2, 3, and 4), using libraries of increasing size. The results are reported in the new Fig.~S2 and Table S1. The new Supplemental Information file additionally reports the machine configuration used in these benchmarking tests. This new material is referenced in the Discussion. 
 \end{response}
 
 \item The paper highlights design cards as a core feature, emphasizing their use
@@ -77,7 +79,7 @@ experiment quantifying the added information gain of design cards, or explicitly
 state in the Discussion that this validation is planned as future work.
 
 \begin{response}
-Design cards record the specific design choices used to construct each sequence. We claim in the paper that this can facilitate surrogate modling studies by making these design choices readily available as covariates, and support this claim by illustrating in Fig.~3 an sample analysis that does this. The does not, however, claim that the information in design cards increases the predictive performance of sequence-to-function models. 
+Design cards record the specific design choices used to construct each sequence. We claim in the paper that this can facilitate surrogate modeling studies by making these design choices readily available as covariates, and support this claim by illustrating in Fig.~4 a sample analysis that does this. We do not, however, claim that the information in design cards increases the predictive performance of sequence-to-function models. 
 \end{response}
 
 \item The introduction mentions VaLiAnT and MPRAnator, noting their limitations,
@@ -87,7 +89,7 @@ on core features, and demonstrate code conciseness in at least one common use
 case, to help readers objectively assess PoolParty's advantages.
 
 \begin{response}
-Tables S2 and S3 in the new Supplemental Information document provide a systematic comparison between PoolParty and other competing tools. Figs.~S3 and S4 further provide code comparisons between PoolParty and the two competing packages, VaLiAnT and tangermeme, in two specific use caes. As mentioned above, we additionally tried to provide a comparison to MPRAnator, but that software (which runs through a web interface) is no longer functional. The Introductiona nd Discussion have also been revised to more explicitly compare PoolParty to existing tools. 
+Tables S2 and S3 in the new Supplemental Information document provide a systematic comparison between PoolParty and other competing tools. Figs.~S3 and S4 further provide code comparisons between PoolParty and the two competing packages, VaLiAnT and tangermeme, in two specific use cases. As mentioned above, we additionally tried to provide a comparison to MPRAnator, but that software (which runs through a web interface) is no longer functional. The Introduction and Discussion have also been revised to more explicitly compare PoolParty to existing tools. 
 \end{response}
 
 \item Provide benchmarking data on runtime and memory usage across libraries of
@@ -116,7 +118,7 @@ authors supplement several relevant representative references.
 [4] \url{https://doi.org/10.1016/j.patcog.2025.112078}
 
 \begin{response}
-Having read these papers, we do not see how these references are relevant to PoolParty for the more general problem of sequence library design: the first paper discusses multimodal representations of small molecules for drug discovery; the second paper models single-cell transcriptomic and surface-protein measurements; the third paper discusses read mapping to pangenome graphs; and the fourth paper concerns circRNA-miRNA interaction prediction. We therefore decided to to cite these papers in the manuscript. 
+Having read these papers, we were unable to identify a clear connection between these references and PoolParty, or the more general problem of sequence library design: the first paper discusses multimodal representations of small molecules for drug discovery; the second paper models single-cell transcriptomic and surface-protein measurements; the third paper discusses read mapping to pangenome graphs; and the fourth paper concerns circRNA-miRNA interaction prediction. We therefore decided not to cite these papers in the manuscript. 
 \end{response}
 
 \item Either provide empirical analysis of design cards' incremental
@@ -138,7 +140,7 @@ specifications)? How unique are the sequences (min/max/average hamming distance)
 How frequent are homopolymers? Etc.
 
 \begin{response}
-This is a good suggestion. To provide this information have added a \texttt{.stats()} method to the Pool class. This method computes a number of summary statistics about the pool, including the size of the design spzce (when this is fixed), the number of unique/duplicated sequences generated, the pairwise Hamming distances between generated sequences, the frequencies of homolopymer occurances, etc. We have added a short paragraph to the Sequence metadata subsection describing this method, as well as documentation at  at \url{https://poolparty.readthedocs.io/en/latest/pool.html#summarising-a-library-stats}. 
+This is a good suggestion. To provide this information we have added a \texttt{.stats()} method to the Pool class. This method computes a number of summary statistics about the pool, including the size of the design space (when this is fixed), the number of unique/duplicated sequences generated, the pairwise Hamming distances between generated sequences, the frequencies of homopolymer occurrences, etc. We have added a short paragraph to the Sequence metadata subsection describing this method, as well as documentation at \url{https://poolparty.readthedocs.io/en/latest/pool.html#summarising-a-library-stats}. 
 \end{response}
 
 % \begin{response}
@@ -162,7 +164,7 @@ This is a good suggestion. To provide this information have added a \texttt{.sta
 \item The authors disclose that LLMs were used to develop, debug, and document the code. Did the authors also write a test harness, and what edge cases were nominated by the LLMs for testing vs what edge cases were nominated by the human developers for testing?
 
 \begin{response}
-Yes, the PoolParty codebase includes over 3{,}000 tests that can be run using pytest. In our experience, the coding agents were quite good at testing mechanical aspects of the code (e.g., invalid inputs and boundary conditions). However, human-written use cases (from which most of the manual tests were derived) were essential for testing the types of inputs and requests likely to be encountered in real biological applications. The current suite consists of a mixture of these two types of tests. We did not track the origin of each test, however, and so precisely quantify how many came from each source.  
+Yes, the PoolParty codebase includes over 3{,}000 tests that can be run using pytest. In our experience, the coding agents were quite good at testing mechanical aspects of the code (e.g., invalid inputs and boundary conditions). However, human-written use cases (from which most of the manual tests were derived) were essential for testing the types of inputs and requests likely to be encountered in real biological applications. The current suite consists of a mixture of these two types of tests. We did not track the origin of each test, however, and so cannot precisely quantify how many came from each source.  
 \end{response}
 
 % \begin{response}
@@ -186,7 +188,7 @@ each step in an expanded figure or labeling arrows with the order would be more
 useful.
 
 \begin{response}
-The new Supplemental Information document includes a figure, Figure S1, that  breaks down the foward and backward pass computations in much more detail We believe this will answer the Reviewer's questions. 
+The new Supplemental Information document includes a figure, Fig.~S1, that breaks down the forward and backward pass computations in much more detail. We believe this will answer the Reviewer's questions. 
 \end{response}
 
 % \begin{response}
@@ -224,13 +226,14 @@ MPRAnator would provide additional confidence in the ability of PoolParty to
 produce sequence pools as expected. Metrics such as the number of pool elements that overlap and an investigation of any unique pool elements would ensure that the generate pools are accurate.
 
 \begin{response}
-Figures S3 and S4 in the new Supplemental Information document compare the code/files needed to create identical libraries with PoolParty and VaLiAnT (Fig. S3) or tangermeme (Fig. S4). We attempted to make a similar figure for MPRNator, but that tool uses a web interface that is currently inoperative. 
+Figs.~S3 and S4 in the new Supplemental Information document compare the code/files needed to create identical libraries with PoolParty and VaLiAnT (Fig.~S3) or tangermeme (Fig.~S4). We attempted to make a similar figure for MPRAnator, but that tool uses a web interface that is currently inoperative. 
 \end{response}
 
 \item Additional operations to improve library content would be useful. E.g. to maximize hamming distance, remove sequences containing restriction enzyme sites, remove homopolymers, etc. would make the tool more useful in generating ready-to-use pools.
 
 \begin{response}
-PoolParty does include a \texttt{filter} Operation that allows users to remove sequences that don't satisfy custom criterion. This Operation includes a number of built-in filter cirteria, including GC content, homopolymer content, sequence complexity, and restriction enzyme recodnition sites. We have also expanded the documentation on this capability and added a short description of this capability to the manuscript. 
+PoolParty does include a \texttt{filter} Operation that allows users to remove sequences that do not satisfy custom criteria. This Operation includes a number of built-in filter criteria, including GC content, homopolymer content, sequence complexity, and restriction enzyme recognition sites. We have also expanded the documentation on this capability and added a short description of this capability to the manuscript. 
+\end{response}
 
 \begin{msquote}
 Sequences can be filtered based on sequence length, GC content, homopolymer
@@ -238,12 +241,13 @@ length, sequence complexity, restriction enzyme recognition sites, or other
 user-defined criteria.
 \end{msquote}
 
-We have also clarified PoolParty's limitations in the Discussion section, in particular the fact that it not meant to generate libraries that are optimized for specific metrices.
+\begin{response}
+We have also clarified PoolParty's limitations in the Discussion section, in particular the fact that it is not meant to generate libraries that are optimized for specific metrics.
+\end{response}
 
 \begin{msquote}
 PoolParty is also not a sequence optimization tool; it does not design sequences that have optimized codon usage \citep{Swainston2017rb}, that are subject to complex synthesis constraints \citep{Zulkower2020jk}, or that have optimal activity as assessed by machine learning models \citep{Schreiber2025ledidi}.
 \end{msquote}
-\end{response}
 
 % PoolParty does have a general \texttt{filter} Operation that lets users provide a
 % Python function to decide
@@ -281,7 +285,7 @@ PoolParty is also not a sequence optimization tool; it does not design sequences
 softwre (\url{https://doi.org/10.1111/1755-0998.12784}).
 
 \begin{response}
-This is a fair concern, but we have decided to retain the name PoolParty. The package already uses the name \texttt{poolparty} on PyPI and ReadTheDocs, and announced this software in a preprint. Moreover, the previously published PoolParty is a pipeline for aligning and analyzing pooled-sequencing data, a use case that we believe is different enough from library sequence generation to avoid confusion with our package. 
+This is a fair concern, but we have decided to retain the name PoolParty. The package already uses the name \texttt{poolparty} on PyPI and ReadTheDocs, and we have announced this software in a preprint. Moreover, the previously published PoolParty is a pipeline for aligning and analyzing pooled-sequencing data, a use case that we believe is different enough from library sequence generation to avoid confusion with our package. 
 \end{response}
 
 % \begin{response}
@@ -319,7 +323,7 @@ and may allow researchers to more readily select which software to invest time
 into learning/using.
 
 \begin{response}
-This is a fair critique: PoolParty does not currently operate on genomes + transcript annotations, accept HGVS input, etc. We have removed language suggesting that PoolParty is meant to replace these other tools, including those that do, and have revised the Background and Discussion to define the scope of PoolParty more clearly. In Additional file 1, we have added two tables explicitly comparing the features and capabilities of PoolParty with existing tools (Tables~S2 and S3), and two figures showing side-by-side implementations of the same libraries in PoolParty versus VaLiAnT or tangermeme (Figs.~S3 and S4). Please also see the response to Comment 3 below.  
+This is a fair critique: PoolParty does not currently operate on genome assemblies together with transcript annotations, nor does it accept HGVS-formatted input. We have removed language suggesting that PoolParty is meant to replace these other tools, including those that do, and have revised the Background and Discussion to define the scope of PoolParty more clearly. In the Supplemental Information, we have added two tables explicitly comparing the features and capabilities of PoolParty with existing tools (Tables~S2 and S3), and two figures showing side-by-side implementations of the same libraries in PoolParty versus VaLiAnT or tangermeme (Figs.~S3 and S4). Please also see the response to Comment 3 below.  
 \end{response}
 
 % \begin{msquote}
@@ -359,9 +363,9 @@ clinically/genomically minded -- if this is possible I would state this/provide
 an easy means to generate VEP input format from PoolParty outputs.
 
 \begin{response}
-Yes, PoolParty does not annotate the molecular consequences of mutations, as it does not return an annotation layer with each sequence. However, if users wish to generate sequences that have a specific type of mutation, then fold these sequences into a larger library, there are two ways to track which specific sequences recieved which types of mutations: through the design card provided with each sequence, and through each sequence's name.
+Yes, PoolParty does not annotate the molecular consequences of mutations, as it does not return an annotation layer with each sequence. However, if users wish to generate sequences that have a specific type of mutation, then fold these sequences into a larger library, there are two ways to track which specific sequences received which types of mutations: through the design card provided with each sequence, and through each sequence's name.
 
-We appreciate the suggestion to support VCF format. To this end we have implemented a new method, \texttt{from\_vcf}, which extracts a specified sequence window and inserts the alternative alleles into that sequence. We do not, however, see a simple way of exporting libraries in VCF format, as the sequences generated by PoolParty are often not closely related to any specific wild-type sequence. The best option in this case would be for users to take the sequences generated by PoolParty, align them to a reference, and use the results to generate a correpsonding VCF record. We believe that this is best done using other available software, however, as building this capability into PoolParty would substantially expand PoolParty's dependencies.
+We appreciate the suggestion to support VCF format. To this end we have implemented a new method, \texttt{from\_vcf}, which extracts a specified sequence window and inserts the alternative alleles into that sequence. We do not, however, see a simple way of exporting libraries in VCF format, as the sequences generated by PoolParty are often not closely related to any specific wild-type sequence. The best option in this case would be for users to take the sequences generated by PoolParty, align them to a reference, and use the results to generate a corresponding VCF record. We believe that this is best done using other available software, however, as building this capability into PoolParty would substantially expand PoolParty's dependencies.
 \end{response}
 
 % \begin{response}
@@ -418,7 +422,7 @@ in my opinion, but much more salient for ML based studies on raw sequence out of
 genomic context).
 
 \begin{response}
-We agree and have updated the Limitations section accordingly. The revised textreads:
+We agree and have updated the Limitations section accordingly. The revised text reads:
 \end{response}
 
 \begin{msquote} 
@@ -473,7 +477,7 @@ Thanks!
 blocks here? I'm not sure how useful this is for readership.
 
 \begin{response}
-The purpose of these panels is to support our claim that the PoolParty API is simple to use. We believe that showing the code explicitly, together with the output the code generates, is the best way to support this claim, and so have opted to retain these panels. 
+The purpose of these panels is to support our claim that the PoolParty API is simple to use. We believe that showing the code explicitly, together with the output the code generates, is the best way to support this claim, and so we have opted to retain these panels. 
 \end{response}
 
 \item Line 194 -- `most abundant codon' -- this needs to be defined, is this
@@ -492,8 +496,7 @@ before this in section 2.8 -- I would move the `a deep learning model of mRNA
 splicing' to the earlier section.
 
 \begin{response}
-The term SpliceAI is now defined in the earlier Implementation subsection, where the
-this term is first used:
+The term SpliceAI is now defined in the earlier Implementation subsection, where this term is first used:
 \end{response}
 
 \begin{msquote}
@@ -558,10 +561,11 @@ likely due to confidentiality).
 
 \begin{response}
 BMC Bioinformatics policy permits LLM use when disclosed. We have also clarified the LLM disclosure statement in Implementation:
+\end{response}
+
 \begin{msquote}
 The authors used large language models (primarily Claude Opus 4.5 and 4.6, Anthropic) to assist with code development, debugging, and documentation writing. The manuscript was written entirely by the authors, with LLM assistance only at the copy-editing stage. The figures were also prepared by the authors; LLMs were used only to help write the scripts that generate the plots. The authors affirm that they are fully responsible for the content of the manuscript, the codebase, and the documentation. 
 \end{msquote}
-\end{response}
 
 \item The name `PoolParty' is great.
 
