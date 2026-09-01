@@ -138,38 +138,43 @@ specifications)? How unique are the sequences (min/max/average hamming distance)
 How frequent are homopolymers? Etc.
 
 \begin{response}
-We agree that these statistics are useful for checking the generated library.
-We have added a \texttt{.stats()} method that can be called on any DNA Pool in
-the DAG, summarizing the size of the specified design space when it is fixed,
-the number of unique/duplicated sequences generated, pairwise Hamming
-distances, homopolymer frequencies, and several other basic properties of the
-Pool. We have also added documentation and examples at
-\url{https://poolparty.readthedocs.io/en/latest/pool.html\#pool-stats}. We have
-added a short paragraph to the Sequence metadata subsection of the
-Implementation section:
+This is a good suggestion. To provide this information have added a \texttt{.stats()} method to the Pool class. This method computes a number of summary statistics about the pool, including the size of the design spzce (when this is fixed), the number of unique/duplicated sequences generated, the pairwise Hamming distances between generated sequences, the frequencies of homolopymer occurances, etc. We have added a short paragraph to the Sequence metadata subsection describing this method, as well as documentation at  at \url{https://poolparty.readthedocs.io/en/latest/pool.html#summarising-a-library-stats}. 
 \end{response}
 
-\begin{msquote}
-PoolParty also provides a \texttt{stats} method for summarizing a DNA Pool,
-including its unique and duplicate sequence counts, pairwise Hamming distances,
-and homopolymer frequencies.
-\end{msquote}
+% \begin{response}
+% We agree that these statistics are useful for checking the generated library.
+% We have added a \texttt{.stats()} method that can be called on any DNA Pool in
+% the DAG, summarizing the size of the specified design space when it is fixed,
+% the number of unique/duplicated sequences generated, pairwise Hamming
+% distances, homopolymer frequencies, and several other basic properties of the
+% Pool. We have also added documentation and examples at
+% \url{https://poolparty.readthedocs.io/en/latest/pool.html\#pool-stats}. We have
+% added a short paragraph to the Sequence metadata subsection of the
+% Implementation section:
+% \end{response}
 
-\item The authors disclose that LLMs were used to develop, debug, and document
-the code. Did the authors also write a test harness, and what edge cases were
-nominated by the LLMs for testing vs what edge cases were nominated by the human
-developers for testing?
+% \begin{msquote}
+% PoolParty also provides a \texttt{stats} method for summarizing a DNA Pool,
+% including its unique and duplicate sequence counts, pairwise Hamming distances,
+% and homopolymer frequencies.
+% \end{msquote}
+
+\item The authors disclose that LLMs were used to develop, debug, and document the code. Did the authors also write a test harness, and what edge cases were nominated by the LLMs for testing vs what edge cases were nominated by the human developers for testing?
 
 \begin{response}
-Yes. PoolParty has over 3,000 tests written with pytest. These tests are from a
-combination of humans and coding agents. We did not track the origin of every
-individual test, so we cannot separate them exactly after the fact. In our
-experience, coding agents are particularly good at testing mechanical aspects
-of the code (e.g., invalid inputs and boundary conditions) instead of
-biologically realistic tests (e.g., DMS and MPRA designs that respect
-biological and physical constraints), and we added a lot of tests for real use
-cases during a long period of development and trial use.
+Yes, the PoolParty codebase includes over 3{,}000 tests that can be run using pytest. In our experience, the coding agents were quite good at testing mechanical aspects of the code (e.g., invalid inputs and boundary conditions). However, human-written use cases (from which most of the manual tests were derived) were essential for testing the types of inputs and requests likely to be encountered in real biological applications. The current suite consists of a mixture of these two types of tests. We did not track the origin of each test, however, and so precisely quantify how many came from each source.  
 \end{response}
+
+% \begin{response}
+% Yes. PoolParty has over 3,000 tests written with pytest. These tests are from a
+% combination of humans and coding agents. We did not track the origin of every
+% individual test, so we cannot separate them exactly after the fact. In our
+% experience, coding agents are particularly good at testing mechanical aspects
+% of the code (e.g., invalid inputs and boundary conditions) instead of
+% biologically realistic tests (e.g., DMS and MPRA designs that respect
+% biological and physical constraints), and we added a lot of tests for real use
+% cases during a long period of development and trial use.
+% \end{response}
 
 \item The backward/forward pass steps are not well described in the manuscript,
 and figure 1b is hard to interpret. I suggest adding a supplemental figure
@@ -181,65 +186,51 @@ each step in an expanded figure or labeling arrows with the order would be more
 useful.
 
 \begin{response}
-We agree that our description of state assignment (the backward pass) and
-sequence construction (the forward pass) was not clear. We have revised the
-Sequence generation subsection to specify the order of the two passes and what
-is passed between Pools and Operations. We have also expanded the example in
-Fig.~\ref{ms-fig:figure1}B into Additional file 1: Fig.~S1, numbering each step
-and showing the state
-calculations and sequence changes in action. We have revised the Sequence generation
-subsection as follows:
+The new Supplemental Information document includes a figure, Figure S1, that  breaks down the foward and backward pass computations in much more detail We believe this will answer the Reviewer's questions. 
 \end{response}
 
-\begin{msquote}
-To generate a sequence library, PoolParty iterates through a series of
-\emph{states}. Each state is an integer that, together with a random seed,
-uniquely determines a sequence. The generation of each individual sequence
-proceeds in two steps: state assignment and sequence construction
-(Fig.~\ref{ms-fig:figure1}B; Additional file 1: Fig.~S1). This process begins when the corresponding
-state is passed to the root Pool. State assignment involves a
-\emph{backward pass} through the DAG, from the root Pool toward the source
-Pools. Each Pool passes the state it receives to the Operation that created it.
-Each Operation then decomposes this state into an \emph{internal state} (which
-it keeps) and zero or more \emph{component states}, each of which is passed to a
-distinct input Pool of that Operation. Sequence construction then occurs during
-a \emph{forward pass} through the DAG, from the initial Pools toward the root
-Pool: each Operation constructs a sequence based on its internal state and the
-sequences returned by its input Pools, then passes this sequence to the Pool it
-creates. The final constructed sequence is then received from the root Pool and
-recorded.
-\end{msquote}
+% \begin{response}
+% We agree that our description of state assignment (the backward pass) and
+% sequence construction (the forward pass) was not clear. We have revised the
+% Sequence generation subsection to specify the order of the two passes and what
+% is passed between Pools and Operations. We have also expanded the example in
+% Fig.~\ref{ms-fig:figure1}B into Additional file 1: Fig.~S1, numbering each step
+% and showing the state
+% calculations and sequence changes in action. We have revised the Sequence generation
+% subsection as follows:
+% \end{response}
+
+% \begin{msquote}
+% To generate a sequence library, PoolParty iterates through a series of
+% \emph{states}. Each state is an integer that, together with a random seed,
+% uniquely determines a sequence. The generation of each individual sequence
+% proceeds in two steps: state assignment and sequence construction
+% (Fig.~\ref{ms-fig:figure1}B; Additional file 1: Fig.~S1). This process begins when the corresponding
+% state is passed to the root Pool. State assignment involves a
+% \emph{backward pass} through the DAG, from the root Pool toward the source
+% Pools. Each Pool passes the state it receives to the Operation that created it.
+% Each Operation then decomposes this state into an \emph{internal state} (which
+% it keeps) and zero or more \emph{component states}, each of which is passed to a
+% distinct input Pool of that Operation. Sequence construction then occurs during
+% a \emph{forward pass} through the DAG, from the initial Pools toward the root
+% Pool: each Operation constructs a sequence based on its internal state and the
+% sequences returned by its input Pools, then passes this sequence to the Pool it
+% creates. The final constructed sequence is then received from the root Pool and
+% recorded.
+% \end{msquote}
 
 \item A comparison to the pools produced by other tools such as VaLiAnT or
 MPRAnator would provide additional confidence in the ability of PoolParty to
-produce sequence pools as expected. Metrics such as the number of pool elements
-that overlap and an investigation of any unique pool elements would ensure that
-the generate pools are accurate.
+produce sequence pools as expected. Metrics such as the number of pool elements that overlap and an investigation of any unique pool elements would ensure that the generate pools are accurate.
 
 \begin{response}
-We discuss this comparison in our response to Reviewer 1, Comment 3. The
-sequence-set comparisons are shown in Additional file 1: Figs.~S3 and S4.
+Figures S3 and S4 in the new Supplemental Information document compare the code/files needed to create identical libraries with PoolParty and VaLiAnT (Fig. S3) or tangermeme (Fig. S4). We attempted to make a similar figure for MPRNator, but that tool uses a web interface that is currently inoperative. 
 \end{response}
 
-\item additional operations to improve library content would be useful. E.g. to
-maximize hamming distance, remove sequences containing restriction enzyme
-sites, remove homopolymers, etc. would make the tool more useful in generating
-ready-to-use pools.
+\item Additional operations to improve library content would be useful. E.g. to maximize hamming distance, remove sequences containing restriction enzyme sites, remove homopolymers, etc. would make the tool more useful in generating ready-to-use pools.
 
 \begin{response}
-PoolParty does have a general \texttt{filter} Operation that lets users provide a
-Python function to decide
-which sequences should be kept. It also has several convenient filter methods
-for basic sequence properties, including GC content, homopolymers, sequence
-complexity, and restriction enzyme recognition sites. We realized that these
-features were not clearly described in the manuscript or documentation, and
-have now added a short description to the manuscript and expanded the
-documentation. We also clarified PoolParty's limitation in the Discussion to
-distinguish filtering from sequence optimization. Maximizing Hamming distance
-and other constraint-based optimizations usually require comparing sequences
-across the Pool and are outside the current scope of PoolParty. We have added the
-following sentence to the Pools and Operations subsection:
-\end{response}
+PoolParty does include a \texttt{filter} Operation that allows users to remove sequences that don't satisfy custom criterion. This Operation includes a number of built-in filter cirteria, including GC content, homopolymer content, sequence complexity, and restriction enzyme recodnition sites. We have also expanded the documentation on this capability and added a short description of this capability to the manuscript. 
 
 \begin{msquote}
 Sequences can be filtered based on sequence length, GC content, homopolymer
@@ -247,28 +238,59 @@ length, sequence complexity, restriction enzyme recognition sites, or other
 user-defined criteria.
 \end{msquote}
 
-\begin{response}
-We have also revised the following sentence in the limitations paragraph of the
-Discussion:
-\end{response}
+We have also clarified PoolParty's limitations in the Discussion section, in particular the fact that it not meant to generate libraries that are optimized for specific metrices.
 
 \begin{msquote}
-PoolParty is also not a sequence optimization tool; it does not design sequences
-that have optimized codon usage \citep{Swainston2017rb}, that are subject to
-complex synthesis constraints \citep{Zulkower2020jk}, or that have optimal
-activity as assessed by machine learning models \citep{Schreiber2025ledidi}.
+PoolParty is also not a sequence optimization tool; it does not design sequences that have optimized codon usage \citep{Swainston2017rb}, that are subject to complex synthesis constraints \citep{Zulkower2020jk}, or that have optimal activity as assessed by machine learning models \citep{Schreiber2025ledidi}.
 \end{msquote}
+\end{response}
+
+% PoolParty does have a general \texttt{filter} Operation that lets users provide a
+% Python function to decide
+% which sequences should be kept. It also has several convenient filter methods
+% for basic sequence properties, including GC content, homopolymers, sequence
+% complexity, and restriction enzyme recognition sites. We realized that these
+% features were not clearly described in the manuscript or documentation, and
+% have now added a short description to the manuscript and expanded the
+% documentation. We also clarified PoolParty's limitation in the Discussion to
+% distinguish filtering from sequence optimization. Maximizing Hamming distance
+% and other constraint-based optimizations usually require comparing sequences
+% across the Pool and are outside the current scope of PoolParty. We have added the
+% following sentence to the Pools and Operations subsection:
+% \end{response}
+
+% \begin{msquote}
+% Sequences can be filtered based on sequence length, GC content, homopolymer
+% length, sequence complexity, restriction enzyme recognition sites, or other
+% user-defined criteria.
+% \end{msquote}
+
+% \begin{response}
+% We have also revised the following sentence in the limitations paragraph of the
+% Discussion:
+% \end{response}
+
+% \begin{msquote}
+% PoolParty is also not a sequence optimization tool; it does not design sequences
+% that have optimized codon usage \citep{Swainston2017rb}, that are subject to
+% complex synthesis constraints \citep{Zulkower2020jk}, or that have optimal
+% activity as assessed by machine learning models \citep{Schreiber2025ledidi}.
+% \end{msquote}
 
 \item The name PoolParty may be confused with the existing PoolParty analysis
 softwre (\url{https://doi.org/10.1111/1755-0998.12784}).
 
 \begin{response}
-We thank the reviewer for pointing this out. The previously published PoolParty
-is a pipeline for aligning and analyzing pooled-sequencing data, whereas our
-package is used to design DNA sequence libraries. The two tools are unrelated
-and have different purposes. Given this difference in scope, we have retained
-the name PoolParty.
+This is a fair concern, but we have decided to retain the name PoolParty. The package already uses the name \texttt{poolparty} on PyPI and ReadTheDocs, and announced this software in a preprint. Moreover, the previously published PoolParty is a pipeline for aligning and analyzing pooled-sequencing data, a use case that we believe is different enough from library sequence generation to avoid confusion with our package. 
 \end{response}
+
+% \begin{response}
+% We thank the reviewer for pointing this out. The previously published PoolParty
+% is a pipeline for aligning and analyzing pooled-sequencing data, whereas our
+% package is used to design DNA sequence libraries. The two tools are unrelated
+% and have different purposes. Given this difference in scope, we have retained
+% the name PoolParty.
+% \end{response}
 \end{enumerate}
 
 \reviewersection{Reviewer 3}
@@ -297,41 +319,30 @@ and may allow researchers to more readily select which software to invest time
 into learning/using.
 
 \begin{response}
-We agree that the original wording was too broad. We have removed language
-suggesting that PoolParty replaces other tools and revised the Background and
-Discussion to define its scope more clearly.
-
-In Additional file 1, we have added two tables explicitly
-comparing PoolParty with existing tools (Tables~S2 and S3). We have also added two
-figures showing side-by-side implementations of the same libraries in
-PoolParty and VaLiAnT or tangermeme (Figs.~S3 and S4).
-
-PoolParty does not currently accept HGVS notation. We discuss the broader
-genome- and transcript-awareness limitation under Comment 3 below. We have
-revised the relevant statements as follows:
+This is a fair critique: PoolParty does not currently operate on genomes + transcript annotations, accept HGVS input, etc. We have removed language suggesting that PoolParty is meant to replace these other tools, including those that do, and have revised the Background and Discussion to define the scope of PoolParty more clearly. In Additional file 1, we have added two tables explicitly comparing the features and capabilities of PoolParty with existing tools (Tables~S2 and S3), and two figures showing side-by-side implementations of the same libraries in PoolParty versus VaLiAnT or tangermeme (Figs.~S3 and S4). Please also see the response to Comment 3 below.  
 \end{response}
 
-\begin{msquote}
-Existing tools can help with parts of this process.
-\end{msquote}
+% \begin{msquote}
+% Existing tools can help with parts of this process.
+% \end{msquote}
 
-\begin{msquote}
-We have presented PoolParty, a Python package for designing oligonucleotide
-libraries. PoolParty facilitates this task by representing libraries as directed
-acyclic graphs (DAGs) that users can construct using a simple API.
-\end{msquote}
+% \begin{msquote}
+% We have presented PoolParty, a Python package for designing oligonucleotide
+% libraries. PoolParty facilitates this task by representing libraries as directed
+% acyclic graphs (DAGs) that users can construct using a simple API.
+% \end{msquote}
 
-\begin{msquote}
-PoolParty complements existing library-design tools such as VaLiAnT
-\citep{Barbon2022th} and MPRAnator \citep{GeorgakopoulosSoares2017gb} by
-providing a single framework for DMS libraries, MPRA libraries, and library
-designs that combine elements of both.
-\end{msquote}
+% \begin{msquote}
+% PoolParty complements existing library-design tools such as VaLiAnT
+% \citep{Barbon2022th} and MPRAnator \citep{GeorgakopoulosSoares2017gb} by
+% providing a single framework for DMS libraries, MPRA libraries, and library
+% designs that combine elements of both.
+% \end{msquote}
 
-\begin{msquote}
-Additional comparisons between PoolParty and existing tools are provided in
-Additional file 1: Figs.~S3 and S4 and Tables~S2 and S3.
-\end{msquote}
+% \begin{msquote}
+% Additional comparisons between PoolParty and existing tools are provided in
+% Additional file 1: Figs.~S3 and S4 and Tables~S2 and S3.
+% \end{msquote}
 
 \item Molecular consequence beyond codon change for missense is not reported as
 far as I can tell, VaLiAnT does this to some extent (e.g. stop-gained,
@@ -348,35 +359,43 @@ clinically/genomically minded -- if this is possible I would state this/provide
 an easy means to generate VEP input format from PoolParty outputs.
 
 \begin{response}
-Thank you for raising these points. PoolParty doesn't directly annotate
-molecular consequences for variants, but for ORF-aware Operations these can
-usually be inferred from the Operation used and the amino-acid changes recorded
-in the design cards (i.e., \texttt{wt\_aas}, \texttt{mut\_aas}). In some cases,
-the consequence is already specified by the user, e.g., when requesting
-missense-only, synonymous, or nonsense mutations using
-\texttt{mutagenize\_orf}. We have also implemented ORF-aware insertion and
-deletion scans, with the insertion scan also supporting codon replacement,
-because the corresponding sequence-level Operations do not provide coding-aware
-design cards. These are local coding consequences only, though, since PoolParty
-does not track transcript context.
+Yes, PoolParty does not annotate the molecular consequences of mutations, as it does not return an annotation layer with each sequence. However, if users wish to generate sequences that have a specific type of mutation, then fold these sequences into a larger library, there are two ways to track which specific sequences recieved which types of mutations: through the design card provided with each sequence, and through each sequence's name.
 
-The suggestion to support VCF output is great. We can imagine two ways of
-implementing it. The first is to make PoolParty aware of genomic coordinates,
-such that every Operation can track coordinate changes and propagate them
-downstream. The difficulty is that many Operations can't do this cleanly
-because the coordinate changes are not well defined, e.g., \texttt{join},
-\texttt{shuffle}, and \texttt{recombine}. The second is to implement an
-alignment algorithm that calls variants from the generated sequences post hoc,
-but this can be tricky for the same reason. It should be possible to support VCF
-output for a restricted set of Operations with well-defined coordinate changes,
-but we decided to leave this to a future version because it is not obvious what
-restrictions would be needed to prevent seemingly valid VCF output in
-unsupported cases. As an alternative, we implemented \texttt{from\_vcf}, which
-extracts the corresponding sequence window and inserts the alt allele
-independently for each VCF record. The resulting sequences can then be used as
-input to genomic deep learning models or for clinically focused episomal MAVE
-assays.
+We appreciate the suggestion to support VCF format. To this end we have implemented a new method, \texttt{from\_vcf}, which extracts a specified sequence window and inserts the alternative alleles into that sequence. We do not, however, see a simple way of exporting libraries in VCF format, as the sequences generated by PoolParty are often not closely related to any specific wild-type sequence. The best option in this case would be for users to take the sequences generated by PoolParty, align them to a reference, and use the results to generate a correpsonding VCF record. We believe that this is best done using other available software, however, as building this capability into PoolParty would substantially expand PoolParty's dependencies.
 \end{response}
+
+% \begin{response}
+% [REVISE THIS LATER]
+
+% Thank you for raising these points. PoolParty doesn't directly annotate
+% molecular consequences for variants, but for ORF-aware Operations these can
+% usually be inferred from the Operation used and the amino-acid changes recorded
+% in the design cards (i.e., \texttt{wt\_aas}, \texttt{mut\_aas}). In some cases,
+% the consequence is already specified by the user, e.g., when requesting
+% missense-only, synonymous, or nonsense mutations using
+% \texttt{mutagenize\_orf}. We have also implemented ORF-aware insertion and
+% deletion scans, with the insertion scan also supporting codon replacement,
+% because the corresponding sequence-level Operations do not provide coding-aware
+% design cards. These are local coding consequences only, though, since PoolParty
+% does not track transcript context.
+
+% The suggestion to support VCF output is great. We can imagine two ways of
+% implementing it. The first is to make PoolParty aware of genomic coordinates,
+% such that every Operation can track coordinate changes and propagate them
+% downstream. The difficulty is that many Operations can't do this cleanly
+% because the coordinate changes are not well defined, e.g., \texttt{join},
+% \texttt{shuffle}, and \texttt{recombine}. The second is to implement an
+% alignment algorithm that calls variants from the generated sequences post hoc,
+% but this can be tricky for the same reason. It should be possible to support VCF
+% output for a restricted set of Operations with well-defined coordinate changes,
+% but we decided to leave this to a future version because it is not obvious what
+% restrictions would be needed to prevent seemingly valid VCF output in
+% unsupported cases. As an alternative, we implemented \texttt{from\_vcf}, which
+% extracts the corresponding sequence window and inserts the alt allele
+% independently for each VCF record. The resulting sequences can then be used as
+% input to genomic deep learning models or for clinically focused episomal MAVE
+% assays.
+% \end{response}
 
 \item The authors note limitations at the end of the discussion. I think
 updating this section to address that PoolParty is mostly of benefit for DMS and
@@ -399,28 +418,22 @@ in my opinion, but much more salient for ML based studies on raw sequence out of
 genomic context).
 
 \begin{response}
-We agree and have updated the Limitations section accordingly. The revised text
-reads:
+We agree and have updated the Limitations section accordingly. The revised textreads:
 \end{response}
 
-\begin{msquote}
-PoolParty operates on sequences, not genomic loci or transcript models. It can
-accept genomic coordinates as input to extract sequences, but does not
-interpret transcript annotations or keep track of those coordinates through
-subsequent design steps (e.g., as VaLiAnT does), which may make PoolParty less
-helpful for certain genome-editing applications.
+\begin{msquote} 
+PoolParty operates on sequences, not genomic loci or transcript models. It can accept genomic coordinates as input to extract sequences, but does not interpret transcript annotations or keep track of those coordinates through subsequent design steps (e.g., as VaLiAnT does), which may make PoolParty less helpful for certain genome-editing applications.
 \end{msquote}
 
 \item Line 12 -- there is not a ``lack'' of purpose-built software, replace
 with ``scarcity'' perhaps.
 
 \begin{response}
-We have replaced ``lack'' with ``scarcity.'' The revised sentence reads:
+Fair point. We have replaced ``lack'' with ``scarcity.'' The revised sentence reads:
 \end{response}
 
 \begin{msquote}
-Designing these libraries, however, remains tedious and error-prone due to the
-scarcity of purpose-built software.
+Designing these libraries, however, remains tedious and error-prone due to the scarcity of purpose-built software.
 \end{msquote}
 
 \item Line 51-53 - stated that VaLinAnT is assay specific, then say used for DMS
@@ -428,18 +441,11 @@ and saturation genome editing two different assays (SGE is a type of DMS, but
 VaLinAnT is used for SGE and cDNA DMS which are quite different assays).
 
 \begin{response}
-We have replaced ``assay-specific'' with more general wording and revised the
-surrounding description. We also tested VaLiAnT
-on noncoding regions and confirmed that it supports these designs. We have
-revised the description as follows:
+We have replaced ``assay-specific'' with more general wording and revised the surrounding description. We also tested VaLiAnT on noncoding regions and confirmed that it supports these designs. We have revised the description as follows:
 \end{response}
 
 \begin{msquote}
-Several other tools automate library design or sequence perturbation for
-particular applications. For example, VaLiAnT \citep{Barbon2022th} generates
-mutational scanning libraries of both coding and noncoding regions; supported
-mutation types include single-nucleotide substitutions, amino acid
-substitutions, and in-frame deletions.
+Several other tools automate library design or sequence perturbation for particular applications. For example, VaLiAnT \citep{Barbon2022th} generates mutational scanning libraries of both coding and noncoding regions; supported mutation types include single-nucleotide substitutions, amino acid substitutions, and in-frame deletions.
 \end{msquote}
 
 \item Line 66 -- ``expensive computation'' this is only true for truly massive
@@ -449,51 +455,36 @@ statement would be true for many permutations of sequence for use in ML (e.g.
 pairwise, full genome CDS on GPU) -- I would qualify this point on cost.
 
 \begin{response}
-Indeed, most libraries designed for wet-lab experiments can be generated in
-seconds to minutes on a standard CPU, as the reviewer notes. We have therefore
-made the wording more specific:
+Indeed, most libraries designed for wet-lab experiments can be generated in seconds to minutes on a standard CPU, as the reviewer notes. We have therefore made the wording more specific:
 \end{response}
 
 \begin{msquote}
-Importantly, no sequences are generated until the user requests them, and it is
-simple to generate small test sets of sequences. This allows users to explore
-multiple design options without having to generate complete libraries at each
-iteration.
+Importantly, no sequences are generated until the user requests them, and it is simple to generate small test sets of sequences. This allows users to explore multiple design options without having to generate complete libraries at each iteration.
 \end{msquote}
 
 \item The use cases of protein coding, MPRA promoter and splice are good examples
 (line 68).
 
 \begin{response}
-We are glad the reviewer found the three use cases well chosen; we selected
-them to illustrate the types of library designs where we think PoolParty is
-particularly useful. We appreciate the other positive feedback.
+Thanks!
 \end{response}
 
 \item Figure 2 B and Figure 3 B -- is it necessary helpful to put these code
 blocks here? I'm not sure how useful this is for readership.
 
 \begin{response}
-We have retained these code panels because they show directly how the library
-designs in panels A are specified using PoolParty. The examples are short and
-also illustrate the relationship between the code and the corresponding DAGs
-and outputs.
+The purpose of these panels is to support our claim that the PoolParty API is simple to use. We believe that showing the code explicitly, together with the output the code generates, is the best way to support this claim, and so have opted to retain these panels. 
 \end{response}
 
 \item Line 194 -- `most abundant codon' -- this needs to be defined, is this
 codon usage (I think not) or instance in the input sequence?
 
 \begin{response}
-\texttt{missense\_only\_first} selects the first codon listed for each target
-amino acid in the specified codon table, which by default is ordered by human
-codon-usage frequency. It does not count codons in the input sequence. We have
-clarified this in the text:
+We have clarified the text:
 \end{response}
 
 \begin{msquote}
-We note that \texttt{mutagenize\_orf} supports multiple codon mutation types;
-this example uses \texttt{missense\_only\_first}, which selects the most
-frequently used codon in the human genome for each target amino acid.
+We note that \texttt{mutagenize\_orf} supports multiple codon mutation types; this example uses \texttt{missense\_only\_first}, which selects the most frequently used codon in the human genome for each target amino acid.
 \end{msquote}
 
 \item Line 235 -- SpliceAI is defined here for the first time but is introduced
@@ -501,53 +492,33 @@ before this in section 2.8 -- I would move the `a deep learning model of mRNA
 splicing' to the earlier section.
 
 \begin{response}
-We have defined SpliceAI in the earlier Implementation subsection where the
-model is first used. The revised text reads:
+The term SpliceAI is now defined in the earlier Implementation subsection, where the
+this term is first used:
 \end{response}
 
 \begin{msquote}
-SpliceAI \citep{Jaganathan2019ps} is a genomic deep learning model for
-splice-site prediction in humans. We used the five-model ensemble to predict
-the canonical 5'ss probability using $\pm$5~kb of genomic context (GRCh38).
+SpliceAI \citep{Jaganathan2019ps} is a genomic deep learning model for splice-site prediction in humans. We used the five-model ensemble to predict the canonical 5'ss probability using $\pm$5~kb of genomic context (GRCh38).
 \end{msquote}
 
-\item Lien 238 ``varying strength'' -- maxentscan in legend, I would define this
-is the amin body text too.
+\item Line 238 ``varying strength'' -- maxentscan in legend, I would define this
+is the main body text too.
 
 \begin{response}
-We have clarified in the Results that cryptic splice-site strength refers to
-the MaxEntScan score. The revised sentence reads:
+We have clarified that cryptic splice-site strength refers to the MaxEntScan. The revised sentence in Results reads:
 \end{response}
 
 \begin{msquote}
-Using the 5'ss of SMN2 exon~7 as the canonical site, we used PoolParty to
-construct a library in which cryptic 5'ss 9-mers of varying strength
-(MaxEntScan score) were inserted at varying positions on either side of the
-canonical 5'ss (see Implementation).
+Using the 5'ss of SMN2 exon~7 as the canonical site, we used PoolParty to construct a library in which cryptic 5'ss 9-mers of varying strength
+(MaxEntScan score) were inserted at varying positions on either side of the canonical 5'ss (see Implementation).
 \end{msquote}
 
-\item Lien 248 -- Fig.4G is introduced before 4E-F, perhaps generally introduce
+\item Line 248 -- Fig.4G is introduced before 4E-F, perhaps generally introduce
 Fig.4. then this could stay as is.
 
 \begin{response}
 We have moved the cross-validation result to the end of the paragraph so that
-the Figure 4 panels are introduced in order. The revised paragraph reads:
+the Figure 4 panels are introduced in order. 
 \end{response}
-
-\begin{msquote}
-The GAMs closely reproduced the observed data (Fig.~\ref{ms-fig:figure4}B,C).
-Cryptic sites on the exonic side suppressed canonical site usage more strongly
-than those on the intronic side (Fig.~\ref{ms-fig:figure4}D), with the effect
-peaking approximately 20~bp upstream of the canonical 5'ss. This is consistent
-with the observation that cryptic 5'ss are preferentially depleted near
-annotated ones on the exonic side \citep{Dawes2022empirical}. Stronger cryptic
-sites drove greater suppression in both models (Fig.~\ref{ms-fig:figure4}E). The
-effects of position and strength exhibited substantial interactions
-(Fig.~\ref{ms-fig:figure4}F). Through a comparison to analogous linear models, we
-observed that the non-linear terms and interaction terms in the GAMs
-substantially improved predictive performance, with held-out $R^2$ of 0.82 for
-exonic and 0.71 for intronic insertions (Fig.~\ref{ms-fig:figure4}G).
-\end{msquote}
 
 \item Line 256 -- ``replaces the ad hoc'' is too bold and a little presumptive as
 for major points above-- needs clarification/qualification. Also, Line 274 --
@@ -556,35 +527,27 @@ MPRA as well as SGE/SPE -- I would tone these statements down and/or emphasise
 what is unique to PoolParty.
 
 \begin{response}
-As discussed in our response to Comment 1 above, we have revised both
-statements:
+This is fair criticism; we have revised both statements:
 \end{response}
 
 \begin{msquote}
-We have presented PoolParty, a Python package for designing oligonucleotide
-libraries. PoolParty facilitates this task by representing libraries as directed
-acyclic graphs (DAGs) that users can construct using a simple API.
+We have presented PoolParty, a Python package for designing oligonucleotide libraries. PoolParty facilitates this task by representing libraries as directed acyclic graphs (DAGs) that users can construct using a simple API.
 \end{msquote}
 
 \begin{msquote}
-PoolParty complements existing library-design tools such as VaLiAnT
-\citep{Barbon2022th} and MPRAnator \citep{GeorgakopoulosSoares2017gb} by
-providing a single framework for DMS libraries, MPRA libraries, and library
-designs that combine elements of both.
+PoolParty complements existing library-design tools such as VaLiAnT \citep{Barbon2022th} and MPRAnator \citep{GeorgakopoulosSoares2017gb} by
+providing a single framework for DMS libraries, MPRA libraries, and library designs that combine elements of both.
 \end{msquote}
 
 \item Line 271 -- ``in the spliceAI example'' -- the one in section 2.8 or 3.3?
 (3.3 I imagine, but best to state).
 
 \begin{response}
-We have clarified that this refers to the SpliceAI surrogate modeling example
-in the Results. The revised sentence reads:
+We have clarified that this refers to the SpliceAI surrogate modeling example in the Results:
 \end{response}
 
 \begin{msquote}
-For example, in the SpliceAI analysis of Fig.~\ref{ms-fig:figure4}, the cryptic
-splice-site strength and position recorded in each design card provided the
-covariates used for surrogate modeling.
+For example, in the SpliceAI analysis of Fig.~\ref{ms-fig:figure4}, the cryptic splice-site strength and position recorded in each design card provided the covariates used for surrogate modeling.
 \end{msquote}
 
 \item The code is very well written and documented, and it is noted by the
@@ -594,11 +557,10 @@ Bioinformatics (as reviewers were requested not to use these tools, but this is
 likely due to confidentiality).
 
 \begin{response}
-We checked the current BMC policy and confirmed that this use is permitted when
-disclosed. The software was developed through human coding and testing with
-assistance from LLMs. LLMs were also used for copy-editing the manuscript,
-while the scientific content and conclusions were determined and reviewed by
-the authors.
+BMC Bioinformatics policy permits LLM use when disclosed. We have also clarified the LLM disclosure statement in Implementation:
+\begin{msquote}
+The authors used large language models (primarily Claude Opus 4.5 and 4.6, Anthropic) to assist with code development, debugging, and documentation writing. The manuscript was written entirely by the authors, with LLM assistance only at the copy-editing stage. The figures were also prepared by the authors; LLMs were used only to help write the scripts that generate the plots. The authors affirm that they are fully responsible for the content of the manuscript, the codebase, and the documentation. 
+\end{msquote}
 \end{response}
 
 \item The name `PoolParty' is great.
