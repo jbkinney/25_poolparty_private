@@ -24,14 +24,21 @@
 \definecolor{responseblue}{HTML}{0070C0}
 \definecolor{noticegray}{HTML}{555555}
 % Must match \quoted in main.tex and si.tex.
-\definecolor{quotedtext}{HTML}{7030A0}
+\definecolor{quotedtext}{HTML}{A00020}
 \newenvironment{response}{\par\color{responseblue}}{\par}
 \newenvironment{msquote}
-  {\begin{quote}\color{quotedtext}\itshape\noindent\ignorespaces}
+  {\begin{quote}\color{quotedtext}\noindent\ignorespaces}
   {\end{quote}}
 \providecommand{\bibcommenthead}{}
+% Flat table of contents: every entry is one flush-left, dotted line.
+\makeatletter
+\renewcommand*{\l@section}{\@dottedtocline{1}{0pt}{0pt}}
+\makeatother
+\newcommand{\tocline}[1]{\addcontentsline{toc}{section}{#1}}
 \setlist[enumerate,1]{leftmargin=*,itemsep=1.2\baselineskip,topsep=\baselineskip}
 \newcommand{\reviewersection}[1]{%
+  \phantomsection
+  \tocline{#1}%
   \bigskip\par\noindent{\large\bfseries #1}\par\medskip\hrule\medskip}
 
 \begin{document}
@@ -41,6 +48,12 @@
 {\large PoolParty: streamlined design of DNA sequence libraries in Python}\\[0.8em]
 Zhihan Liu, Aidan Cordero, Justin B. Kinney\\[0.7em]
 \end{center}
+
+\renewcommand{\contentsname}{Contents}
+\tableofcontents
+%\clearpage
+
+\reviewersection{Overview}
 
 \begin{response}
 We thank the Editor and Reviewers for their thoughtful critiques. The manuscript has been improved substantially as a result of this feedback. Additional edits have also been made throughout to improve clarity. We provide a point-by-point response to each critique below.
@@ -469,6 +482,8 @@ Thank you!
 \end{response}
 \end{enumerate}
 
+\phantomsection
+\tocline{References}
 \bibliographystyle{sn-vancouver-num}
 \bibliography{references}
 
