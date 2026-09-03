@@ -71,13 +71,16 @@ main_tracked.pdf: main_tracked.tex si.pdf $(SUPPORT) $(ASSETS)
 verify:                    ## Check build logs for undefined refs/citations, bad floats
 	@fail=0; for f in si main response main_tracked si-clean main-clean; do if [ -f $$f.log ]; then if grep -Eq $(BADLOG) $$f.log; then echo "FAIL  $$f.log"; grep -En $(BADLOG) $$f.log; fail=1; else echo "  ok  $$f.log"; fi; fi; done; exit $$fail
 
+# latexmk protects .bbl from cleanup unless bibtex_use=2, which "-bibtex"
+# sets: a .bbl can be a document's only bibliography source. Here it is
+# always regenerable from the tracked references.bib, so it is removed.
 clean:                     ## Remove LaTeX auxiliary files, keeping the PDFs
-	$(LATEXMK) -c si.tex main.tex response.tex
+	$(LATEXMK) -bibtex -c si.tex main.tex response.tex
 	@rm -f main_tracked.tex main_tracked.tex.tmp main_tracked.aux main_tracked.log main_tracked.out main_tracked.fls main_tracked.fdb_latexmk main_tracked.bbl main_tracked.blg main_tracked.toc
 	@rm -f si-clean.aux si-clean.log si-clean.out si-clean.fls si-clean.fdb_latexmk si-clean.bbl si-clean.blg si-clean.toc main-clean.aux main-clean.log main-clean.out main-clean.fls main-clean.fdb_latexmk main-clean.bbl main-clean.blg
 
 distclean: clean           ## Also delete the PDFs (tracked in git; restore with git checkout)
-	$(LATEXMK) -C si.tex main.tex response.tex
+	$(LATEXMK) -bibtex -C si.tex main.tex response.tex
 	@rm -f main_tracked.pdf $(CLEANPDFS)
 
 help:                      ## Show this help
