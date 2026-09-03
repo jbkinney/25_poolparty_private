@@ -8,6 +8,20 @@
 \usepackage{booktabs,array}
 \usepackage[nointegrals]{wasysym}
 \usepackage[numbers,sort&compress]{natbib}
+
+\usepackage{xcolor}
+
+% Passages quoted verbatim in the response-to-reviewers letter are wrapped in
+% \quoted{...} so they are easy to find when syncing the two documents.
+% \showquotedtrue colours them; switch to \showquotedfalse for a clean
+% submission PDF. Keep the colour in sync with response.tex's msquote.
+\newif\ifshowquoted
+% On by default. "make clean-pdf" builds unmarked PDFs by predefining
+% \NOQUOTEDCOLOR on the pdflatex command line, so neither file has to be
+% edited to produce a submission-ready copy.
+\ifdefined\NOQUOTEDCOLOR\showquotedfalse\else\showquotedtrue\fi
+\definecolor{quotedtext}{HTML}{7030A0}
+\newcommand{\quoted}[1]{\ifshowquoted\textcolor{quotedtext}{#1}\else#1\fi}
 \usepackage[hidelinks]{hyperref}
 \usepackage[labelfont=bf,labelsep=period]{caption}
 \newcommand{\botrule}{\bottomrule}
@@ -51,10 +65,10 @@ Zhihan Liu$^{1}$, Aidan Cordero$^{1}$, Justin B. Kinney$^{1,*}$\\[0.75em]
 \section*{Supplemental Methods}
 
 \subsection*{Benchmarking analysis}
-Figure~\ref{fig:benchmark-scaling} and Table \ref{tab:benchmark-summary} present a benchmarking study of PoolParty using the three library designs featured in Figs.~2, 3, and 4 of the main text. Benchmarking experiments were run under Ubuntu 22.04.3 LTS in Windows Subsystem for Linux 2 on an Intel Core Ultra 9 185H workstation with 31~GB RAM allocated to WSL2, using CPython 3.12.2, PoolParty 0.1.0, and StateTracker 0.1.0. Timings are single-threaded wall-clock measurements of \texttt{generate\_library}, reported as mean $\pm$ SD over five replicate runs. Peak memory is the maximum resident set size reported by \texttt{getrusage}, with each data point measured in a fresh process.
+\quoted{Figure~\ref{fig:benchmark-scaling} and Table \ref{tab:benchmark-summary} present a benchmarking study of PoolParty using the three library designs featured in Figs.~2, 3, and 4 of the main text. Benchmarking experiments were run under Ubuntu 22.04.3 LTS in Windows Subsystem for Linux 2 on an Intel Core Ultra 9 185H workstation with 31~GB RAM allocated to WSL2, using CPython 3.12.2, PoolParty 0.1.0, and StateTracker 0.1.0. Timings are single-threaded wall-clock measurements of \texttt{generate\_library}, reported as mean $\pm$ SD over five replicate runs. Peak memory is the maximum resident set size reported by \texttt{getrusage}, with each data point measured in a fresh process.}
 
 \subsection*{Tool comparisons}
-A literature search identified 13 tools with substantial functional overlap with PoolParty; these are listed in Table \ref{tab:tools}. Table \ref{tab:capabilities} compares the specific features and capabilities of the 7 tools most similar in purpose to PoolParty. Of these 7, we judged VaLiAnT \cite{Barbon2022th}, MPRAnator \cite{GeorgakopoulosSoares2017gb}, and tangermeme \cite{Schreiber2025nd} to be the closest competitors. MPRAnator is a web application that, as of this writing, is no longer accessible. Figs.~\ref{fig:valiant-comparison} and \ref{fig:tangermeme-comparison} provide explicit comparisons of the code / inputs required to construct identical libraries using PoolParty and VaLiAnT (in Fig.~\ref{fig:valiant-comparison}) or PoolParty and tangermeme (in Fig.~\ref{fig:tangermeme-comparison}). We note that neither VaLiAnT nor tangermeme is readily capable of generating the three libraries used in the benchmarking study of PoolParty.
+\quoted{A literature search identified 13 tools with substantial functional overlap with PoolParty; these are listed in Table \ref{tab:tools}. Table \ref{tab:capabilities} compares the specific features and capabilities of the 7 tools most similar in purpose to PoolParty. Of these 7, we judged VaLiAnT \cite{Barbon2022th}, MPRAnator \cite{GeorgakopoulosSoares2017gb}, and tangermeme \cite{Schreiber2025nd} to be the closest competitors. MPRAnator is a web application that, as of this writing, is no longer accessible. Figs.~\ref{fig:valiant-comparison} and \ref{fig:tangermeme-comparison} provide explicit comparisons of the code/inputs required to construct identical libraries using PoolParty versus VaLiAnT (Fig.~\ref{fig:valiant-comparison}) or PoolParty versus tangermeme (Fig.~\ref{fig:tangermeme-comparison}). We note that neither VaLiAnT nor tangermeme is capable of generating all three libraries used in the benchmarking study of PoolParty.}
 
 \clearpage
 
