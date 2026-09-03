@@ -1,0 +1,73 @@
+% PoolParty: streamlined design of DNA sequence libraries in Python.
+% BMC Bioinformatics software-article wrapper. Build with `make main`.
+
+% xr-hyper must precede sn-jnl.cls because the class loads hyperref. This lets
+% \ref resolve the Figure S* and Table S* labels defined in si.tex; build
+% si.tex before this document.
+\RequirePackage{xr-hyper}
+\documentclass[pdflatex,sn-vancouver-num,referee,oneside]{sn-jnl}
+
+% assets/figure2.pdf is PDF 1.6, above pdfTeX's default 1.5 ceiling.
+\ifdefined\pdfminorversion\pdfminorversion=6\fi
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+% UTF-8 + Greek letters: required by entries in references.bib.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textgreek}
+\usepackage[mathlines]{lineno}
+\usepackage{xcolor}
+
+% Passages quoted verbatim in the response letter use \quoted{...} so they
+% are easy to synchronize. `make clean-pdf` disables this highlighting.
+\newif\ifshowquoted
+\ifdefined\NOQUOTEDCOLOR\showquotedfalse\else\showquotedtrue\fi
+\definecolor{quotedtext}{HTML}{A00020}
+\newcommand{\quoted}[1]{\ifshowquoted\textcolor{quotedtext}{#1}\else#1\fi}
+\newcommand{\figurefourwidth}{0.75\textwidth}
+\graphicspath{{assets/}}
+
+% The label sets are disjoint; nocite prevents bibliography-number conflicts.
+\externaldocument[][nocite]{si}
+
+% Use a standard US Letter submission layout with the Springer/BMC class.
+\geometry{reset,letterpaper,margin=1in}
+\renewcommand{\descriptionlabel}[1]{\hspace\labelsep\bfseries #1}
+\raggedbottom
+
+\begin{document}
+
+\title[PoolParty]{PoolParty: streamlined design of DNA sequence libraries in Python}
+
+\author[1]{\fnm{Zhihan} \sur{Liu}}\email{zhliu@cshl.edu}
+\author[1]{\fnm{Aidan} \sur{Cordero}}\email{aicorder@cshl.edu}
+\author*[1]{\fnm{Justin B.} \sur{Kinney}}\email{jkinney@cshl.edu}
+
+\affil*[1]{\orgdiv{Simons Center for Quantitative Biology},
+           \orgname{Cold Spring Harbor Laboratory},
+           \orgaddress{\street{1 Bungtown Rd.},
+                       \city{Cold Spring Harbor},
+                       \state{New York},
+                       \postcode{11724},
+                       \country{United States}}}
+
+\abstract{%
+\textbf{Background:} Computationally designed DNA sequence libraries are essential components of massively parallel reporter assays (MPRAs), deep mutational scanning (DMS) experiments, and other multiplex assays of variant effect (MAVEs). They are also increasingly used in silico to analyze genomic AI models. \quoted{Designing these libraries, however, remains tedious and error-prone due to the scarcity of purpose-built software.}\\
+
+\textbf{Results:} Here we describe PoolParty, a Python package that streamlines the design of complex oligo pools using a simple but flexible API. In PoolParty, each library is represented by a computational graph that can be specified in just a few lines of code. Over 50 built-in operations cover nucleotide- and codon-level mutagenesis, motif insertion, barcode generation, and more. PoolParty automatically generates informative names for each sequence and provides ``design cards'' detailing how each sequence was generated. Visualization methods let users quickly audit library content and inspect the underlying graph. PoolParty thus transforms oligo pool design from a tedious task requiring custom functions and scripts into a structured, transparent, and reproducible process.\\
+
+\textbf{Conclusions:} PoolParty streamlines the design of DMS, MPRA, and other multiplex assay libraries, and the design cards it provides can help researchers systematically probe and interpret genomic AI models. PoolParty can also be extended to support new assays and analysis strategies as they emerge.
+}
+
+\keywords{sequence design, library design, massively parallel reporter assay, deep mutational scanning, multiplex assay of variant effect, genomic AI, in silico experiments, Python software, directed acyclic graph}
+
+\modulolinenumbers[1]
+\linenumbers
+\maketitle
+
+\input{main_body.tex}
+
+\bibliography{references}
+
+\end{document}

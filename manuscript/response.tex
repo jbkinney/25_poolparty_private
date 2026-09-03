@@ -14,7 +14,7 @@
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
 % Labels from both documents are imported unprefixed, so quoted blocks can be
-% pasted verbatim from main.tex and si.tex. Safe because response.tex defines
+% pasted verbatim from main_bmc.tex and si.tex. Safe because response.tex defines
 % no labels of its own and the two label sets are disjoint. The "nocite"
 % argument suppresses import of \bibcite entries, which would otherwise clash
 % with this document's own citation numbering.
@@ -23,7 +23,7 @@
 
 \definecolor{responseblue}{HTML}{0070C0}
 \definecolor{noticegray}{HTML}{555555}
-% Must match \quoted in main.tex and si.tex.
+% Must match \quoted in main_bmc.tex and si.tex.
 \definecolor{quotedtext}{HTML}{A00020}
 \newenvironment{response}{\par\color{responseblue}}{\par}
 \newenvironment{msquote}

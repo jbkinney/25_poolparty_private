@@ -1,0 +1,83 @@
+% PoolParty: streamlined design of DNA sequence libraries in Python.
+% bioRxiv preprint wrapper. Build with `make biorxiv`.
+
+% xr-hyper must precede the legacy class because the class loads hyperref.
+\RequirePackage{xr-hyper}
+\documentclass[twoside]{kinneylab_preprintstyle}
+
+% assets/figure2.pdf is PDF 1.6, above pdfTeX's default 1.5 ceiling.
+\ifdefined\pdfminorversion\pdfminorversion=6\fi
+
+% Match the legacy preprint's type treatment.
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\normalsize}{\fontsize{9}{11}\selectfont}
+\urlstyle{same}
+\hbadness=10000
+\raggedbottom
+
+% The preprint intentionally has neither line numbers nor quoted-text colour.
+\newcommand{\quoted}[1]{#1}
+\providecommand{\backmatter}{}
+\newcommand{\figurefourwidth}{0.8\textwidth}
+\graphicspath{{assets/}}
+
+% The shared body uses one-column figures sized to \textwidth. Render them
+% across both columns in this two-column layout.
+\makeatletter
+\renewenvironment{figure}[1][tbp]
+  {\@dblfloat{figure}[#1]}
+  {\end@dblfloat}
+\makeatother
+
+% The label sets are disjoint; nocite prevents bibliography-number conflicts.
+\externaldocument[][nocite]{si}
+
+\begin{document}
+
+\leadauthor{Liu}
+\title{PoolParty: streamlined design of DNA sequence libraries in Python}
+\shorttitle{PoolParty}
+
+\author[1]{Zhihan Liu}
+\author[1]{Aidan Cordero}
+\author[1,\Letter]{Justin B. Kinney}
+
+\affil[1]{Simons Center for Quantitative Biology, Cold Spring Harbor
+Laboratory, 1 Bungtown Rd., Cold Spring Harbor, New York 11724, United States}
+\affil[ ]{\Letter\; Address correspondence to:
+\href{mailto:jkinney@cshl.edu}{jkinney@cshl.edu}}
+
+\begin{abstract}
+\textbf{Background:} Computationally designed DNA sequence libraries are
+essential components of massively parallel reporter assays (MPRAs), deep
+mutational scanning (DMS) experiments, and other multiplex assays of variant
+effect (MAVEs). They are also increasingly used in silico to analyze genomic AI
+models. \quoted{Designing these libraries, however, remains tedious and
+error-prone due to the scarcity of purpose-built software.}\\
+
+\textbf{Results:} Here we describe PoolParty, a Python package that streamlines
+the design of complex oligo pools using a simple but flexible API. In PoolParty,
+each library is represented by a computational graph that can be specified in
+just a few lines of code. Over 50 built-in operations cover nucleotide- and
+codon-level mutagenesis, motif insertion, barcode generation, and more.
+PoolParty automatically generates informative names for each sequence and
+provides ``design cards'' detailing how each sequence was generated.
+Visualization methods let users quickly audit library content and inspect the
+underlying graph. PoolParty thus transforms oligo pool design from a tedious
+task requiring custom functions and scripts into a structured, transparent, and
+reproducible process.\\
+
+\textbf{Conclusions:} PoolParty streamlines the design of DMS, MPRA, and other
+multiplex assay libraries, and the design cards it provides can help researchers
+systematically probe and interpret genomic AI models. PoolParty can also be
+extended to support new assays and analysis strategies as they emerge.
+\end{abstract}
+
+\maketitle
+
+\input{main_body.tex}
+
+\bibliographystyle{kinneylab_bibstyle}
+\bibliography{references}
+
+\end{document}
