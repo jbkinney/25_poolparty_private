@@ -1,10 +1,6 @@
 % PoolParty: streamlined design of DNA sequence libraries in Python.
 % BMC Bioinformatics software-article wrapper. Build with `make main`.
 
-% xr-hyper must precede sn-jnl.cls because the class loads hyperref. This lets
-% \ref resolve the Figure S* and Table S* labels defined in si.tex; build
-% si.tex before this document.
-\RequirePackage{xr-hyper}
 \documentclass[pdflatex,sn-vancouver-num,referee,oneside]{sn-jnl}
 
 % assets/figure2.pdf is PDF 1.6, above pdfTeX's default 1.5 ceiling.
@@ -27,9 +23,6 @@
 \newcommand{\quoted}[1]{\ifshowquoted\textcolor{quotedtext}{#1}\else#1\fi}
 \newcommand{\figurefourwidth}{0.75\textwidth}
 \graphicspath{{assets/}}
-
-% The label sets are disjoint; nocite prevents bibliography-number conflicts.
-\externaldocument[][nocite]{si}
 
 % Use a standard US Letter submission layout with the Springer/BMC class.
 \geometry{reset,letterpaper,margin=1in}

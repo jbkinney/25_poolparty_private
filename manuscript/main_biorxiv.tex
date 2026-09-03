@@ -1,8 +1,6 @@
 % PoolParty: streamlined design of DNA sequence libraries in Python.
 % bioRxiv preprint wrapper. Build with `make biorxiv`.
 
-% xr-hyper must precede the legacy class because the class loads hyperref.
-\RequirePackage{xr-hyper}
 \documentclass[twoside]{kinneylab_preprintstyle}
 
 % assets/figure2.pdf is PDF 1.6, above pdfTeX's default 1.5 ceiling.
@@ -28,9 +26,6 @@
   {\@dblfloat{figure}[#1]}
   {\end@dblfloat}
 \makeatother
-
-% The label sets are disjoint; nocite prevents bibliography-number conflicts.
-\externaldocument[][nocite]{si}
 
 \begin{document}
 

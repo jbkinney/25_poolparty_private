@@ -1,0 +1,66 @@
+% Supplemental Information for the BMC resubmission. Build with `make si`.
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs,array}
+\usepackage[nointegrals]{wasysym}
+% Match main_resub.tex's sn-vancouver-num class option: bracketed, numerical
+% citations that are sorted and compressed by natbib.
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+
+% Quoted passages are marked for resubmission review. `make clean-pdf`
+% predefines \NOQUOTEDCOLOR to produce an unmarked BMC copy.
+\newif\ifshowquoted
+\ifdefined\NOQUOTEDCOLOR\showquotedfalse\else\showquotedtrue\fi
+\definecolor{quotedtext}{HTML}{A00020}
+\newcommand{\quoted}[1]{\ifshowquoted\textcolor{quotedtext}{#1}\else#1\fi}
+\usepackage[hidelinks]{hyperref}
+\usepackage[labelfont=bf,labelsep=period]{caption}
+\newcommand{\botrule}{\bottomrule}
+
+% Flat table of contents: every entry is one flush-left, dotted line.
+\makeatletter
+\renewcommand*{\l@subsection}{\@dottedtocline{1}{0pt}{0pt}}
+\makeatother
+\newcommand{\tocline}[1]{\addcontentsline{toc}{subsection}{#1}}
+\providecommand{\bibcommenthead}{}
+
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theHfigure}{S\arabic{figure}}
+\renewcommand{\theHtable}{S\arabic{table}}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+
+\begin{document}
+
+\title{\textbf{Supplemental Information for ``PoolParty: streamlined design of DNA sequence libraries in Python''}}
+
+\author{%
+Zhihan Liu$^{1}$, Aidan Cordero$^{1}$, Justin B. Kinney$^{1,*}$\\[0.75em]
+{\small $^{1}$Simons Center for Quantitative Biology, Cold Spring Harbor Laboratory,}\\
+{\small 1 Bungtown Rd., Cold Spring Harbor, New York 11724, United States}\\[0.5em]
+{\small E-mail: \href{mailto:zhliu@cshl.edu}{zhliu@cshl.edu} (Z.L.),
+\href{mailto:aicorder@cshl.edu}{aicorder@cshl.edu} (A.C.),
+\href{mailto:jkinney@cshl.edu}{jkinney@cshl.edu} (J.B.K.)}\\[0.5em]
+{\small $^{*}$Corresponding author}%
+}
+
+\maketitle
+\renewcommand{\contentsname}{Contents}
+\tableofcontents
+\clearpage
+
+\input{si_body.tex}
+
+\phantomsection
+\tocline{\textbf{References}}
+\bibliographystyle{sn-vancouver-num}
+\bibliography{references}
+
+\end{document}
